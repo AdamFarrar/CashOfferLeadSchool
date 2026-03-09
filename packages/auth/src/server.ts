@@ -106,6 +106,39 @@ export const auth = betterAuth({
 
     databaseHooks: {
         user: {
+            create: {
+                after: async (user) => {
+                    try {
+                        const slug = `${user.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "user"}-${user.id.slice(0, 8)}`;
+                        await auth.api.createOrganization({
+                            body: {
+                                name: `${user.name || "My"}'s Organization`,
+                                slug,
+                            },
+                            headers: new Headers(),
+                            query: { userId: user.id } as any,
+                        }).catch(async () => {
+                            // Fallback: direct DB insert if API method fails
+                            const { db } = await import("@cocs/database/client");
+                            const { organization, member } = await import("@cocs/database/schema");
+                            const orgId = crypto.randomUUID();
+                            await db.insert(organization).values({
+                                id: orgId,
+                                name: `${user.name || "My"}'s Organization`,
+                                slug,
+                            });
+                            await db.insert(member).values({
+                                organizationId: orgId,
+                                userId: user.id,
+                                role: "owner",
+                            });
+                        });
+                    } catch (error) {
+                        console.error("[AUTH] Failed to create default org for user:", error);
+                        // Non-blocking — user creation must not fail because of org creation
+                    }
+                },
+            },
             update: {
                 after: async (user) => {
                     if (user.emailVerified && !_verificationEventFired.has(user.id)) {
