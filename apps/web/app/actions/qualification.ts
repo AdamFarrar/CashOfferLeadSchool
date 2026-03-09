@@ -6,13 +6,12 @@ import {
 } from "@cocs/services";
 import { auth } from "@cocs/auth/server";
 import { headers } from "next/headers";
+import { db } from "@cocs/database/client";
+import { member } from "@cocs/database/schema";
+import { eq } from "drizzle-orm";
 
 // =============================================================================
 // Qualification Server Actions
-// =============================================================================
-// Thin server action layer. All DB logic lives in packages/services.
-// Identity is always resolved from the authenticated session — never trusted
-// from client input.
 // =============================================================================
 
 const MAX_TEXT = 500;
@@ -21,14 +20,29 @@ async function getServerIdentity() {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) return null;
 
-    const activeMember = session.session?.activeOrganizationId
-        ? await auth.api.getActiveMember({ headers: await headers() }).catch(() => null)
-        : null;
+    let orgId = session.session?.activeOrganizationId || "";
+    let role = "";
+
+    if (orgId) {
+        const activeMember = await auth.api.getActiveMember({ headers: await headers() }).catch(() => null);
+        role = activeMember?.role || "";
+    } else {
+        // No active org — look up the user's first org from DB
+        const membership = await db
+            .select({ organizationId: member.organizationId, role: member.role })
+            .from(member)
+            .where(eq(member.userId, session.user.id))
+            .limit(1);
+        if (membership.length > 0) {
+            orgId = membership[0].organizationId;
+            role = membership[0].role;
+        }
+    }
 
     return {
         userId: session.user.id,
-        organizationId: session.session?.activeOrganizationId || "",
-        role: activeMember?.role || "",
+        organizationId: orgId,
+        role,
     };
 }
 
