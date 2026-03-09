@@ -226,7 +226,7 @@ export default function DashboardPage() {
                         width: "2.5rem",
                         height: "2.5rem",
                         borderRadius: "50%",
-                        background: "rgba(34, 197, 94, 0.1)",
+                        background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "rgba(34, 197, 94, 0.1)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                         flexShrink: 0,
                     }}
                 >
-                    💡
+                    {qualCompleted ? "🎉" : "💡"}
                 </div>
                 <div>
                     <div
@@ -244,7 +244,7 @@ export default function DashboardPage() {
                             marginBottom: "0.25rem",
                         }}
                     >
-                        Getting Started
+                        {qualCompleted ? "You're All Set" : "Getting Started"}
                     </div>
                     <p
                         style={{
@@ -253,14 +253,16 @@ export default function DashboardPage() {
                             lineHeight: 1.5,
                         }}
                     >
-                        Start by completing your{" "}
-                        <Link
-                            href="/qualify"
-                            style={{ color: "var(--brand-orange)", textDecoration: "none" }}
-                        >
-                            qualification form
-                        </Link>
-                        . This helps us tailor your learning path and match you with the right resources.
+                        {qualCompleted
+                            ? "Your qualification is complete. We're preparing your personalized learning path. More features coming soon!"
+                            : <>Start by completing your{" "}
+                                <Link
+                                    href="/qualify"
+                                    style={{ color: "var(--brand-orange)", textDecoration: "none" }}
+                                >
+                                    qualification form
+                                </Link>
+                                . This helps us tailor your learning path and match you with the right resources.</>}
                     </p>
                 </div>
             </div>
