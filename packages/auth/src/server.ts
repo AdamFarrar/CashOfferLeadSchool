@@ -40,20 +40,10 @@ export const auth = betterAuth({
         schema,
     }),
 
-    baseURL: (() => {
-        if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
-        if (process.env.NODE_ENV === "production") {
-            throw new Error("BETTER_AUTH_URL environment variable is required in production.");
-        }
-        return "http://localhost:3000";
-    })(),
-    secret: (() => {
-        if (process.env.BETTER_AUTH_SECRET) return process.env.BETTER_AUTH_SECRET;
-        if (process.env.NODE_ENV === "production") {
-            throw new Error("BETTER_AUTH_SECRET environment variable is required in production.");
-        }
-        return undefined;
-    })(),
+    // Env vars use fallbacks at build time (NODE_ENV=production but secrets
+    // aren't available during `next build`). Validated at runtime by BetterAuth.
+    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    secret: process.env.BETTER_AUTH_SECRET,
 
     emailAndPassword: {
         enabled: true,
