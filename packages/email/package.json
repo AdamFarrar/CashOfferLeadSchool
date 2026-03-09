@@ -1,0 +1,23 @@
+{
+    "name": "@cocs/email",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@cocs/database": "workspace:*",
+        "resend": "^4.0.0",
+        "isomorphic-dompurify": "^2.20.0",
+        "juice": "^11.0.0",
+        "drizzle-orm": "^0.41.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.0",
+        "@types/node": "^22.0.0"
+    }
+}

@@ -12,7 +12,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "posthog-js": "^1.200.0"
+        "posthog-js": "^1.200.0",
+        "@cocs/events": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.7.0",

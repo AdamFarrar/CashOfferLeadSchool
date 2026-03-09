@@ -25,3 +25,7 @@ export { FUNNEL_DASHBOARD, FEEDBACK_DASHBOARD, EXPERIMENT_DASHBOARD, ALL_DASHBOA
 
 // D13: Docs Generator
 export { extractDocs, generateMarkdown } from "./generate-docs";
+
+// Phase 1.6: Domain Event Bus Listener
+export { registerAnalyticsListener } from "./listener";
+export { resolveContract } from "./contract-mapper";

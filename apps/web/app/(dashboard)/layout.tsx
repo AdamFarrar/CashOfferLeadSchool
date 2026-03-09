@@ -14,6 +14,12 @@ const NAV_ITEMS = [
     { href: "#", label: "Analytics", icon: "📈", locked: true },
 ];
 
+const ADMIN_NAV_ITEMS = [
+    { href: "/admin/email-templates", label: "Email Templates", icon: "📧" },
+    { href: "/admin/automation-rules", label: "Automation Rules", icon: "⚡" },
+    { href: "/admin/feedback", label: "Feedback", icon: "💬" },
+];
+
 export default function DashboardLayout({
     children,
 }: {
@@ -22,6 +28,7 @@ export default function DashboardLayout({
     const pathname = usePathname();
     const { data: session } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [userRole, setUserRole] = useState("");
 
     // Auto-set active org if user has one but hasn't selected it
     useEffect(() => {
@@ -34,6 +41,17 @@ export default function DashboardLayout({
             }).catch(() => { });
         }
     }, [session?.user?.id, session?.session?.activeOrganizationId]);
+
+    // Fetch user role for admin nav
+    useEffect(() => {
+        if (session?.session?.activeOrganizationId) {
+            authClient.organization.getActiveMember().then((res) => {
+                setUserRole(res.data?.role || "");
+            }).catch(() => { });
+        }
+    }, [session?.session?.activeOrganizationId]);
+
+    const isAdmin = ["owner", "admin"].includes(userRole);
 
     return (
         <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -152,6 +170,55 @@ export default function DashboardLayout({
                             </Link>
                         );
                     })}
+
+                    {/* Admin section — visible to owner/admin only */}
+                    {isAdmin && (
+                        <>
+                            <div
+                                style={{
+                                    margin: "0.75rem 0 0.5rem",
+                                    padding: "0 0.75rem",
+                                    fontSize: "0.65rem",
+                                    fontWeight: 700,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.08em",
+                                    color: "var(--text-muted)",
+                                }}
+                            >
+                                Admin
+                            </div>
+                            {ADMIN_NAV_ITEMS.map((item) => {
+                                const active = pathname === item.href || pathname.startsWith(item.href + "/");
+                                return (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        onClick={() => setSidebarOpen(false)}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.625rem",
+                                            padding: "0.625rem 0.75rem",
+                                            borderRadius: "var(--radius-md)",
+                                            textDecoration: "none",
+                                            fontSize: "0.875rem",
+                                            fontWeight: active ? 600 : 400,
+                                            color: active
+                                                ? "var(--text-primary)"
+                                                : "var(--text-secondary)",
+                                            background: active
+                                                ? "rgba(249, 115, 22, 0.08)"
+                                                : "transparent",
+                                            transition: "background 0.15s",
+                                        }}
+                                    >
+                                        <span style={{ fontSize: "1rem" }}>{item.icon}</span>
+                                        {item.label}
+                                    </Link>
+                                );
+                            })}
+                        </>
+                    )}
                 </nav>
 
                 {/* User */}

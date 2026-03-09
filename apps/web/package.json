@@ -20,8 +20,13 @@
         "@cocs/analytics": "workspace:*",
         "@cocs/experiments": "workspace:*",
         "@cocs/ui": "workspace:*",
+        "@cocs/events": "workspace:*",
+        "@cocs/email": "workspace:*",
+        "@cocs/automation": "workspace:*",
         "@sentry/nextjs": "^8.0.0",
-        "drizzle-orm": "^0.41.0"
+        "drizzle-orm": "^0.41.0",
+        "grapesjs": "^0.21.0",
+        "grapesjs-preset-newsletter": "^1.0.0"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",

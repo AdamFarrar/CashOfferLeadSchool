@@ -5,6 +5,7 @@ import {
     recordPromptSeen,
     recordPromptDismissed,
     getFeedbackByUser,
+    feedbackExistsForUser,
     getAllFeedback,
     reviewFeedback,
 } from "@cocs/services";
@@ -91,8 +92,7 @@ export async function recordPromptSeenAction(feedbackId: string) {
     if (!identity) return;
 
     // Verify ownership: feedbackId must belong to calling user
-    const userFeedback = await getFeedbackByUser(identity.userId, identity.organizationId);
-    const owns = userFeedback.some((f: { id: string }) => f.id === feedbackId);
+    const owns = await feedbackExistsForUser(feedbackId, identity.userId);
     if (!owns) return;
 
     try {
@@ -110,8 +110,7 @@ export async function recordPromptDismissedAction(feedbackId: string) {
     if (!identity) return;
 
     // Verify ownership: feedbackId must belong to calling user
-    const userFeedback = await getFeedbackByUser(identity.userId, identity.organizationId);
-    const owns = userFeedback.some((f: { id: string }) => f.id === feedbackId);
+    const owns = await feedbackExistsForUser(feedbackId, identity.userId);
     if (!owns) return;
 
     try {

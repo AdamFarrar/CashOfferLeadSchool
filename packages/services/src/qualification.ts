@@ -1,6 +1,7 @@
 import { db } from "@cocs/database/client";
 import { qualificationForm } from "@cocs/database/schema";
 import { eq, and } from "drizzle-orm";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 
 // =============================================================================
 // Qualification Service — Phase 1
@@ -67,6 +68,23 @@ export async function submitQualificationForm(data: QualificationData) {
             responses: data.responses || {},
             submittedAt: now,
         });
+    }
+
+    // Emit domain event for automation pipeline (welcome email, etc.)
+    try {
+        await emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.QUALIFICATION_SUBMITTED,
+            payload: {
+                user_name: data.businessName,
+                businessType: data.businessType,
+                marketArea: data.marketArea,
+            },
+            actor: { type: "user", id: data.userId },
+            subject: { type: "user", id: data.userId },
+            organizationId: data.organizationId,
+        });
+    } catch {
+        // Non-blocking — form submission must succeed even if event fails
     }
 
     return { success: true };

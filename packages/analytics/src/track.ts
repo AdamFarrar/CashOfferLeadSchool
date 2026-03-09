@@ -12,6 +12,7 @@
 
 import type { EventContract, ContractProperties } from "./types";
 import type { EventEnvelope } from "./event-envelope";
+import { generateEventId } from "./utils";
 
 type PostHogInstance = {
     capture: (event: string, properties: Record<string, unknown>) => void;
@@ -80,20 +81,7 @@ async function getPostHog(): Promise<PostHogInstance | null> {
     }
 }
 
-/**
- * Generate a UUID v4 for event_id.
- */
-function generateEventId(): string {
-    if (typeof crypto !== "undefined" && crypto.randomUUID) {
-        return crypto.randomUUID();
-    }
-    // Fallback for older browsers
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
+// generateEventId imported from ./utils
 
 /**
  * Get session_id from PostHog if available.

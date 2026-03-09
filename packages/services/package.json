@@ -12,6 +12,7 @@
     "dependencies": {
         "@cocs/database": "workspace:*",
         "@cocs/auth": "workspace:*",
+        "@cocs/events": "workspace:*",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {

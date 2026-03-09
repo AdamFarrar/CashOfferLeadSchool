@@ -8,6 +8,7 @@
 
 import type { EventContract, ContractProperties } from "./types";
 import type { EventEnvelope } from "./event-envelope";
+import { generateEventId } from "./utils";
 
 interface ServerContext {
     userId: string;
@@ -16,19 +17,7 @@ interface ServerContext {
     activeExperiments?: { id: string; variant: string }[];
 }
 
-/**
- * Generate a UUID v4 for server-side event_id.
- */
-function generateEventId(): string {
-    if (typeof crypto !== "undefined" && crypto.randomUUID) {
-        return crypto.randomUUID();
-    }
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
+// generateEventId imported from ./utils
 
 /**
  * Track an analytics event from the server.

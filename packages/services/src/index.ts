@@ -12,3 +12,5 @@ export const VERSION = "0.0.1";
 
 export * from "./feedback";
 export * from "./qualification";
+export * from "./email-templates";
+export * from "./automation-rules";

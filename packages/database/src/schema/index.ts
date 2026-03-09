@@ -3,3 +3,5 @@ export * from "./auth";
 export * from "./organizations";
 export * from "./audit";
 export * from "./feedback";
+export * from "./email";
+export * from "./automation";

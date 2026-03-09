@@ -1,12 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins/organization";
-import { Resend } from "resend";
 import { db } from "@cocs/database/client";
 import * as schema from "@cocs/database/schema";
 import { ac, owner, admin, instructor, student, prospect } from "./permissions";
-import { serverTrack } from "@cocs/analytics";
-import { AuthEmailVerificationCompleted } from "@cocs/analytics/event-contracts";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 
 // =============================================================================
 // Production Startup Validation
@@ -30,19 +28,6 @@ const _verificationEventFired = new Set<string>();
 // BetterAuth Server Configuration
 // =============================================================================
 
-let _resend: Resend | null = null;
-function getResend(): Resend | null {
-    if (!_resend) {
-        const apiKey = process.env.RESEND_API_KEY;
-        if (!apiKey) {
-            console.error("[AUTH] RESEND_API_KEY not set — cannot send emails");
-            return null;
-        }
-        _resend = new Resend(apiKey);
-    }
-    return _resend;
-}
-
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -61,6 +46,22 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            try {
+                await emitDomainEvent({
+                    eventKey: DOMAIN_EVENTS.PASSWORD_REQUESTED,
+                    payload: {
+                        email: user.email,
+                        user_name: user.name ?? "",
+                        reset_url: url,
+                    },
+                    actor: { type: "system", id: "betterauth" },
+                    subject: { type: "user", id: user.id },
+                });
+            } catch (error) {
+                console.error("[AUTH] Failed to emit password reset event:", error);
+            }
+        },
     },
 
     emailVerification: {
@@ -68,29 +69,23 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
         sendVerificationEmail: async ({ user, url }) => {
             try {
-                const resend = getResend();
-                if (!resend) {
-                    console.error(`[AUTH] Skipping verification email for ${user.email} — Resend not configured`);
-                    return;
-                }
-                await resend.emails.send({
-                    from: "Cash Offer School <noreply@cashofferleadschool.com>",
-                    to: user.email,
-                    subject: "Verify your email — Cash Offer Lead School",
-                    html: `
-          <h2>Welcome to Cash Offer Lead School</h2>
-          <p>Click the link below to verify your email address:</p>
-          <p><a href="${url}">Verify Email</a></p>
-          <p>This link expires in 24 hours.</p>
-        `,
+                await emitDomainEvent({
+                    eventKey: DOMAIN_EVENTS.VERIFICATION_EMAIL_REQUESTED,
+                    payload: {
+                        email: user.email,
+                        user_name: user.name ?? "",
+                        verification_url: url,
+                    },
+                    actor: { type: "system", id: "betterauth" },
+                    subject: { type: "user", id: user.id },
+                    // No organizationId — org may not exist yet at registration time
                 });
             } catch (error) {
-                console.error("[AUTH] Verification email failed:", {
+                console.error("[AUTH] Failed to emit verification event:", {
                     to: user.email,
                     error: error instanceof Error ? error.message : error,
                 });
-                // Do NOT rethrow — account creation must succeed even if email fails.
-                // User can retry via the "Resend Verification Email" button.
+                // Non-blocking — account creation must succeed even if event fails.
             }
         },
     },
@@ -108,6 +103,23 @@ export const auth = betterAuth({
         user: {
             create: {
                 after: async (user) => {
+                    // Emit USER_REGISTERED event (C3 fix)
+                    try {
+                        await emitDomainEvent({
+                            eventKey: DOMAIN_EVENTS.USER_REGISTERED,
+                            payload: {
+                                email: user.email,
+                                user_name: user.name ?? "",
+                                method: "email",
+                            },
+                            actor: { type: "system", id: "betterauth" },
+                            subject: { type: "user", id: user.id },
+                        });
+                    } catch {
+                        // Non-blocking
+                    }
+
+                    // Auto-create default organization
                     try {
                         const slug = `${user.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "user"}-${user.id.slice(0, 8)}`;
                         await auth.api.createOrganization({
@@ -135,7 +147,6 @@ export const auth = betterAuth({
                         });
                     } catch (error) {
                         console.error("[AUTH] Failed to create default org for user:", error);
-                        // Non-blocking — user creation must not fail because of org creation
                     }
                 },
             },
@@ -143,11 +154,16 @@ export const auth = betterAuth({
                 after: async (user) => {
                     if (user.emailVerified && !_verificationEventFired.has(user.id)) {
                         _verificationEventFired.add(user.id);
-                        serverTrack(AuthEmailVerificationCompleted, {
-                            time_to_verify_s: 0,
-                        }, {
-                            userId: user.id,
-                        }).catch(() => { });
+                        try {
+                            await emitDomainEvent({
+                                eventKey: DOMAIN_EVENTS.EMAIL_VERIFIED,
+                                payload: { time_to_verify_s: 0 },
+                                actor: { type: "user", id: user.id },
+                                subject: { type: "user", id: user.id },
+                            });
+                        } catch {
+                            // Non-blocking
+                        }
                     }
                 },
             },

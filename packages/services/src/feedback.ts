@@ -1,6 +1,7 @@
 import { db } from "@cocs/database/client";
 import { feedbackEntry } from "@cocs/database/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 
 // =============================================================================
 // Feedback Service — Phase 1.5A
@@ -53,6 +54,24 @@ export async function submitFeedback(input: SubmitFeedbackInput) {
         })
         .returning({ id: feedbackEntry.id });
 
+    // Emit domain event for automation pipeline
+    try {
+        await emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.FEEDBACK_SUBMITTED,
+            payload: {
+                type: input.type,
+                context: input.context,
+                stakeholderGroup: input.stakeholderGroup,
+                rating: input.rating ?? null,
+            },
+            actor: { type: "user", id: input.userId },
+            subject: { type: "user", id: input.userId },
+            organizationId: input.organizationId,
+        });
+    } catch {
+        // Non-blocking
+    }
+
     return entry;
 }
 
@@ -96,6 +115,25 @@ export async function getFeedbackByUser(userId: string, organizationId: string) 
             )
         )
         .orderBy(desc(feedbackEntry.createdAt));
+}
+
+/**
+ * Efficient ownership check — returns true if the feedback entry
+ * belongs to the given user. Uses a targeted query instead of
+ * fetching all feedback entries (O(1) vs O(n)).
+ */
+export async function feedbackExistsForUser(feedbackId: string, userId: string): Promise<boolean> {
+    const result = await db
+        .select({ id: feedbackEntry.id })
+        .from(feedbackEntry)
+        .where(
+            and(
+                eq(feedbackEntry.id, feedbackId),
+                eq(feedbackEntry.userId, userId),
+            )
+        )
+        .limit(1);
+    return result.length > 0;
 }
 
 export async function getAllFeedback(filters?: {

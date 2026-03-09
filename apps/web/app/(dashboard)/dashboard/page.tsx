@@ -18,17 +18,26 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (userId) {
-            identify(userId);
+            identify(userId, { organizationId: organizationId || undefined });
             getQualificationStatus().then((status) => {
-                if (status?.submittedAt) setQualCompleted(true);
-            }).catch(() => { });
+                const completed = !!status?.submittedAt;
+                if (completed) setQualCompleted(true);
+                // Track first dashboard view AFTER qualification status resolves
+                const key = "cocs_dashboard_first_viewed";
+                if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
+                    track(DashboardFirstViewed, { qualification_completed: completed });
+                    sessionStorage.setItem(key, "1");
+                }
+            }).catch(() => {
+                // Still track if qualification check fails
+                const key = "cocs_dashboard_first_viewed";
+                if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
+                    track(DashboardFirstViewed, { qualification_completed: false });
+                    sessionStorage.setItem(key, "1");
+                }
+            });
         }
-        const key = "cocs_dashboard_first_viewed";
-        if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
-            track(DashboardFirstViewed, { qualification_completed: false });
-            sessionStorage.setItem(key, "1");
-        }
-    }, [userId]);
+    }, [userId, organizationId]);
 
     return (
         <div>

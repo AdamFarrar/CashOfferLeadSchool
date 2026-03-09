@@ -35,7 +35,9 @@ function LoginForm() {
             }
 
             if (result.data?.user?.id) {
-                identify(result.data.user.id);
+                identify(result.data.user.id, {
+                    emailVerified: result.data.user.emailVerified ?? undefined,
+                });
             }
             track(AuthLoginCompleted, { method: "email" });
 
