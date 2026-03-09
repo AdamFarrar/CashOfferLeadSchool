@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { signOut, useSession } from "@cocs/auth/client";
+import { useState, useEffect } from "react";
+import { authClient, signOut, useSession } from "@cocs/auth/client";
 import { resetIdentity } from "@cocs/analytics";
 
 const NAV_ITEMS = [
@@ -22,6 +22,18 @@ export default function DashboardLayout({
     const pathname = usePathname();
     const { data: session } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Auto-set active org if user has one but hasn't selected it
+    useEffect(() => {
+        if (!session?.session?.activeOrganizationId && session?.user?.id) {
+            authClient.organization.list().then((res) => {
+                const orgs = res.data;
+                if (orgs && orgs.length > 0) {
+                    authClient.organization.setActive({ organizationId: orgs[0].id });
+                }
+            }).catch(() => { });
+        }
+    }, [session?.user?.id, session?.session?.activeOrganizationId]);
 
     return (
         <div style={{ display: "flex", minHeight: "100vh" }}>
