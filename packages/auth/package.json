@@ -1,0 +1,26 @@
+{
+    "name": "@cocs/auth",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts",
+        "./server": "./src/server.ts",
+        "./client": "./src/client.ts",
+        "./permissions": "./src/permissions.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "better-auth": "^1.2.0",
+        "@better-auth/drizzle-adapter": "^1.2.0",
+        "resend": "^4.0.0",
+        "@cocs/database": "workspace:*",
+        "@cocs/analytics": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "typescript": "^5.7.0"
+    }
+}

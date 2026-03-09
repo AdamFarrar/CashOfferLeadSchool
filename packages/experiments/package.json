@@ -1,0 +1,23 @@
+{
+    "name": "@cocs/experiments",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@cocs/analytics": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.0",
+        "@types/node": "^22.0.0",
+        "@types/react": "^19.0.0"
+    },
+    "peerDependencies": {
+        "react": "^19.0.0"
+    }
+}

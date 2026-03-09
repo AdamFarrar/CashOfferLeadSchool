@@ -1,0 +1,34 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies (installed in Docker)
+node_modules
+.pnpm-store
+
+# Build artifacts
+.next
+dist
+.turbo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Documentation (not needed in image)
+docs
+*.md
+LICENSE
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github
+
+# Sentry config (auth token)
+.sentryclirc
