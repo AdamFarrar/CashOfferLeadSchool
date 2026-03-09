@@ -8,6 +8,20 @@ import { ac, owner, admin, instructor, student, prospect } from "./permissions";
 import { serverTrack } from "@cocs/analytics";
 import { AuthEmailVerificationCompleted } from "@cocs/analytics/event-contracts";
 
+// =============================================================================
+// Production Startup Validation
+// =============================================================================
+if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
+    const required = ["BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "SUPABASE_DB_URL"];
+    const missing = required.filter((k) => !process.env[k]);
+    if (missing.length > 0) {
+        console.error(`[AUTH] Missing required env vars: ${missing.join(", ")}`);
+    }
+    if (!process.env.RESEND_API_KEY) {
+        console.warn("[AUTH] RESEND_API_KEY not set — verification emails will fail silently");
+    }
+}
+
 // Dedup guard: track which user IDs have already had the verification event fired
 // during this process lifetime. Prevents spurious re-fires on unrelated user updates.
 const _verificationEventFired = new Set<string>();
@@ -15,19 +29,14 @@ const _verificationEventFired = new Set<string>();
 // =============================================================================
 // BetterAuth Server Configuration
 // =============================================================================
-// Server-side auth instance. Handles:
-// - Session management (httpOnly cookies)
-// - Organization multi-tenancy
-// - RBAC via organization roles + access control
-// - Email verification via Resend
-// =============================================================================
 
 let _resend: Resend | null = null;
-function getResend() {
+function getResend(): Resend | null {
     if (!_resend) {
         const apiKey = process.env.RESEND_API_KEY;
         if (!apiKey) {
-            throw new Error("RESEND_API_KEY environment variable is required for email sending.");
+            console.error("[AUTH] RESEND_API_KEY not set — cannot send emails");
+            return null;
         }
         _resend = new Resend(apiKey);
     }
@@ -40,8 +49,6 @@ export const auth = betterAuth({
         schema,
     }),
 
-    // Env vars use fallbacks at build time (NODE_ENV=production but secrets
-    // aren't available during `next build`). Validated at runtime by BetterAuth.
     baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
     secret: process.env.BETTER_AUTH_SECRET,
 
@@ -54,17 +61,31 @@ export const auth = betterAuth({
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
         sendVerificationEmail: async ({ user, url }) => {
-            await getResend().emails.send({
-                from: "Cash Offer School <noreply@cashofferconversionschool.com>",
-                to: user.email,
-                subject: "Verify your email — Cash Offer Conversion School",
-                html: `
-          <h2>Welcome to Cash Offer Conversion School</h2>
+            try {
+                const resend = getResend();
+                if (!resend) {
+                    console.error(`[AUTH] Skipping verification email for ${user.email} — Resend not configured`);
+                    return;
+                }
+                await resend.emails.send({
+                    from: "Cash Offer School <noreply@cashofferleadschool.com>",
+                    to: user.email,
+                    subject: "Verify your email — Cash Offer Lead School",
+                    html: `
+          <h2>Welcome to Cash Offer Lead School</h2>
           <p>Click the link below to verify your email address:</p>
           <p><a href="${url}">Verify Email</a></p>
           <p>This link expires in 24 hours.</p>
         `,
-            });
+                });
+            } catch (error) {
+                console.error("[AUTH] Verification email failed:", {
+                    to: user.email,
+                    error: error instanceof Error ? error.message : error,
+                });
+                // Do NOT rethrow — account creation must succeed even if email fails.
+                // User can retry via the "Resend Verification Email" button.
+            }
         },
     },
 
@@ -81,18 +102,13 @@ export const auth = betterAuth({
         user: {
             update: {
                 after: async (user) => {
-                    // Fire email verification event ONCE per user when emailVerified
-                    // transitions to true. Dedup guard prevents re-fire on unrelated
-                    // user updates (name change, avatar, etc.).
                     if (user.emailVerified && !_verificationEventFired.has(user.id)) {
                         _verificationEventFired.add(user.id);
                         serverTrack(AuthEmailVerificationCompleted, {
                             time_to_verify_s: 0,
                         }, {
                             userId: user.id,
-                        }).catch(() => {
-                            // Non-blocking — analytics failure must not break auth
-                        });
+                        }).catch(() => { });
                     }
                 },
             },
@@ -101,11 +117,6 @@ export const auth = betterAuth({
 
     plugins: [
         organization({
-            // BetterAuth's organization plugin expects `AccessControl` from
-            // better-auth/plugins/access but createAccessControl() returns a
-            // structurally identical but nominally different type. BetterAuth
-            // does not re-export the expected type, so `as any` is required.
-            // TODO: Remove when BetterAuth exports a compatible type.
             ac: ac as any,
             allowUserToCreateOrganization: true,
             organizationLimit: 5,
