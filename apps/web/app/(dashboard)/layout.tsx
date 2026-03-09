@@ -212,7 +212,7 @@ export default function DashboardLayout({
                         </div>
                     </div>
                     <button
-                        onClick={() => { resetIdentity(); signOut(); }}
+                        onClick={() => { resetIdentity(); signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } }); }}
                         style={{
                             width: "100%",
                             padding: "0.5rem",
