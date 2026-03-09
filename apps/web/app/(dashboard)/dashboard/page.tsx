@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, useActiveOrganization } from "@cocs/auth/client";
 import { FeedbackWidget } from "@/app/components/FeedbackWidget";
 import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
+import { getQualificationStatus } from "@/app/actions/qualification";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
@@ -13,10 +14,14 @@ export default function DashboardPage() {
     const userId = session?.user?.id || "";
     const { data: activeOrg } = useActiveOrganization();
     const organizationId = activeOrg?.id || "";
+    const [qualCompleted, setQualCompleted] = useState(false);
 
     useEffect(() => {
         if (userId) {
             identify(userId);
+            getQualificationStatus().then((status) => {
+                if (status?.submittedAt) setQualCompleted(true);
+            }).catch(() => { });
         }
         const key = "cocs_dashboard_first_viewed";
         if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
@@ -69,14 +74,14 @@ export default function DashboardPage() {
                                 width: "2.5rem",
                                 height: "2.5rem",
                                 borderRadius: "var(--radius-md)",
-                                background: "var(--brand-orange-glow)",
+                                background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "var(--brand-orange-glow)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 fontSize: "1.125rem",
                             }}
                         >
-                            ✅
+                            {qualCompleted ? "✅" : "📋"}
                         </div>
                         <div>
                             <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
@@ -85,11 +90,11 @@ export default function DashboardPage() {
                             <div
                                 style={{
                                     fontSize: "0.75rem",
-                                    color: "var(--brand-orange)",
+                                    color: qualCompleted ? "#22c55e" : "var(--brand-orange)",
                                     fontWeight: 600,
                                 }}
                             >
-                                Action Required
+                                {qualCompleted ? "Completed" : "Action Required"}
                             </div>
                         </div>
                     </div>
@@ -100,7 +105,9 @@ export default function DashboardPage() {
                             lineHeight: 1.5,
                         }}
                     >
-                        Complete your operator qualification to unlock the full platform.
+                        {qualCompleted
+                            ? "Your operator qualification is complete. You can review or update it anytime."
+                            : "Complete your operator qualification to unlock the full platform."}
                     </p>
                 </Link>
 
