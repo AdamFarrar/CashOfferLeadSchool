@@ -8,40 +8,13 @@ import {
     getAllFeedback,
     reviewFeedback,
 } from "@cocs/services";
-import { auth } from "@cocs/auth/server";
-import { headers } from "next/headers";
-
-// =============================================================================
-// Feedback Server Actions — Phase 1.5A
-// =============================================================================
-// All actions validate inputs server-side. No client-side DB access.
-// Identity is always resolved from the authenticated session — never trusted
-// from client input.
-// Admin actions are role-gated via auth.api.getActiveMember().
-// =============================================================================
+import { getServerIdentity } from "./identity";
 
 const MAX_BODY_LENGTH = 2000;
 const MAX_NOTES_LENGTH = 1000;
 const VALID_TYPES = ["general", "feature_request", "bug_report", "usability", "content"] as const;
 const VALID_GROUPS = ["internal", "pilot_user", "admin"] as const;
 const VALID_STATUSES = ["new", "reviewed", "actioned", "dismissed"] as const;
-
-// --- Shared server-side identity resolver ---
-
-async function getServerIdentity() {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user?.id) return null;
-
-    const activeMember = session.session?.activeOrganizationId
-        ? await auth.api.getActiveMember({ headers: await headers() }).catch(() => null)
-        : null;
-
-    return {
-        userId: session.user.id,
-        organizationId: session.session?.activeOrganizationId || "",
-        role: activeMember?.role || "",
-    };
-}
 
 // --- Submit Feedback ---
 
