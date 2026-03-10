@@ -96,7 +96,7 @@ function SectionIntro({ badge, heading, body }: { badge: string; heading: string
 export default function LandingPage() {
     return (
         <>
-            {/* ===== NAV BAR ===== */}
+            {/* ===== NAV BAR (sticky via .nav-bar CSS) ===== */}
             <nav className="nav-bar">
                 <div className="max-w-7xl mx-auto px-6 nav-inner">
                     <Link href="/" className="nav-logo">
@@ -115,7 +115,7 @@ export default function LandingPage() {
             </nav>
 
             <main>
-                {/* ===== 1. HERO ===== */}
+                {/* ===== 1. HERO — dark ===== */}
                 <section className="hero-section">
                     <div aria-hidden="true" className="hero-glow" />
 
@@ -135,10 +135,10 @@ export default function LandingPage() {
                     </p>
 
                     <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-4 relative">
-                        <TrackedCta href="/register" className="btn-primary" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
+                        <TrackedCta href="/register" className="btn-primary text-lg px-8 py-3" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
                             Save My Seat for Season 1
                         </TrackedCta>
-                        <a href="#system" className="btn-ghost">
+                        <a href="#system" className="btn-ghost text-lg px-8 py-3">
                             See the System
                         </a>
                     </div>
@@ -150,8 +150,8 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 2. CATEGORY SHIFT ===== */}
-                <section className="section-padded section-bordered-top">
+                {/* ===== 2. CATEGORY SHIFT — alt (contrast from hero) ===== */}
+                <section className="section-padded section-bg-alt">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="The Problem"
@@ -165,9 +165,9 @@ export default function LandingPage() {
                                 { icon: "🔧", title: "This Installs Systems", body: "Every week you install a specific conversion system into your operation. Scripts, SOPs, and live coaching to make sure it sticks." },
                                 { icon: "🎯", title: "Operators, Not Gurus", body: "Every guest has a live operation. They're closing deals this month, not teaching from a stage." },
                             ].map((card) => (
-                                <div key={card.title} className="glass-card p-6 text-center">
-                                    <div className="text-4xl mb-4">{card.icon}</div>
-                                    <h3 className="text-xl font-semibold mb-3">{card.title}</h3>
+                                <div key={card.title} className="glass-card p-5 text-center">
+                                    <div className="text-4xl mb-3">{card.icon}</div>
+                                    <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
                                     <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {card.body}
                                     </p>
@@ -177,16 +177,16 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 3. WHY TEAMS LEAK LEADS ===== */}
-                <section className="section-padded section-bg-alt section-bordered-top section-bordered-bottom">
+                {/* ===== 3. WHY TEAMS LEAK LEADS — dark ===== */}
+                <section className="section-padded">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="The Leak"
                             heading="Why Your Team Leaks Leads"
-                            body={'You\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
+                            body={'\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
                         />
 
-                        <div className="max-w-3xl mx-auto space-y-6">
+                        <div className="max-w-3xl mx-auto space-y-5">
                             {[
                                 { icon: "🕐", label: "Slow speed to lead — the first 5 minutes matter more than the first 5 days" },
                                 { icon: "📞", label: "No call script — reps improvise every call and wonder why results vary" },
@@ -203,8 +203,8 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 4. THE 12-WEEK INSTALLATION SYSTEM ===== */}
-                <section id="system" className="section-padded section-bordered-bottom">
+                {/* ===== 4. THE 12-WEEK INSTALLATION SYSTEM — alt ===== */}
+                <section id="system" className="section-padded section-bg-alt">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="The System"
@@ -214,8 +214,8 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             {MODULES.map((mod) => (
-                                <div key={mod.number} className="glass-card p-6">
-                                    <div className="flex items-center gap-3 mb-4">
+                                <div key={mod.number} className="glass-card p-5">
+                                    <div className="flex items-center gap-3 mb-3">
                                         <div className="step-number">{mod.number}</div>
                                         <div>
                                             <h3 className="text-xl font-semibold">{mod.title}</h3>
@@ -231,46 +231,66 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 5. MODULE BREAKDOWN (Episode Preview) ===== */}
-                <section className="section-padded section-bg-alt section-bordered-bottom">
+                {/* ===== 5. INSTALLATION TIMELINE — dark ===== */}
+                <section className="section-padded">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="Inside the Program"
                             heading="What You'll Install Each Week"
                         />
 
-                        <div className="max-w-3xl mx-auto space-y-10">
-                            {MODULES.map((mod) => (
-                                <div key={mod.number}>
-                                    <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                                        <span className="text-[color:var(--brand-orange)]">Module {mod.number}</span>
-                                        <span className="text-[color:var(--text-muted)]">—</span>
-                                        {mod.title}
-                                    </h3>
-                                    <div className="space-y-3">
-                                        {Array.from({ length: mod.episodes }, (_, i) => (
-                                            <div key={i} className="glass-card p-6 flex items-center gap-4">
-                                                <div className="icon-box shrink-0 text-sm">🎬</div>
-                                                <div className="flex-1">
-                                                    <div className="font-semibold text-base">
-                                                        Episode {(Number(mod.number) - 1) * 3 + i + 1}
-                                                    </div>
-                                                    <div className="text-[color:var(--text-muted)] text-xs">
-                                                        Guest Operator (TBA)
-                                                    </div>
-                                                </div>
-                                                <span className="badge text-xs">Week {(Number(mod.number) - 1) * 3 + i + 1}</span>
+                        {/* Timeline layout — vertical line with weekly steps */}
+                        <div className="max-w-2xl mx-auto relative">
+                            {/* Timeline spine */}
+                            <div
+                                className="absolute left-6 top-0 bottom-0 w-px"
+                                style={{ background: 'linear-gradient(to bottom, var(--brand-orange), var(--border-subtle))' }}
+                                aria-hidden="true"
+                            />
+
+                            <div className="space-y-12">
+                                {MODULES.map((mod) => (
+                                    <div key={mod.number} className="relative">
+                                        {/* Module marker */}
+                                        <div className="flex items-center gap-4 mb-5">
+                                            <div className="step-number relative z-10">{mod.number}</div>
+                                            <div>
+                                                <h3 className="text-xl font-semibold">{mod.title}</h3>
+                                                <span className="text-xs text-[color:var(--text-muted)]">{mod.weeks}</span>
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        {/* Episode steps */}
+                                        <div className="pl-16 space-y-3">
+                                            {Array.from({ length: mod.episodes }, (_, i) => {
+                                                const epNum = (Number(mod.number) - 1) * 3 + i + 1;
+                                                return (
+                                                    <div key={i} className="flex items-center gap-3">
+                                                        {/* Step dot */}
+                                                        <div
+                                                            className="w-2 h-2 rounded-full shrink-0"
+                                                            style={{ background: 'var(--brand-orange)', marginLeft: '-2.55rem' }}
+                                                        />
+                                                        <div className="flex-1 flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
+                                                            <div>
+                                                                <span className="font-semibold text-sm">Episode {epNum}</span>
+                                                                <span className="text-xs text-[color:var(--text-muted)] ml-2">Guest Operator (TBA)</span>
+                                                            </div>
+                                                            <span className="text-xs text-[color:var(--text-muted)]">Week {epNum}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 6. GUEST OPERATORS ===== */}
-                <section className="section-padded section-bordered-bottom">
+                {/* ===== 6. GUEST OPERATORS — alt ===== */}
+                <section className="section-padded section-bg-alt">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="Real Operators"
@@ -284,7 +304,7 @@ export default function LandingPage() {
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
                                 { icon: "🏗️", label: "Founders who built their operation from scratch" },
                             ].map((item) => (
-                                <div key={item.label} className="glass-card p-6 text-center">
+                                <div key={item.label} className="glass-card p-5 text-center">
                                     <div className="text-3xl mb-3">{item.icon}</div>
                                     <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {item.label}
@@ -295,8 +315,8 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 7. WHAT YOU RECEIVE ===== */}
-                <section className="section-padded section-bg-alt section-bordered-top section-bordered-bottom">
+                {/* ===== 7. WHAT YOU RECEIVE — dark ===== */}
+                <section className="section-padded">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
                             badge="What's Included"
@@ -305,8 +325,8 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
-                                <div key={d.title} className="glass-card p-6">
-                                    <div className="icon-box mb-4">{d.icon}</div>
+                                <div key={d.title} className="glass-card p-5">
+                                    <div className="icon-box mb-3">{d.icon}</div>
                                     <h3 className="text-xl font-semibold mb-2">{d.title}</h3>
                                     <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {d.detail}
@@ -317,24 +337,24 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 8. AUDIT CTA ===== */}
-                <section className="section-padded section-bordered-bottom relative overflow-hidden">
+                {/* ===== 8. AUDIT CTA — alt with glow ===== */}
+                <section className="section-padded section-bg-alt relative overflow-hidden">
                     <div aria-hidden="true" className="cta-glow" />
 
                     <div className="max-w-7xl mx-auto px-6 text-center relative">
                         <span className="badge mb-6 inline-flex">Limited Seats</span>
                         <h2 className="section-heading mb-4">Ready to Install a Real Conversion System?</h2>
-                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mb-8 text-base leading-relaxed">
+                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mb-10 text-base leading-relaxed">
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
-                        <TrackedCta href="/register" className="btn-primary" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
+                        <TrackedCta href="/register" className="btn-primary text-lg px-10 py-4" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
                             Save My Seat for Season 1
                         </TrackedCta>
                     </div>
                 </section>
 
-                {/* ===== 9. FAQ ===== */}
+                {/* ===== 9. FAQ — dark ===== */}
                 <section className="section-padded">
                     <div className="max-w-7xl mx-auto px-6">
                         <SectionIntro
@@ -342,9 +362,9 @@ export default function LandingPage() {
                             heading="Common Questions"
                         />
 
-                        <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="max-w-2xl mx-auto space-y-4">
                             {FAQS.map((faq) => (
-                                <div key={faq.q} className="glass-card p-6">
+                                <div key={faq.q} className="glass-card p-5">
                                     <h3 className="text-base font-semibold mb-2">{faq.q}</h3>
                                     <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {faq.a}
