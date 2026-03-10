@@ -58,8 +58,6 @@ const DELIVERABLES = [
     { icon: "🔁", title: "Replay Access", detail: "Every session recorded — revisit any module at your own pace" },
 ];
 
-
-
 // ── Section Header ──
 
 function SectionHeader({ badge, heading, sub }: { badge: string; heading: string; sub?: string }) {
@@ -68,7 +66,7 @@ function SectionHeader({ badge, heading, sub }: { badge: string; heading: string
             <Badge>{badge}</Badge>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">{heading}</h2>
             {sub && (
-                <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto text-base leading-relaxed">
+                <p className="text-[color:var(--text-secondary)] max-w-[650px] mx-auto text-base leading-relaxed">
                     {sub}
                 </p>
             )}
@@ -97,7 +95,7 @@ export default function LandingPage() {
 
             <main>
                 {/* ═══ 1. HERO ═══ */}
-                <section className="relative overflow-hidden py-[120px]">
+                <section className="relative overflow-hidden py-[140px]">
                     {/* Radial glow */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
                         <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.1)_0%,transparent_70%)]" />
@@ -106,13 +104,13 @@ export default function LandingPage() {
                     <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-8">
                         <Badge className="animate-fade-in-up">● Season 1 — Now Enrolling</Badge>
 
-                        <h1 className="animate-fade-in-up animate-delay-100 text-5xl md:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-[1.1]">
+                        <h1 className="animate-fade-in-up animate-delay-100 text-[56px] md:text-[64px] font-bold tracking-tight max-w-[900px] mx-auto leading-[1.1]">
                             The 12-Week System That{" "}
                             <span className="text-gradient-brand">Installs Conversion</span>
                             {" "}Into Your Operation
                         </h1>
 
-                        <p className="animate-fade-in-up animate-delay-200 text-lg text-[color:var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
+                        <p className="animate-fade-in-up animate-delay-200 text-lg text-[color:var(--text-secondary)] max-w-[650px] mx-auto leading-relaxed">
                             Stop guessing why leads don&apos;t close. Install the scripts, systems,
                             and operator habits that turn cash offer leads into signed contracts.
                         </p>
@@ -126,7 +124,7 @@ export default function LandingPage() {
                             </a>
                         </div>
 
-                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm text-[color:var(--text-muted)]">
+                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm text-[color:var(--text-muted)] mt-4">
                             <span>✓ 12 weeks, live</span>
                             <span>✓ Real operators, not theory</span>
                             <span>✓ Install and keep the systems</span>
@@ -135,7 +133,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 2. CATEGORY SHIFT ═══ */}
-                <section className="py-24 bg-[var(--bg-secondary)]">
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The Problem"
@@ -149,7 +147,7 @@ export default function LandingPage() {
                                 { icon: "🔧", title: "This Installs Systems", body: "Every week you install a specific conversion system into your operation. Scripts, SOPs, and live coaching to make sure it sticks." },
                                 { icon: "🎯", title: "Operators, Not Gurus", body: "Every guest has a live operation. They're closing deals this month, not teaching from a stage." },
                             ].map((c) => (
-                                <Card key={c.title} className="text-center">
+                                <Card key={c.title} className="text-center shadow-sm">
                                     <CardContent className="p-6 space-y-3">
                                         <div className="text-4xl">{c.icon}</div>
                                         <h3 className="text-xl font-semibold">{c.title}</h3>
@@ -162,7 +160,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 3. WHY TEAMS LEAK LEADS ═══ */}
-                <section className="py-24">
+                <section className="py-[100px]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The Leak"
@@ -170,7 +168,7 @@ export default function LandingPage() {
                             sub={'You\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
                         />
 
-                        <div className="max-w-3xl mx-auto space-y-5">
+                        <div className="max-w-[700px] mx-auto space-y-6">
                             {[
                                 { icon: "🕐", label: "Slow speed to lead — the first 5 minutes matter more than the first 5 days" },
                                 { icon: "📞", label: "No call script — reps improvise every call and wonder why results vary" },
@@ -188,7 +186,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 4. 12-WEEK SYSTEM ═══ */}
-                <section id="system" className="py-24 bg-[var(--bg-secondary)]">
+                <section id="system" className="py-[100px] bg-[var(--bg-secondary)]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The System"
@@ -196,9 +194,9 @@ export default function LandingPage() {
                             sub="Each week covers one piece of the conversion system. By week 12, your team has a complete, battle-tested playbook."
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px] mx-auto">
                             {MODULES.map((mod) => (
-                                <Card key={mod.number}>
+                                <Card key={mod.number} className="shadow-sm">
                                     <CardContent className="p-6 space-y-3">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg">
@@ -218,45 +216,49 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 5. INSTALLATION TIMELINE ═══ */}
-                <section className="py-24">
+                <section className="py-[100px]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="Inside the Program"
                             heading="What You'll Install Each Week"
                         />
 
-                        <div className="max-w-2xl mx-auto relative">
+                        <div className="max-w-[700px] mx-auto relative pl-2 md:pl-0">
                             {/* Timeline spine */}
                             <div
-                                className="absolute left-[23px] top-0 bottom-0 w-px"
+                                className="absolute left-[26px] top-0 bottom-0 w-[2px]"
                                 style={{ background: 'linear-gradient(to bottom, var(--brand-orange), var(--border-subtle))' }}
                                 aria-hidden="true"
                             />
 
-                            <div className="space-y-10">
+                            <div className="space-y-12">
                                 {MODULES.map((mod) => (
                                     <div key={mod.number} className="relative">
                                         {/* Module marker */}
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg relative z-10">
+                                        <div className="flex items-center gap-5 mb-5 relative">
+                                            <div className="w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg relative z-10 shrink-0">
                                                 {mod.number}
                                             </div>
                                             <div>
                                                 <h3 className="text-xl font-semibold">{mod.title}</h3>
-                                                <span className="text-xs text-[color:var(--text-muted)]">{mod.weeks}</span>
+                                                <span className="text-sm font-medium text-[color:var(--text-muted)]">{mod.weeks}</span>
                                             </div>
                                         </div>
 
                                         {/* Episodes */}
-                                        <div className="ml-[47px] space-y-0">
+                                        <div className="ml-[54px] space-y-0">
                                             {Array.from({ length: mod.episodes }, (_, i) => {
                                                 const epNum = (Number(mod.number) - 1) * 3 + i + 1;
                                                 return (
-                                                    <div key={i} className="flex items-center gap-3 py-3 border-b border-[var(--border-subtle)] last:border-b-0">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-orange)] shrink-0" />
-                                                        <span className="text-sm font-medium flex-1">Episode {epNum}</span>
-                                                        <span className="text-xs text-[color:var(--text-muted)]">Guest Operator (TBA)</span>
-                                                        <Badge variant="outline" className="text-xs">Week {epNum}</Badge>
+                                                    <div key={i} className="flex items-center gap-4 py-4 border-b border-[var(--border-subtle)] last:border-b-0 relative">
+                                                        {/* Dot connecting to spine */}
+                                                        <div className="absolute -left-[29px] w-2 h-2 rounded-full bg-[var(--brand-orange)]" />
+
+                                                        <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                            <div className="font-medium text-[color:var(--text-primary)]">
+                                                                Week {epNum} &mdash; <span className="text-[color:var(--text-secondary)]">{mod.title}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 );
                                             })}
@@ -269,7 +271,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 6. GUEST OPERATORS ═══ */}
-                <section className="py-24 bg-[var(--bg-secondary)]">
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="Real Operators"
@@ -277,13 +279,13 @@ export default function LandingPage() {
                             sub="No talking heads. No motivational speakers. Every guest operator is actively closing cash offer deals — this month, not last year."
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[900px] mx-auto">
                             {[
                                 { icon: "🎙️", label: "Operators who run their own disposition desks" },
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
                                 { icon: "🏗️", label: "Founders who built their operation from scratch" },
                             ].map((item) => (
-                                <Card key={item.label} className="text-center">
+                                <Card key={item.label} className="text-center shadow-sm">
                                     <CardContent className="p-6 space-y-3">
                                         <div className="text-3xl">{item.icon}</div>
                                         <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{item.label}</p>
@@ -295,7 +297,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 7. WHAT YOU RECEIVE ═══ */}
-                <section className="py-24">
+                <section className="py-[100px]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="What's Included"
@@ -304,7 +306,7 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
-                                <Card key={d.title}>
+                                <Card key={d.title} className="shadow-sm">
                                     <CardContent className="p-6 space-y-3">
                                         <div className="w-10 h-10 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-xl">{d.icon}</div>
                                         <h3 className="text-xl font-semibold">{d.title}</h3>
@@ -317,21 +319,22 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 8. PRIMARY CTA ═══ */}
-                <section className="py-24 bg-[var(--bg-secondary)] relative overflow-hidden">
+                <section className="py-[100px] bg-[var(--bg-secondary)] relative overflow-hidden">
                     {/* Glow */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-                        <div className="w-[30rem] h-[30rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.08)_0%,transparent_70%)]" />
+                        <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.08)_0%,transparent_70%)]" />
                     </div>
 
                     <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-6">
-                        <Badge>Limited Seats</Badge>
-                        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Ready to Install a Real Conversion System?</h2>
-                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto text-base leading-relaxed">
+                        <h2 className="text-[40px] md:text-[48px] font-bold tracking-tight max-w-[700px] mx-auto leading-[1.1]">
+                            Ready to Install a Real Conversion System?
+                        </h2>
+                        <p className="text-[color:var(--text-secondary)] max-w-[650px] mx-auto text-lg leading-relaxed">
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
-                        <div className="pt-4">
-                            <TrackedCta href="/register" className="btn-primary text-lg px-10 py-4 rounded-xl" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
+                        <div className="pt-6">
+                            <TrackedCta href="/register" className="btn-primary text-lg px-10 py-5 rounded-xl font-bold" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
                                 Save My Seat for Season 1
                             </TrackedCta>
                         </div>
@@ -339,14 +342,14 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 9. FAQ ═══ */}
-                <section className="py-24">
+                <section className="py-[100px]">
                     <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="FAQ"
                             heading="Common Questions"
                         />
 
-                        <div className="max-w-3xl mx-auto">
+                        <div className="max-w-[700px] mx-auto">
                             <FaqAccordion />
                         </div>
                     </div>
