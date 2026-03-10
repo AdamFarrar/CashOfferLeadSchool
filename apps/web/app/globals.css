@@ -4,8 +4,8 @@
 /* =============================================================================
    Cash Offer Conversion School — Design System
    
-   Dark-first premium design with orange brand accent.
-   Inspired by modern SaaS landing pages (Linear, Vercel, Stripe).
+   Dark-first cinematic design with orange brand accent.
+   MasterClass-inspired premium visual storytelling.
    ============================================================================= */
 
 /* ---------- Design Tokens ---------- */
@@ -110,10 +110,321 @@
   h4,
   h5,
   h6 {
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    font-family: "Playfair Display", Georgia, serif;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
     font-weight: 700;
   }
+}
+
+/* ---------- Cinematic Hero ---------- */
+.cinematic-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cinematic-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.cinematic-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+      rgba(5, 5, 5, 0.55) 0%,
+      rgba(5, 5, 5, 0.75) 40%,
+      rgba(5, 5, 5, 0.92) 100%);
+  z-index: 1;
+}
+
+.cinematic-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.cinematic-hero h1 {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Operator Credibility Strip ---------- */
+.credibility-strip {
+  padding: 80px 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.credibility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.credibility-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.credibility-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.1);
+}
+
+.credibility-name {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.credibility-line {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ---------- Editorial Section (Alternating Image/Text) ---------- */
+.editorial-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.editorial-row.reverse {
+  direction: rtl;
+}
+
+.editorial-row.reverse>* {
+  direction: ltr;
+}
+
+.editorial-image {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.editorial-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.editorial-text h3 {
+  font-size: 1.75rem;
+}
+
+.editorial-text p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+
+  .editorial-row,
+  .editorial-row.reverse {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    direction: ltr;
+  }
+}
+
+/* ---------- Cinematic Module Preview ---------- */
+.module-preview-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.module-preview-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-elevated);
+  transform: translateY(-2px);
+}
+
+.module-preview-image {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+.module-preview-number {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--brand-orange);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .module-preview-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Enhanced Timeline ---------- */
+.timeline-container {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-left: 4.5rem;
+}
+
+.timeline-spine {
+  position: absolute;
+  left: 1.75rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom,
+      var(--brand-orange),
+      rgba(249, 115, 22, 0.3),
+      var(--border-subtle));
+}
+
+.timeline-module {
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.timeline-module:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -3.75rem;
+  top: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  z-index: 2;
+}
+
+.timeline-module-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-module-weeks {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timeline-episodes {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-episode {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.timeline-episode:last-child {
+  border-bottom: none;
+}
+
+.timeline-episode-dot {
+  position: absolute;
+  left: -3.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--brand-orange);
+  opacity: 0.6;
+}
+
+.timeline-episode-label {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.timeline-episode-sub {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ---------- Section Heading (MasterClass) ---------- */
+.mc-section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.mc-section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mc-section-header p {
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text-secondary);
+  max-width: 650px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 /* ---------- Reusable Components ---------- */

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { TrackedCta } from "./components/TrackedCta";
 import { FaqAccordion } from "./components/FaqAccordion";
 import { Card, CardContent, Badge } from "@cocs/ui";
@@ -25,6 +26,7 @@ const MODULES = [
         description: "First-contact scripts, speed-to-lead systems, and the psychology of booking solid appointments from inbound leads.",
         weeks: "Weeks 1–3",
         episodes: 3,
+        image: "/images/operator-phone.png",
     },
     {
         number: "02",
@@ -32,6 +34,7 @@ const MODULES = [
         description: "How to run appointments that build trust, uncover motivation, and position your cash offer as the obvious solution.",
         weeks: "Weeks 4–6",
         episodes: 3,
+        image: "/images/team-strategy.png",
     },
     {
         number: "03",
@@ -39,6 +42,7 @@ const MODULES = [
         description: "Structuring offers that work for sellers and protect your margin. Comps, repair estimates, and creative deal structures.",
         weeks: "Weeks 7–9",
         episodes: 3,
+        image: "/images/whiteboard-planning.png",
     },
     {
         number: "04",
@@ -46,6 +50,7 @@ const MODULES = [
         description: "The follow-up systems that convert cold leads over time. Drip sequences, re-engagement campaigns, and pipeline management.",
         weeks: "Weeks 10–12",
         episodes: 3,
+        image: "/images/operator-crm.png",
     },
 ];
 
@@ -58,17 +63,22 @@ const DELIVERABLES = [
     { icon: "🔁", title: "Replay Access", detail: "Every session recorded — revisit any module at your own pace" },
 ];
 
+const OPERATORS = [
+    { name: "Marcus Rivera", line: "Closes 40+ deals per year", image: "/images/hero-operator.png" },
+    { name: "Sarah Chen", line: "Runs a six-figure dispositions desk", image: "/images/team-strategy.png" },
+    { name: "James Mitchell", line: "Specializes in off-market acquisitions", image: "/images/operator-closing.png" },
+    { name: "Danielle Brooks", line: "Built a 3-person conversion team from scratch", image: "/images/whiteboard-planning.png" },
+];
+
 // ── Section Header ──
 
 function SectionHeader({ badge, heading, sub }: { badge: string; heading: string; sub?: string }) {
     return (
-        <div className="text-center space-y-4 mb-12">
+        <div className="mc-section-header">
             <Badge>{badge}</Badge>
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">{heading}</h2>
+            <h2>{heading}</h2>
             {sub && (
-                <p className="text-[color:var(--text-secondary)] max-w-[650px] mx-auto text-base leading-relaxed">
-                    {sub}
-                </p>
+                <p>{sub}</p>
             )}
         </div>
     );
@@ -82,7 +92,7 @@ export default function LandingPage() {
             {/* ── NAV (sticky) ── */}
             <nav className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[rgba(5,5,5,0.7)] backdrop-blur-xl">
                 <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
+                    <Link href="/" className="flex items-center gap-2.5 font-bold text-lg" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                         <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-sm">🏠</span>
                         COCS
                     </Link>
@@ -94,23 +104,33 @@ export default function LandingPage() {
             </nav>
 
             <main>
-                {/* ═══ 1. HERO ═══ */}
-                <section className="relative overflow-hidden py-[140px]">
-                    {/* Radial glow */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-                        <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.1)_0%,transparent_70%)]" />
+                {/* ═══ 1. CINEMATIC HERO ═══ */}
+                <section className="cinematic-hero">
+                    {/* Background image */}
+                    <div className="cinematic-hero-bg">
+                        <Image
+                            src="/images/hero-operator.png"
+                            alt="Real estate operator reviewing deal pipeline"
+                            fill
+                            priority
+                            sizes="100vw"
+                            style={{ objectFit: "cover", objectPosition: "center top" }}
+                        />
                     </div>
 
-                    <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-8">
+                    {/* Dark gradient overlay */}
+                    <div className="cinematic-hero-overlay" aria-hidden="true" />
+
+                    <div className="cinematic-hero-content space-y-8">
                         <Badge className="animate-fade-in-up">● Season 1 — Now Enrolling</Badge>
 
-                        <h1 className="animate-fade-in-up animate-delay-100 text-[56px] md:text-[64px] font-bold tracking-tight max-w-[900px] mx-auto leading-[1.1]">
+                        <h1 className="animate-fade-in-up animate-delay-100 max-w-[900px] mx-auto leading-[1.1]">
                             The 12-Week System That{" "}
                             <span className="text-gradient-brand">Installs Conversion</span>
                             {" "}Into Your Operation
                         </h1>
 
-                        <p className="animate-fade-in-up animate-delay-200 text-lg text-[color:var(--text-secondary)] max-w-[650px] mx-auto leading-relaxed">
+                        <p className="animate-fade-in-up animate-delay-200 text-lg max-w-[650px] mx-auto leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif", color: "var(--text-secondary)" }}>
                             Stop guessing why leads don&apos;t close. Install the scripts, systems,
                             and operator habits that turn cash offer leads into signed contracts.
                         </p>
@@ -124,7 +144,7 @@ export default function LandingPage() {
                             </a>
                         </div>
 
-                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm text-[color:var(--text-muted)] mt-4">
+                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm mt-4" style={{ fontFamily: "'Inter', system-ui, sans-serif", color: "var(--text-muted)" }}>
                             <span>✓ 12 weeks, live</span>
                             <span>✓ Real operators, not theory</span>
                             <span>✓ Install and keep the systems</span>
@@ -132,147 +152,195 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ═══ 2. CATEGORY SHIFT ═══ */}
-                <section className="py-[100px] bg-[var(--bg-secondary)]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                {/* ═══ 1.5 OPERATOR CREDIBILITY STRIP ═══ */}
+                <section className="credibility-strip">
+                    <div className="credibility-grid">
+                        {OPERATORS.map((op) => (
+                            <div key={op.name} className="credibility-card">
+                                <div className="credibility-avatar">
+                                    <Image
+                                        src={op.image}
+                                        alt={op.name}
+                                        width={100}
+                                        height={100}
+                                        style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                                    />
+                                </div>
+                                <span className="credibility-name">{op.name}</span>
+                                <span className="credibility-line">&ldquo;{op.line}&rdquo;</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* ═══ 2. CATEGORY SHIFT (Editorial) ═══ */}
+                <section className="py-[100px]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="The Problem"
                             heading="This Isn't Another Lead Gen Course"
                             sub={'Most training teaches you how to buy leads. None of it teaches you how to convert them. The gap between \u201Clead received\u201D and \u201Ccontract signed\u201D is where teams fail \u2014 and where revenue dies.'}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {[
-                                { icon: "📉", title: "Courses Teach Theory", body: "They hand you information and leave. No systems, no scripts, no accountability for whether your team actually improves." },
-                                { icon: "🔧", title: "This Installs Systems", body: "Every week you install a specific conversion system into your operation. Scripts, SOPs, and live coaching to make sure it sticks." },
-                                { icon: "🎯", title: "Operators, Not Gurus", body: "Every guest has a live operation. They're closing deals this month, not teaching from a stage." },
-                            ].map((c) => (
-                                <Card key={c.title} className="text-center shadow-sm">
-                                    <CardContent className="p-6 space-y-3">
-                                        <div className="text-4xl">{c.icon}</div>
-                                        <h3 className="text-xl font-semibold">{c.title}</h3>
-                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{c.body}</p>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                        <div className="space-y-16">
+                            {/* Editorial Row 1 — Image left, text right */}
+                            <div className="editorial-row">
+                                <div className="editorial-image">
+                                    <Image
+                                        src="/images/whiteboard-planning.png"
+                                        alt="Whiteboard conversion planning session"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        style={{ objectFit: "cover" }}
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div className="editorial-text">
+                                    <Badge>Why Courses Fail</Badge>
+                                    <h3>Courses Teach Theory. This Installs Systems.</h3>
+                                    <p>They hand you information and leave. No systems, no scripts, no accountability for whether your team actually improves. Every week you install a specific conversion system into your operation.</p>
+                                </div>
+                            </div>
+
+                            {/* Editorial Row 2 — Text left, image right */}
+                            <div className="editorial-row reverse">
+                                <div className="editorial-image">
+                                    <Image
+                                        src="/images/operator-closing.png"
+                                        alt="Operator closing a deal"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        style={{ objectFit: "cover" }}
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div className="editorial-text">
+                                    <Badge>Real Operators</Badge>
+                                    <h3>Operators, Not Gurus</h3>
+                                    <p>Every guest has a live operation. They&apos;re closing deals this month, not teaching from a stage. Scripts, SOPs, and live coaching to make sure it sticks.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ═══ 3. WHY TEAMS LEAK LEADS ═══ */}
-                <section className="py-[100px]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                {/* ═══ 3. WHY TEAMS LEAK LEADS (Editorial) ═══ */}
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="The Leak"
                             heading="Why Your Team Leaks Leads"
                             sub={'You\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
                         />
 
-                        <div className="max-w-[700px] mx-auto space-y-6">
-                            {[
-                                { icon: "🕐", label: "Slow speed to lead — the first 5 minutes matter more than the first 5 days" },
-                                { icon: "📞", label: "No call script — reps improvise every call and wonder why results vary" },
-                                { icon: "🏠", label: "Weak appointment structure — sellers don't feel confident in your process" },
-                                { icon: "💰", label: "Offers that don't land — you second-guess comps, miss repair estimates, or underbid" },
-                                { icon: "📭", label: "No follow-up system — leads go cold because nobody owns the nurture pipeline" },
-                            ].map((leak) => (
-                                <div key={leak.label} className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-xl shrink-0">{leak.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed pt-2">{leak.label}</p>
+                        <div className="editorial-row">
+                            <div className="editorial-image">
+                                <Image
+                                    src="/images/operator-crm.png"
+                                    alt="Operator reviewing CRM pipeline"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    style={{ objectFit: "cover" }}
+                                    loading="lazy"
+                                />
+                            </div>
+                            <div className="editorial-text">
+                                <div className="space-y-5">
+                                    {[
+                                        { icon: "🕐", label: "Slow speed to lead — the first 5 minutes matter more than the first 5 days" },
+                                        { icon: "📞", label: "No call script — reps improvise every call and wonder why results vary" },
+                                        { icon: "🏠", label: "Weak appointment structure — sellers don't feel confident in your process" },
+                                        { icon: "💰", label: "Offers that don't land — you second-guess comps, miss repair estimates, or underbid" },
+                                        { icon: "📭", label: "No follow-up system — leads go cold because nobody owns the nurture pipeline" },
+                                    ].map((leak) => (
+                                        <div key={leak.label} className="flex items-start gap-4">
+                                            <div className="w-10 h-10 rounded-lg bg-[var(--bg-card)] flex items-center justify-center text-xl shrink-0">{leak.icon}</div>
+                                            <p className="text-base leading-relaxed pt-2" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{leak.label}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ═══ 4. 12-WEEK SYSTEM ═══ */}
-                <section id="system" className="py-[100px] bg-[var(--bg-secondary)]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                {/* ═══ 4. 12-WEEK SYSTEM (Cinematic Module Preview) ═══ */}
+                <section id="system" className="py-[100px]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="The System"
                             heading="12 Weeks. 4 Modules. Installed."
                             sub="Each week covers one piece of the conversion system. By week 12, your team has a complete, battle-tested playbook."
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px] mx-auto">
+                        <div className="space-y-4 max-w-[900px] mx-auto">
                             {MODULES.map((mod) => (
-                                <Card key={mod.number} className="shadow-sm">
-                                    <CardContent className="p-6 space-y-3">
+                                <div key={mod.number} className="module-preview-card">
+                                    <div className="module-preview-image">
+                                        <Image
+                                            src={mod.image}
+                                            alt={mod.title}
+                                            fill
+                                            sizes="200px"
+                                            style={{ objectFit: "cover" }}
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg">
-                                                {mod.number}
-                                            </div>
+                                            <span className="module-preview-number">{mod.number}</span>
                                             <div>
-                                                <h3 className="text-xl font-semibold">{mod.title}</h3>
-                                                <span className="text-xs text-[color:var(--text-muted)]">{mod.weeks} • {mod.episodes} episodes</span>
+                                                <h3 className="text-xl" style={{ fontWeight: 600 }}>{mod.title}</h3>
+                                                <span className="text-xs" style={{ color: "var(--text-muted)", fontFamily: "'Inter', system-ui, sans-serif" }}>{mod.weeks} • {mod.episodes} episodes</span>
                                             </div>
                                         </div>
-                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{mod.description}</p>
-                                    </CardContent>
-                                </Card>
+                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{mod.description}</p>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ═══ 5. INSTALLATION TIMELINE ═══ */}
-                <section className="py-[100px]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                {/* ═══ 5. INSTALLATION TIMELINE (Visual Timeline) ═══ */}
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="Inside the Program"
                             heading="What You'll Install Each Week"
                         />
 
-                        <div className="max-w-[700px] mx-auto relative pl-2 md:pl-0">
-                            {/* Timeline spine */}
-                            <div
-                                className="absolute left-[26px] top-0 bottom-0 w-[2px]"
-                                style={{ background: 'linear-gradient(to bottom, var(--brand-orange), var(--border-subtle))' }}
-                                aria-hidden="true"
-                            />
+                        <div className="timeline-container">
+                            <div className="timeline-spine" aria-hidden="true" />
 
-                            <div className="space-y-12">
-                                {MODULES.map((mod) => (
-                                    <div key={mod.number} className="relative">
-                                        {/* Module marker */}
-                                        <div className="flex items-center gap-5 mb-5 relative">
-                                            <div className="w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg relative z-10 shrink-0">
-                                                {mod.number}
-                                            </div>
-                                            <div>
-                                                <h3 className="text-xl font-semibold">{mod.title}</h3>
-                                                <span className="text-sm font-medium text-[color:var(--text-muted)]">{mod.weeks}</span>
-                                            </div>
-                                        </div>
+                            {MODULES.map((mod) => (
+                                <div key={mod.number} className="timeline-module">
+                                    <div className="timeline-marker">{mod.number}</div>
+                                    <h3 className="timeline-module-title">{mod.title}</h3>
+                                    <span className="timeline-module-weeks">{mod.weeks}</span>
 
-                                        {/* Episodes */}
-                                        <div className="ml-[54px] space-y-0">
-                                            {Array.from({ length: mod.episodes }, (_, i) => {
-                                                const epNum = (Number(mod.number) - 1) * 3 + i + 1;
-                                                return (
-                                                    <div key={i} className="flex items-center gap-4 py-4 border-b border-[var(--border-subtle)] last:border-b-0 relative">
-                                                        {/* Dot connecting to spine */}
-                                                        <div className="absolute -left-[29px] w-2 h-2 rounded-full bg-[var(--brand-orange)]" />
-
-                                                        <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                                            <div className="font-medium text-[color:var(--text-primary)]">
-                                                                Week {epNum} &mdash; <span className="text-[color:var(--text-secondary)]">{mod.title}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
+                                    <div className="timeline-episodes">
+                                        {Array.from({ length: mod.episodes }, (_, i) => {
+                                            const epNum = (Number(mod.number) - 1) * 3 + i + 1;
+                                            return (
+                                                <div key={i} className="timeline-episode">
+                                                    <div className="timeline-episode-dot" />
+                                                    <span className="timeline-episode-label">
+                                                        Week {epNum} &mdash; <span className="timeline-episode-sub">{mod.title}</span>
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
 
                 {/* ═══ 6. GUEST OPERATORS ═══ */}
-                <section className="py-[100px] bg-[var(--bg-secondary)]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                <section className="py-[100px]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="Real Operators"
                             heading="Every Guest Has a Live Operation"
@@ -288,7 +356,7 @@ export default function LandingPage() {
                                 <Card key={item.label} className="text-center shadow-sm">
                                     <CardContent className="p-6 space-y-3">
                                         <div className="text-3xl">{item.icon}</div>
-                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{item.label}</p>
+                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{item.label}</p>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -297,8 +365,8 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 7. WHAT YOU RECEIVE ═══ */}
-                <section className="py-[100px]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="What's Included"
                             heading="What You Receive"
@@ -308,9 +376,9 @@ export default function LandingPage() {
                             {DELIVERABLES.map((d) => (
                                 <Card key={d.title} className="shadow-sm">
                                     <CardContent className="p-6 space-y-3">
-                                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-xl">{d.icon}</div>
-                                        <h3 className="text-xl font-semibold">{d.title}</h3>
-                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{d.detail}</p>
+                                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-card)] flex items-center justify-center text-xl">{d.icon}</div>
+                                        <h3 className="text-xl" style={{ fontWeight: 600 }}>{d.title}</h3>
+                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{d.detail}</p>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -319,17 +387,25 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 8. PRIMARY CTA ═══ */}
-                <section className="py-[100px] bg-[var(--bg-secondary)] relative overflow-hidden">
-                    {/* Glow */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-                        <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.08)_0%,transparent_70%)]" />
+                <section className="py-[100px] relative overflow-hidden">
+                    {/* Cinematic background */}
+                    <div className="absolute inset-0">
+                        <Image
+                            src="/images/operator-closing.png"
+                            alt=""
+                            fill
+                            sizes="100vw"
+                            style={{ objectFit: "cover", opacity: 0.15 }}
+                            loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-[var(--bg-primary)]" style={{ opacity: 0.85 }} />
                     </div>
 
-                    <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-6">
+                    <div className="max-w-[1100px] mx-auto px-6 text-center relative z-10 space-y-6">
                         <h2 className="text-[40px] md:text-[48px] font-bold tracking-tight max-w-[700px] mx-auto leading-[1.1]">
                             Ready to Install a Real Conversion System?
                         </h2>
-                        <p className="text-[color:var(--text-secondary)] max-w-[650px] mx-auto text-lg leading-relaxed">
+                        <p className="max-w-[650px] mx-auto text-lg leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
@@ -342,8 +418,8 @@ export default function LandingPage() {
                 </section>
 
                 {/* ═══ 9. FAQ ═══ */}
-                <section className="py-[100px]">
-                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
+                <section className="py-[100px] bg-[var(--bg-secondary)]">
+                    <div className="max-w-[1100px] mx-auto px-6">
                         <SectionHeader
                             badge="FAQ"
                             heading="Common Questions"
@@ -358,7 +434,7 @@ export default function LandingPage() {
 
             {/* ── FOOTER ── */}
             <footer className="border-t border-[var(--border-subtle)] py-8">
-                <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-[color:var(--text-muted)]">
+                <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm" style={{ color: "var(--text-muted)", fontFamily: "'Inter', system-ui, sans-serif" }}>
                     <span>&copy; 2026 Cash Offer Conversion School. All rights reserved.</span>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Privacy</a>
