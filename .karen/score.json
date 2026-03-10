@@ -1,0 +1,54 @@
+{
+    "total_score": 72,
+    "grade": "Actually decent",
+    "timestamp": "2026-03-09T16:30:00Z",
+    "breakdown": {
+        "bullshit_factor": 14,
+        "actually_works": 16,
+        "code_quality": 17,
+        "completion": 11,
+        "practical_value": 14
+    },
+    "market_research": {
+        "competitors": [
+            {
+                "name": "GoHighLevel",
+                "status": "industry standard CRM + funnel builder",
+                "note": "All-in-one marketing/CRM but not investor-specific LMS"
+            },
+            {
+                "name": "PropStream",
+                "status": "dominant lead data platform",
+                "note": "Data/analytics, not coaching/LMS"
+            },
+            {
+                "name": "BiggerPockets",
+                "status": "largest RE investor community",
+                "note": "Community + content, not white-label LMS"
+            },
+            {
+                "name": "LearnWorlds",
+                "status": "generic LMS SaaS",
+                "note": "Course builder, not RE-investor-specific"
+            },
+            {
+                "name": "Teachable + Kajabi",
+                "status": "course hosting platforms",
+                "note": "Generic course hosting, no investor tooling"
+            }
+        ],
+        "unique_value": "Vertically integrated qualification-to-coaching pipeline specifically for RE investor lead school operators. Combines auth, org management, qualification funnels, event-driven automation, and a/b testing in one monorepo. Not a generic LMS.",
+        "recommendation": "Continue — fills niche gap between generic LMS platforms and RE-specific data tools. No direct competitor does qualification→automation→coaching in one stack."
+    },
+    "codebase_stats": {
+        "total_files": 127,
+        "total_lines": 11721,
+        "test_files": 18,
+        "tests_passing": 173,
+        "packages": 9,
+        "todo_count": 0,
+        "any_type_count": 0,
+        "catch_blocks": 44,
+        "readme_lines": 172
+    }
+}

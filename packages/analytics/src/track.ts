@@ -13,6 +13,8 @@
 import type { EventContract, ContractProperties } from "./types";
 import type { EventEnvelope } from "./event-envelope";
 import { generateEventId } from "./utils";
+import { buildTrafficContext } from "./traffic-context";
+import type { TrafficSource } from "./traffic-context";
 
 type PostHogInstance = {
     capture: (event: string, properties: Record<string, unknown>) => void;
@@ -27,6 +29,9 @@ let _organizationId: string | undefined;
 
 // Experiment context — set via ExperimentProvider
 let _activeExperiments: { id: string; variant: string }[] = [];
+
+// Traffic source override — set via setTrafficSource()
+let _trafficSourceOverride: TrafficSource | undefined;
 
 /**
  * Set the current user context for analytics.
@@ -43,6 +48,13 @@ export function setAnalyticsContext(userId?: string, organizationId?: string) {
  */
 export function setActiveExperiments(experiments: { id: string; variant: string }[]) {
     _activeExperiments = experiments;
+}
+
+/**
+ * Set the traffic source for analytics events (e.g., "admin" on admin pages).
+ */
+export function setTrafficSource(source: TrafficSource | undefined) {
+    _trafficSourceOverride = source;
 }
 
 /**
@@ -116,6 +128,7 @@ export async function track<C extends EventContract>(
         user_id: _userId,
         organization_id: _organizationId,
         session_id: getSessionId(),
+        segmentation: buildTrafficContext(_userId, _trafficSourceOverride),
         properties,
     };
 
@@ -128,9 +141,10 @@ export async function track<C extends EventContract>(
     if (!posthog) return; // no-op without PostHog
 
     // Send flattened envelope as PostHog event
+    // Segmentation fields spread at top level for PostHog dashboard filtering
     posthog.capture(envelope.event_name, {
         ...envelope,
-        // Also spread properties at top level for PostHog dashboard compatibility
         ...properties,
+        ...(envelope.segmentation ?? {}),
     });
 }

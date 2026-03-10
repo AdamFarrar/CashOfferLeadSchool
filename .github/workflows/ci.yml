@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
@@ -6,66 +6,35 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  NODE_VERSION: "20"
-  PNPM_VERSION: "9.15.4"
-
 jobs:
-  lint-typecheck:
-    name: Lint & Type Check
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          node-version: 20
+          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo lint typecheck
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: lint-typecheck
-    steps:
-      - uses: actions/checkout@v4
+      - name: Lint
+        run: pnpm lint
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+      - name: Type check
+        run: pnpm typecheck
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+      - name: Test
+        run: pnpm test -- --run --exclude '**/prpm-extract/**'
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build
+      - name: Check inline styles
+        run: pnpm check:styles
 
-  docker:
-    name: Docker Build
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker Image
-        run: |
-          docker build \
-            -f docker/Dockerfile \
-            -t cocs-web:${{ github.sha }} \
-            -t cocs-web:latest \
-            .
-
-      # Uncomment when Dokploy webhook is configured:
-      # - name: Deploy to Dokploy
-      #   run: |
-      #     curl -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}" \
-      #       -H "Content-Type: application/json"
+      - name: Build
+        run: pnpm build

@@ -9,12 +9,15 @@
 import type { EventContract, ContractProperties } from "./types";
 import type { EventEnvelope } from "./event-envelope";
 import { generateEventId } from "./utils";
+import { buildTrafficContext } from "./traffic-context";
+import type { TrafficSource } from "./traffic-context";
 
 interface ServerContext {
     userId: string;
     organizationId?: string;
     sessionId?: string;
     activeExperiments?: { id: string; variant: string }[];
+    trafficSource?: TrafficSource;
 }
 
 // generateEventId imported from ./utils
@@ -32,6 +35,8 @@ export async function serverTrack<C extends EventContract>(
     properties: ContractProperties<C>,
     context: ServerContext,
 ): Promise<void> {
+    const segmentation = buildTrafficContext(context.userId, context.trafficSource);
+
     const envelope: EventEnvelope<ContractProperties<C>> = {
         event_id: generateEventId(),
         event_name: contract.name,
@@ -40,6 +45,7 @@ export async function serverTrack<C extends EventContract>(
         user_id: context.userId,
         organization_id: context.organizationId,
         session_id: context.sessionId,
+        segmentation,
         properties,
     };
 
@@ -63,6 +69,7 @@ export async function serverTrack<C extends EventContract>(
                 properties: {
                     ...envelope,
                     ...properties,
+                    ...(segmentation ?? {}),
                 },
                 timestamp: new Date(envelope.timestamp).toISOString(),
             }),

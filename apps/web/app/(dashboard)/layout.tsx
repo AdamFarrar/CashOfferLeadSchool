@@ -54,74 +54,30 @@ export default function DashboardLayout({
     const isAdmin = ["owner", "admin"].includes(userRole);
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh" }}>
+        <div className="dashboard-layout">
             {/* Mobile overlay */}
             {sidebarOpen && (
                 <div
                     onClick={() => setSidebarOpen(false)}
-                    style={{
-                        position: "fixed",
-                        inset: 0,
-                        background: "rgba(0,0,0,0.6)",
-                        zIndex: 40,
-                    }}
+                    className="fixed inset-0 bg-black/60 z-40"
                 />
             )}
 
             {/* Sidebar */}
-            <aside
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    width: "16rem",
-                    background: "var(--bg-secondary)",
-                    borderRight: "1px solid var(--border-subtle)",
-                    padding: "1.5rem 1rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    zIndex: 50,
-                    transform: sidebarOpen ? "translateX(0)" : undefined,
-                    transition: "transform 0.2s ease",
-                }}
-                className="sidebar-desktop"
-            >
+            <aside className="sidebar sidebar-desktop z-50 px-4">
                 {/* Logo */}
                 <Link
                     href="/dashboard"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                        textDecoration: "none",
-                        color: "var(--text-primary)",
-                        fontWeight: 700,
-                        fontSize: "0.95rem",
-                        marginBottom: "2rem",
-                        paddingLeft: "0.5rem",
-                    }}
+                    className="flex items-center gap-2 no-underline text-[color:var(--text-primary)] font-bold text-[0.95rem] mb-8 pl-2"
                 >
-                    <span
-                        style={{
-                            width: "1.75rem",
-                            height: "1.75rem",
-                            borderRadius: "0.375rem",
-                            background:
-                                "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "0.75rem",
-                        }}
-                    >
+                    <span className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-xs">
                         🏠
                     </span>
                     COCS
                 </Link>
 
                 {/* Nav */}
-                <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
+                <nav className="sidebar-nav">
                     {NAV_ITEMS.map((item) => {
                         const active = pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
@@ -129,41 +85,12 @@ export default function DashboardLayout({
                                 key={item.label}
                                 href={item.locked ? "#" : item.href}
                                 onClick={() => setSidebarOpen(false)}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "0.625rem",
-                                    padding: "0.625rem 0.75rem",
-                                    borderRadius: "var(--radius-md)",
-                                    textDecoration: "none",
-                                    fontSize: "0.875rem",
-                                    fontWeight: active ? 600 : 400,
-                                    color: item.locked
-                                        ? "var(--text-muted)"
-                                        : active
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-                                    background: active
-                                        ? "rgba(249, 115, 22, 0.08)"
-                                        : "transparent",
-                                    cursor: item.locked ? "default" : "pointer",
-                                    transition: "background 0.15s",
-                                    opacity: item.locked ? 0.5 : 1,
-                                }}
+                                className={`sidebar-link ${active ? "sidebar-link-active font-semibold" : ""} ${item.locked ? "sidebar-link-locked" : ""}`}
                             >
-                                <span style={{ fontSize: "1rem" }}>{item.icon}</span>
+                                <span className="text-base">{item.icon}</span>
                                 {item.label}
                                 {item.locked && (
-                                    <span
-                                        style={{
-                                            marginLeft: "auto",
-                                            fontSize: "0.65rem",
-                                            padding: "0.1rem 0.4rem",
-                                            borderRadius: "var(--radius-full)",
-                                            background: "var(--border-subtle)",
-                                            color: "var(--text-muted)",
-                                        }}
-                                    >
+                                    <span className="ml-auto text-[0.65rem] py-px px-1.5 rounded-full bg-[var(--border-subtle)] text-[color:var(--text-muted)]">
                                         Soon
                                     </span>
                                 )}
@@ -174,17 +101,7 @@ export default function DashboardLayout({
                     {/* Admin section — visible to owner/admin only */}
                     {isAdmin && (
                         <>
-                            <div
-                                style={{
-                                    margin: "0.75rem 0 0.5rem",
-                                    padding: "0 0.75rem",
-                                    fontSize: "0.65rem",
-                                    fontWeight: 700,
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.08em",
-                                    color: "var(--text-muted)",
-                                }}
-                            >
+                            <div className="mt-3 mb-2 px-3 text-[0.65rem] font-bold uppercase tracking-widest text-[color:var(--text-muted)]">
                                 Admin
                             </div>
                             {ADMIN_NAV_ITEMS.map((item) => {
@@ -194,25 +111,9 @@ export default function DashboardLayout({
                                         key={item.label}
                                         href={item.href}
                                         onClick={() => setSidebarOpen(false)}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "0.625rem",
-                                            padding: "0.625rem 0.75rem",
-                                            borderRadius: "var(--radius-md)",
-                                            textDecoration: "none",
-                                            fontSize: "0.875rem",
-                                            fontWeight: active ? 600 : 400,
-                                            color: active
-                                                ? "var(--text-primary)"
-                                                : "var(--text-secondary)",
-                                            background: active
-                                                ? "rgba(249, 115, 22, 0.08)"
-                                                : "transparent",
-                                            transition: "background 0.15s",
-                                        }}
+                                        className={`sidebar-link ${active ? "sidebar-link-active font-semibold" : ""}`}
                                     >
-                                        <span style={{ fontSize: "1rem" }}>{item.icon}</span>
+                                        <span className="text-base">{item.icon}</span>
                                         {item.label}
                                     </Link>
                                 );
@@ -222,75 +123,23 @@ export default function DashboardLayout({
                 </nav>
 
                 {/* User */}
-                <div
-                    style={{
-                        borderTop: "1px solid var(--border-subtle)",
-                        paddingTop: "1rem",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.625rem",
-                            padding: "0.5rem",
-                            marginBottom: "0.5rem",
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: "2rem",
-                                height: "2rem",
-                                borderRadius: "50%",
-                                background:
-                                    "linear-gradient(135deg, var(--accent-purple), var(--accent-blue))",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "0.75rem",
-                                fontWeight: 700,
-                            }}
-                        >
+                <div className="sidebar-footer">
+                    <div className="flex items-center gap-2.5 p-2 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-purple)] to-[var(--accent-blue)] flex items-center justify-center text-xs font-bold">
                             {session?.user?.name?.[0]?.toUpperCase() || "?"}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                                style={{
-                                    fontSize: "0.825rem",
-                                    fontWeight: 600,
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                }}
-                            >
+                        <div className="flex-1 min-w-0">
+                            <div className="text-[0.825rem] font-semibold truncate">
                                 {session?.user?.name || "User"}
                             </div>
-                            <div
-                                style={{
-                                    fontSize: "0.7rem",
-                                    color: "var(--text-muted)",
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                }}
-                            >
+                            <div className="text-[0.7rem] text-[color:var(--text-muted)] truncate">
                                 {session?.user?.email || ""}
                             </div>
                         </div>
                     </div>
                     <button
                         onClick={() => { resetIdentity(); signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } }); }}
-                        style={{
-                            width: "100%",
-                            padding: "0.5rem",
-                            fontSize: "0.8rem",
-                            color: "var(--text-muted)",
-                            background: "transparent",
-                            border: "1px solid var(--border-subtle)",
-                            borderRadius: "var(--radius-sm)",
-                            cursor: "pointer",
-                            transition: "border-color 0.15s",
-                        }}
+                        className="w-full p-2 text-[0.8rem] text-[color:var(--text-muted)] bg-transparent border border-[var(--border-subtle)] rounded-[var(--radius-sm)] cursor-pointer transition-colors hover:border-[var(--border-hover)]"
                     >
                         Sign Out
                     </button>
@@ -298,47 +147,20 @@ export default function DashboardLayout({
             </aside>
 
             {/* Main content */}
-            <div
-                style={{
-                    flex: 1,
-                    marginLeft: "16rem",
-                    minWidth: 0,
-                }}
-                className="main-content"
-            >
+            <div className="main-content min-w-0">
                 {/* Top bar (mobile) */}
-                <header
-                    className="mobile-header"
-                    style={{
-                        display: "none",
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 30,
-                        padding: "0.75rem 1rem",
-                        background: "rgba(5, 5, 5, 0.9)",
-                        backdropFilter: "blur(12px)",
-                        borderBottom: "1px solid var(--border-subtle)",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                    }}
-                >
+                <header className="mobile-header hidden sticky top-0 z-30 py-3 px-4 bg-[rgba(5,5,5,0.9)] backdrop-blur-md border-b border-[var(--border-subtle)] items-center justify-between">
                     <button
                         onClick={() => setSidebarOpen(true)}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            color: "var(--text-primary)",
-                            fontSize: "1.25rem",
-                            cursor: "pointer",
-                        }}
+                        className="bg-transparent border-none text-[color:var(--text-primary)] text-xl cursor-pointer"
                     >
                         ☰
                     </button>
-                    <span style={{ fontWeight: 700, fontSize: "0.95rem" }}>COCS</span>
-                    <div style={{ width: "1.25rem" }} />
+                    <span className="font-bold text-[0.95rem]">COCS</span>
+                    <div className="w-5" />
                 </header>
 
-                <main style={{ padding: "2rem" }}>{children}</main>
+                <main className="p-8">{children}</main>
             </div>
 
             {/* Responsive styles */}

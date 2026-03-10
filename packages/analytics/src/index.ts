@@ -2,11 +2,32 @@
 // @cocs/analytics — Barrel Export
 // =============================================================================
 
-export { track, setAnalyticsContext, setActiveExperiments } from "./track";
+export { track, setAnalyticsContext, setActiveExperiments, setTrafficSource } from "./track";
 export { serverTrack } from "./server-track";
 export { identify, resetIdentity } from "./identify";
 export type { EventContract, ContractProperties } from "./types";
 export type { EventEnvelope } from "./event-envelope";
+
+// Traffic Segmentation (Phase 1.7.1E)
+export {
+    buildTrafficContext,
+    registerInternalEmails,
+    registerInternalUserIds,
+    registerStakeholderUserIds,
+    isInternalEmail,
+    isInternalUser,
+    isStakeholderUser,
+    resolveUserCohort,
+    detectEnvironment,
+    detectReleaseChannel,
+} from "./traffic-context";
+export type {
+    Environment,
+    TrafficSource,
+    UserCohort,
+    ReleaseChannel,
+    TrafficContext,
+} from "./traffic-context";
 
 // D8-D9: Metrics & Drop-off
 export { FUNNEL_STAGES, DROP_OFF_POINTS, conversionRate, TIMING_THRESHOLDS } from "./metrics";

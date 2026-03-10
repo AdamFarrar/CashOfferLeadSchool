@@ -8,6 +8,9 @@ import {
     feedbackExistsForUser,
     getAllFeedback,
     reviewFeedback,
+    checkRateLimit,
+    rateLimitKey,
+    RATE_LIMITS,
 } from "@cocs/services";
 import { getServerIdentity } from "./identity";
 
@@ -33,6 +36,15 @@ export async function submitFeedbackAction(input: SubmitFeedbackActionInput) {
     const identity = await getServerIdentity();
     if (!identity || !identity.organizationId) {
         return { success: false, error: "Authentication required." };
+    }
+
+    // Rate limit: 10 per hour per user
+    const rl = checkRateLimit(
+        rateLimitKey("feedback", identity.userId),
+        RATE_LIMITS.feedback,
+    );
+    if (!rl.allowed) {
+        return { success: false, error: "Too many submissions. Please try again later." };
     }
 
     // Validate required fields

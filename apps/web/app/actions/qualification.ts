@@ -3,6 +3,9 @@
 import {
     submitQualificationForm,
     getQualificationByUser,
+    checkRateLimit,
+    rateLimitKey,
+    RATE_LIMITS,
 } from "@cocs/services";
 import { getServerIdentity } from "./identity";
 
@@ -28,6 +31,15 @@ export async function submitQualification(data: SubmitQualificationInput) {
     const identity = await getServerIdentity();
     if (!identity || !identity.organizationId) {
         return { success: false, error: "Authentication required." };
+    }
+
+    // Rate limit: 5 per hour per user
+    const rl = checkRateLimit(
+        rateLimitKey("qualification", identity.userId),
+        RATE_LIMITS.qualification,
+    );
+    if (!rl.allowed) {
+        return { success: false, error: "Too many submissions. Please try again later." };
     }
 
     // Validate required fields

@@ -6,6 +6,8 @@
 // and guarantees consistent metadata across client and server.
 // =============================================================================
 
+import type { TrafficContext } from "./traffic-context";
+
 export interface EventEnvelope<T extends Record<string, unknown>> {
     // Identity
     event_id: string;
@@ -24,6 +26,10 @@ export interface EventEnvelope<T extends Record<string, unknown>> {
         variant: string;
     }[];
 
+    // Traffic Segmentation (Phase 1.7.1E)
+    segmentation?: TrafficContext;
+
     // Typed event properties
     properties: T;
 }
+

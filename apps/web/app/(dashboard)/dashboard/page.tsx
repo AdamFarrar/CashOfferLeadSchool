@@ -22,14 +22,12 @@ export default function DashboardPage() {
             getQualificationStatus().then((status) => {
                 const completed = !!status?.submittedAt;
                 if (completed) setQualCompleted(true);
-                // Track first dashboard view AFTER qualification status resolves
                 const key = "cocs_dashboard_first_viewed";
                 if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
                     track(DashboardFirstViewed, { qualification_completed: completed });
                     sessionStorage.setItem(key, "1");
                 }
             }).catch(() => {
-                // Still track if qualification check fails
                 const key = "cocs_dashboard_first_viewed";
                 if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
                     track(DashboardFirstViewed, { qualification_completed: false });
@@ -42,78 +40,37 @@ export default function DashboardPage() {
     return (
         <div>
             {/* Welcome header */}
-            <div style={{ marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }}>
+            <div className="mb-8">
+                <h1 className="text-[1.75rem] mb-2">
                     Welcome back, {firstName} 👋
                 </h1>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
+                <p className="text-[color:var(--text-secondary)] text-[0.95rem]">
                     Here&apos;s what&apos;s happening in your qualification journey.
                 </p>
             </div>
 
             {/* Status cards */}
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))",
-                    gap: "1.25rem",
-                    marginBottom: "2.5rem",
-                }}
-            >
+            <div className="dashboard-grid mb-10">
                 {/* Qualification card */}
                 <Link
                     href="/qualify"
-                    className="glass-card"
-                    style={{
-                        padding: "1.5rem",
-                        textDecoration: "none",
-                        color: "inherit",
-                    }}
+                    className="glass-card p-6 no-underline text-inherit"
                 >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.75rem",
-                            marginBottom: "1rem",
-                        }}
-                    >
+                    <div className="flex items-center gap-3 mb-4">
                         <div
-                            style={{
-                                width: "2.5rem",
-                                height: "2.5rem",
-                                borderRadius: "var(--radius-md)",
-                                background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "var(--brand-orange-glow)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "1.125rem",
-                            }}
+                            className="w-10 h-10 rounded-[var(--radius-md)] flex items-center justify-center text-lg"
+                            style={{ background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "var(--brand-orange-glow)" }}
                         >
                             {qualCompleted ? "✅" : "📋"}
                         </div>
                         <div>
-                            <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                                Qualification
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.75rem",
-                                    color: qualCompleted ? "#22c55e" : "var(--brand-orange)",
-                                    fontWeight: 600,
-                                }}
-                            >
+                            <div className="font-semibold text-[0.95rem]">Qualification</div>
+                            <div className={`text-xs font-semibold ${qualCompleted ? "text-[#22c55e]" : "text-[color:var(--brand-orange)]"}`}>
                                 {qualCompleted ? "Completed" : "Action Required"}
                             </div>
                         </div>
                     </div>
-                    <p
-                        style={{
-                            fontSize: "0.85rem",
-                            color: "var(--text-secondary)",
-                            lineHeight: 1.5,
-                        }}
-                    >
+                    <p className="text-[0.85rem] text-[color:var(--text-secondary)] leading-normal">
                         {qualCompleted
                             ? "Your operator qualification is complete. You can review or update it anytime."
                             : "Complete your operator qualification to unlock the full platform."}
@@ -121,153 +78,57 @@ export default function DashboardPage() {
                 </Link>
 
                 {/* Academy card */}
-                <div className="glass-card" style={{ padding: "1.5rem", opacity: 0.5 }}>
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.75rem",
-                            marginBottom: "1rem",
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: "2.5rem",
-                                height: "2.5rem",
-                                borderRadius: "var(--radius-md)",
-                                background: "rgba(59, 130, 246, 0.1)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "1.125rem",
-                            }}
-                        >
+                <div className="phase-card">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[rgba(59,130,246,0.1)] flex items-center justify-center text-lg">
                             🎓
                         </div>
                         <div>
-                            <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                                Academy
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.75rem",
-                                    color: "var(--text-muted)",
-                                }}
-                            >
-                                Coming in Phase 2
-                            </div>
+                            <div className="font-semibold text-[0.95rem]">Academy</div>
+                            <div className="text-xs text-[color:var(--text-muted)]">Coming in Phase 2</div>
                         </div>
                     </div>
-                    <p
-                        style={{
-                            fontSize: "0.85rem",
-                            color: "var(--text-muted)",
-                            lineHeight: 1.5,
-                        }}
-                    >
+                    <p className="text-[0.85rem] text-[color:var(--text-muted)] leading-normal">
                         Video courses, downloads, and structured learning paths.
                     </p>
                 </div>
 
                 {/* Coaching card */}
-                <div className="glass-card" style={{ padding: "1.5rem", opacity: 0.5 }}>
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.75rem",
-                            marginBottom: "1rem",
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: "2.5rem",
-                                height: "2.5rem",
-                                borderRadius: "var(--radius-md)",
-                                background: "rgba(139, 92, 246, 0.1)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "1.125rem",
-                            }}
-                        >
+                <div className="phase-card">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[rgba(139,92,246,0.1)] flex items-center justify-center text-lg">
                             💬
                         </div>
                         <div>
-                            <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                                Coaching
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.75rem",
-                                    color: "var(--text-muted)",
-                                }}
-                            >
-                                Coming in Phase 5
-                            </div>
+                            <div className="font-semibold text-[0.95rem]">Coaching</div>
+                            <div className="text-xs text-[color:var(--text-muted)]">Coming in Phase 5</div>
                         </div>
                     </div>
-                    <p
-                        style={{
-                            fontSize: "0.85rem",
-                            color: "var(--text-muted)",
-                            lineHeight: 1.5,
-                        }}
-                    >
+                    <p className="text-[0.85rem] text-[color:var(--text-muted)] leading-normal">
                         1-on-1 coaching, live sessions, and expert guidance.
                     </p>
                 </div>
             </div>
 
             {/* Quick info */}
-            <div
-                className="glass-card"
-                style={{
-                    padding: "1.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    marginBottom: "1.25rem",
-                }}
-            >
+            <div className="glass-card p-6 flex items-center gap-4 mb-5">
                 <div
-                    style={{
-                        width: "2.5rem",
-                        height: "2.5rem",
-                        borderRadius: "50%",
-                        background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "rgba(34, 197, 94, 0.1)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "1rem",
-                        flexShrink: 0,
-                    }}
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0"
+                    style={{ background: "rgba(34, 197, 94, 0.1)" }}
                 >
                     {qualCompleted ? "🎉" : "💡"}
                 </div>
                 <div>
-                    <div
-                        style={{
-                            fontWeight: 600,
-                            fontSize: "0.9rem",
-                            marginBottom: "0.25rem",
-                        }}
-                    >
+                    <div className="font-semibold text-[0.9rem] mb-1">
                         {qualCompleted ? "You're All Set" : "Getting Started"}
                     </div>
-                    <p
-                        style={{
-                            fontSize: "0.825rem",
-                            color: "var(--text-secondary)",
-                            lineHeight: 1.5,
-                        }}
-                    >
+                    <p className="text-[0.825rem] text-[color:var(--text-secondary)] leading-normal">
                         {qualCompleted
                             ? "Your qualification is complete. We're preparing your personalized learning path. More features coming soon!"
                             : <>Start by completing your{" "}
                                 <Link
                                     href="/qualify"
-                                    style={{ color: "var(--brand-orange)", textDecoration: "none" }}
+                                    className="text-[color:var(--brand-orange)] no-underline"
                                 >
                                     qualification form
                                 </Link>

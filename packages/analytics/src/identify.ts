@@ -6,6 +6,7 @@
 // =============================================================================
 
 import { setAnalyticsContext } from "./track";
+import { resolveUserCohort, isInternalUser, isStakeholderUser } from "./traffic-context";
 
 /**
  * Identify a user for analytics. Sets person properties in PostHog
@@ -32,6 +33,10 @@ export async function identify(
             organization_id: traits?.organizationId,
             created_at: traits?.createdAt,
             email_verified: traits?.emailVerified,
+            // Traffic segmentation person properties
+            user_cohort: resolveUserCohort(userId),
+            is_internal: isInternalUser(userId),
+            is_stakeholder: isStakeholderUser(userId),
         });
     } catch {
         // PostHog not available

@@ -84,68 +84,22 @@ export default function LandingPage() {
     return (
         <>
             {/* ===== NAV BAR ===== */}
-            <nav
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 50,
-                    borderBottom: "1px solid var(--border-subtle)",
-                    background: "rgba(5, 5, 5, 0.8)",
-                    backdropFilter: "blur(16px)",
-                }}
-            >
-                <div
-                    className="section-container"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        height: "4rem",
-                    }}
-                >
-                    <Link
-                        href="/"
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.625rem",
-                            textDecoration: "none",
-                            color: "var(--text-primary)",
-                            fontWeight: 700,
-                            fontSize: "1.1rem",
-                        }}
-                    >
-                        <span
-                            style={{
-                                width: "2rem",
-                                height: "2rem",
-                                borderRadius: "0.5rem",
-                                background:
-                                    "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "0.9rem",
-                            }}
-                        >
-                            🏠
-                        </span>
+            <nav className="nav-bar">
+                <div className="section-container nav-inner">
+                    <Link href="/" className="nav-logo">
+                        <span className="nav-logo-icon">🏠</span>
                         COCS
                     </Link>
-                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                    <div className="flex items-center gap-3">
                         <Link
                             href="/login"
-                            className="btn-ghost"
-                            style={{ padding: "0.5rem 1.25rem", fontSize: "0.875rem" }}
+                            className="btn-ghost py-2 px-5 text-sm"
                         >
                             Log In
                         </Link>
                         <Link
                             href="/register"
-                            className="btn-primary"
-                            style={{ padding: "0.5rem 1.25rem", fontSize: "0.875rem" }}
+                            className="btn-primary py-2 px-5 text-sm"
                         >
                             Get Started
                         </Link>
@@ -155,89 +109,24 @@ export default function LandingPage() {
 
             <main>
                 {/* ===== HERO ===== */}
-                <section
-                    style={{
-                        minHeight: "100vh",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        textAlign: "center",
-                        padding: "8rem 1.5rem 5rem",
-                        position: "relative",
-                        overflow: "hidden",
-                    }}
-                >
-                    {/* Background glow */}
-                    <div
-                        aria-hidden="true"
-                        style={{
-                            position: "absolute",
-                            top: "15%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "40rem",
-                            height: "40rem",
-                            borderRadius: "50%",
-                            background:
-                                "radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%)",
-                            pointerEvents: "none",
-                        }}
-                    />
+                <section className="hero-section">
+                    <div aria-hidden="true" className="hero-glow" />
 
-                    <div className="animate-fade-in-up" style={{ position: "relative" }}>
-                        <span className="badge" style={{ marginBottom: "1.5rem" }}>
-                            ● Now Open for Operators
-                        </span>
+                    <div className="animate-fade-in-up relative">
+                        <span className="badge mb-6">● Now Open for Operators</span>
                     </div>
 
-                    <h1
-                        className="animate-fade-in-up animate-delay-100"
-                        style={{
-                            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-                            maxWidth: "52rem",
-                            position: "relative",
-                            marginBottom: "1.5rem",
-                        }}
-                    >
+                    <h1 className="animate-fade-in-up animate-delay-100 hero-title">
                         Master Cash Offer{" "}
-                        <span
-                            style={{
-                                background:
-                                    "linear-gradient(135deg, var(--brand-orange-light), var(--brand-orange))",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                            }}
-                        >
-                            Lead Generation
-                        </span>
+                        <span className="text-gradient-brand">Lead Generation</span>
                     </h1>
 
-                    <p
-                        className="animate-fade-in-up animate-delay-200"
-                        style={{
-                            fontSize: "clamp(1.05rem, 2vw, 1.3rem)",
-                            color: "var(--text-secondary)",
-                            maxWidth: "38rem",
-                            lineHeight: 1.7,
-                            marginBottom: "2.5rem",
-                            position: "relative",
-                        }}
-                    >
+                    <p className="animate-fade-in-up animate-delay-200 hero-subtitle">
                         The complete system to build and operate a cash offer lead business.
                         Education. Qualification. Conversion.
                     </p>
 
-                    <div
-                        className="animate-fade-in-up animate-delay-300"
-                        style={{
-                            display: "flex",
-                            gap: "1rem",
-                            flexWrap: "wrap",
-                            justifyContent: "center",
-                            position: "relative",
-                        }}
-                    >
+                    <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-4 relative">
                         <TrackedCta href="/register" className="btn-primary" ctaId="hero_register" ctaText="Start Your Qualification" section="hero">
                             Start Your Qualification →
                         </TrackedCta>
@@ -246,20 +135,7 @@ export default function LandingPage() {
                         </a>
                     </div>
 
-                    {/* Trust bar */}
-                    <div
-                        className="animate-fade-in-up animate-delay-500"
-                        style={{
-                            marginTop: "4rem",
-                            display: "flex",
-                            gap: "2rem",
-                            flexWrap: "wrap",
-                            justifyContent: "center",
-                            color: "var(--text-muted)",
-                            fontSize: "0.85rem",
-                            position: "relative",
-                        }}
-                    >
+                    <div className="animate-fade-in-up animate-delay-500 trust-bar relative">
                         <span>✓ No upfront costs</span>
                         <span>✓ Structured curriculum</span>
                         <span>✓ Expert coaching</span>
@@ -267,83 +143,27 @@ export default function LandingPage() {
                 </section>
 
                 {/* ===== VALUE PROPOSITIONS ===== */}
-                <section
-                    style={{
-                        padding: "6rem 0",
-                        borderTop: "1px solid var(--border-subtle)",
-                    }}
-                >
+                <section className="section-padded section-bordered-top">
                     <div className="section-container">
-                        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-                            <span
-                                className="badge"
-                                style={{ marginBottom: "1rem", display: "inline-flex" }}
-                            >
-                                Why COCS
-                            </span>
-                            <h2
-                                style={{
-                                    fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
-                                    marginTop: "0.75rem",
-                                }}
-                            >
-                                Three Pillars of Success
-                            </h2>
-                            <p
-                                style={{
-                                    color: "var(--text-secondary)",
-                                    maxWidth: "32rem",
-                                    margin: "1rem auto 0",
-                                    fontSize: "1.05rem",
-                                }}
-                            >
+                        <div className="text-center mb-16">
+                            <span className="badge mb-4 inline-flex">Why COCS</span>
+                            <h2 className="section-heading">Three Pillars of Success</h2>
+                            <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mt-4 text-lg">
                                 Everything you need to go from beginner to qualified operator.
                             </p>
                         </div>
 
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
-                                gap: "1.5rem",
-                            }}
-                        >
+                        <div className="grid-auto-fit">
                             {VALUE_PROPS.map((prop) => (
-                                <div
-                                    key={prop.title}
-                                    className="glass-card"
-                                    style={{ padding: "2rem" }}
-                                >
+                                <div key={prop.title} className="glass-card p-8">
                                     <div
-                                        style={{
-                                            width: "3rem",
-                                            height: "3rem",
-                                            borderRadius: "var(--radius-md)",
-                                            background: `${prop.color}15`,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "1.5rem",
-                                            marginBottom: "1.25rem",
-                                        }}
+                                        className="icon-box"
+                                        style={{ background: `${prop.color}15` }}
                                     >
                                         {prop.icon}
                                     </div>
-                                    <h3
-                                        style={{
-                                            fontSize: "1.25rem",
-                                            marginBottom: "0.75rem",
-                                        }}
-                                    >
-                                        {prop.title}
-                                    </h3>
-                                    <p
-                                        style={{
-                                            color: "var(--text-secondary)",
-                                            lineHeight: 1.65,
-                                            fontSize: "0.95rem",
-                                        }}
-                                    >
+                                    <h3 className="text-xl mb-3">{prop.title}</h3>
+                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem]">
                                         {prop.description}
                                     </p>
                                 </div>
@@ -355,74 +175,20 @@ export default function LandingPage() {
                 {/* ===== HOW IT WORKS ===== */}
                 <section
                     id="how-it-works"
-                    style={{
-                        padding: "6rem 0",
-                        background: "var(--bg-secondary)",
-                        borderTop: "1px solid var(--border-subtle)",
-                        borderBottom: "1px solid var(--border-subtle)",
-                    }}
+                    className="section-padded section-bg-alt section-bordered-top section-bordered-bottom"
                 >
                     <div className="section-container">
-                        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-                            <span
-                                className="badge"
-                                style={{ marginBottom: "1rem", display: "inline-flex" }}
-                            >
-                                The Process
-                            </span>
-                            <h2
-                                style={{
-                                    fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
-                                    marginTop: "0.75rem",
-                                }}
-                            >
-                                How It Works
-                            </h2>
+                        <div className="text-center mb-16">
+                            <span className="badge mb-4 inline-flex">The Process</span>
+                            <h2 className="section-heading">How It Works</h2>
                         </div>
 
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
-                                gap: "2rem",
-                            }}
-                        >
+                        <div className="grid-auto-fit-lg">
                             {STEPS.map((step) => (
-                                <div key={step.step} style={{ textAlign: "center" }}>
-                                    <div
-                                        style={{
-                                            width: "3.5rem",
-                                            height: "3.5rem",
-                                            borderRadius: "50%",
-                                            background:
-                                                "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "1.1rem",
-                                            fontWeight: 800,
-                                            margin: "0 auto 1.25rem",
-                                        }}
-                                    >
-                                        {step.step}
-                                    </div>
-                                    <h3
-                                        style={{
-                                            fontSize: "1.2rem",
-                                            marginBottom: "0.75rem",
-                                        }}
-                                    >
-                                        {step.title}
-                                    </h3>
-                                    <p
-                                        style={{
-                                            color: "var(--text-secondary)",
-                                            lineHeight: 1.65,
-                                            fontSize: "0.95rem",
-                                            maxWidth: "22rem",
-                                            margin: "0 auto",
-                                        }}
-                                    >
+                                <div key={step.step} className="text-center">
+                                    <div className="step-number">{step.step}</div>
+                                    <h3 className="text-xl mb-3">{step.title}</h3>
+                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem] max-w-sm mx-auto">
                                         {step.description}
                                     </p>
                                 </div>
@@ -432,68 +198,23 @@ export default function LandingPage() {
                 </section>
 
                 {/* ===== TESTIMONIALS ===== */}
-                <section style={{ padding: "6rem 0" }}>
+                <section className="section-padded">
                     <div className="section-container">
-                        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-                            <span
-                                className="badge"
-                                style={{ marginBottom: "1rem", display: "inline-flex" }}
-                            >
-                                Success Stories
-                            </span>
-                            <h2
-                                style={{
-                                    fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
-                                    marginTop: "0.75rem",
-                                }}
-                            >
-                                What Operators Are Saying
-                            </h2>
+                        <div className="text-center mb-16">
+                            <span className="badge mb-4 inline-flex">Success Stories</span>
+                            <h2 className="section-heading">What Operators Are Saying</h2>
                         </div>
 
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
-                                gap: "1.5rem",
-                            }}
-                        >
+                        <div className="grid-auto-fit">
                             {TESTIMONIALS.map((t) => (
-                                <div
-                                    key={t.name}
-                                    className="glass-card"
-                                    style={{ padding: "2rem" }}
-                                >
-                                    <div
-                                        style={{
-                                            fontSize: "1.75rem",
-                                            marginBottom: "1rem",
-                                            opacity: 0.3,
-                                        }}
-                                    >
-                                        &ldquo;
-                                    </div>
-                                    <p
-                                        style={{
-                                            color: "var(--text-secondary)",
-                                            lineHeight: 1.7,
-                                            fontSize: "0.95rem",
-                                            marginBottom: "1.5rem",
-                                        }}
-                                    >
+                                <div key={t.name} className="glass-card p-8">
+                                    <div className="quote-mark">&ldquo;</div>
+                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem] mb-6">
                                         {t.quote}
                                     </p>
                                     <div>
-                                        <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                                            {t.name}
-                                        </div>
-                                        <div
-                                            style={{
-                                                color: "var(--text-muted)",
-                                                fontSize: "0.825rem",
-                                                marginTop: "0.15rem",
-                                            }}
-                                        >
+                                        <div className="font-semibold text-[0.95rem]">{t.name}</div>
+                                        <div className="text-[color:var(--text-muted)] text-[0.825rem] mt-0.5">
                                             {t.role}
                                         </div>
                                     </div>
@@ -504,54 +225,12 @@ export default function LandingPage() {
                 </section>
 
                 {/* ===== CTA FOOTER ===== */}
-                <section
-                    style={{
-                        padding: "6rem 0",
-                        borderTop: "1px solid var(--border-subtle)",
-                        position: "relative",
-                        overflow: "hidden",
-                    }}
-                >
-                    {/* Background glow */}
-                    <div
-                        aria-hidden="true"
-                        style={{
-                            position: "absolute",
-                            bottom: "-20%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "30rem",
-                            height: "30rem",
-                            borderRadius: "50%",
-                            background:
-                                "radial-gradient(circle, rgba(249, 115, 22, 0.06) 0%, transparent 70%)",
-                            pointerEvents: "none",
-                        }}
-                    />
+                <section className="section-padded section-bordered-top relative overflow-hidden">
+                    <div aria-hidden="true" className="cta-glow" />
 
-                    <div
-                        className="section-container"
-                        style={{
-                            textAlign: "center",
-                            position: "relative",
-                        }}
-                    >
-                        <h2
-                            style={{
-                                fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
-                                marginBottom: "1rem",
-                            }}
-                        >
-                            Ready to Get Started?
-                        </h2>
-                        <p
-                            style={{
-                                color: "var(--text-secondary)",
-                                maxWidth: "30rem",
-                                margin: "0 auto 2rem",
-                                fontSize: "1.05rem",
-                            }}
-                        >
+                    <div className="section-container text-center relative">
+                        <h2 className="section-heading mb-4">Ready to Get Started?</h2>
+                        <p className="text-[color:var(--text-secondary)] max-w-md mx-auto mb-8 text-lg">
                             Complete your qualification and unlock access to the full Cash Offer
                             Conversion School platform.
                         </p>
@@ -563,32 +242,12 @@ export default function LandingPage() {
             </main>
 
             {/* ===== FOOTER ===== */}
-            <footer
-                style={{
-                    borderTop: "1px solid var(--border-subtle)",
-                    padding: "2rem 0",
-                }}
-            >
-                <div
-                    className="section-container"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                        gap: "1rem",
-                        color: "var(--text-muted)",
-                        fontSize: "0.825rem",
-                    }}
-                >
+            <footer className="site-footer">
+                <div className="section-container footer-inner">
                     <span>© 2026 Cash Offer Conversion School. All rights reserved.</span>
-                    <div style={{ display: "flex", gap: "1.5rem" }}>
-                        <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
-                            Privacy
-                        </a>
-                        <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
-                            Terms
-                        </a>
+                    <div className="flex gap-6">
+                        <a href="#" className="footer-link">Privacy</a>
+                        <a href="#" className="footer-link">Terms</a>
                     </div>
                 </div>
             </footer>

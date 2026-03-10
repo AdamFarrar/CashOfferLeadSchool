@@ -118,7 +118,6 @@ export default function QualificationPage() {
         setError("");
         setLoading(true);
 
-        // UX guard — redirect to login if session seems absent
         if (!session?.user?.id) {
             setError("Authentication error. Please sign in again.");
             setLoading(false);
@@ -151,73 +150,33 @@ export default function QualificationPage() {
         });
     }
 
-    const labelStyle = {
-        display: "block",
-        fontSize: "0.825rem",
-        fontWeight: 600,
-        color: "var(--text-secondary)",
-        marginBottom: "0.5rem",
-    } as const;
-
-    const selectStyle = {
-        width: "100%",
-        padding: "0.75rem 1rem",
-        fontSize: "0.95rem",
-        color: "var(--text-primary)",
-        background: "var(--bg-secondary)",
-        border: "1px solid var(--border-default)",
-        borderRadius: "var(--radius-md)",
-        outline: "none",
-        appearance: "none" as const,
-        cursor: "pointer",
-    };
-
     return (
-        <div style={{ maxWidth: "36rem" }}>
-            <div style={{ marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
-                    Operator Qualification
-                </h1>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+        <div className="qualify-container">
+            <div className="mb-8">
+                <h1 className="text-2xl mb-2">Operator Qualification</h1>
+                <p className="text-[color:var(--text-secondary)] text-[0.9rem]">
                     Tell us about your business so we can tailor your experience.
                 </p>
             </div>
 
             {/* Step indicator */}
-            <div
-                style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginBottom: "2rem",
-                }}
-            >
+            <div className="qualify-progress">
                 {[1, 2, 3].map((s) => (
                     <div
                         key={s}
-                        style={{
-                            flex: 1,
-                            height: "3px",
-                            borderRadius: "2px",
-                            background:
-                                s <= step
-                                    ? "var(--brand-orange)"
-                                    : "var(--border-default)",
-                            transition: "background 0.3s",
-                        }}
+                        className={`qualify-step ${s <= step ? "qualify-step-active" : ""}`}
                     />
                 ))}
             </div>
 
-            <div className="glass-card" style={{ padding: "2rem" }}>
+            <div className="glass-card p-8">
                 {/* Step 1: Business Info */}
                 {step === 1 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                        <h2 style={{ fontSize: "1.15rem", marginBottom: "0.25rem" }}>
-                            Business Information
-                        </h2>
+                    <div className="form-section">
+                        <h2 className="text-lg mb-1">Business Information</h2>
 
-                        <div>
-                            <label htmlFor="businessName" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="businessName" className="form-label text-[color:var(--text-secondary)]">
                                 Business Name *
                             </label>
                             <input
@@ -229,13 +188,13 @@ export default function QualificationPage() {
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="businessType" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="businessType" className="form-label text-[color:var(--text-secondary)]">
                                 Business Type *
                             </label>
                             <select
                                 id="businessType"
-                                style={selectStyle}
+                                className="select-field"
                                 value={businessType}
                                 onChange={(e) => setBusinessType(e.target.value)}
                             >
@@ -246,8 +205,8 @@ export default function QualificationPage() {
                             </select>
                         </div>
 
-                        <div>
-                            <label htmlFor="marketArea" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="marketArea" className="form-label text-[color:var(--text-secondary)]">
                                 Market Area / Region *
                             </label>
                             <input
@@ -263,18 +222,16 @@ export default function QualificationPage() {
 
                 {/* Step 2: Experience */}
                 {step === 2 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                        <h2 style={{ fontSize: "1.15rem", marginBottom: "0.25rem" }}>
-                            Experience & Budget
-                        </h2>
+                    <div className="form-section">
+                        <h2 className="text-lg mb-1">Experience & Budget</h2>
 
-                        <div>
-                            <label htmlFor="yearsExperience" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="yearsExperience" className="form-label text-[color:var(--text-secondary)]">
                                 Years of Experience *
                             </label>
                             <select
                                 id="yearsExperience"
-                                style={selectStyle}
+                                className="select-field"
                                 value={yearsExperience}
                                 onChange={(e) => setYearsExperience(e.target.value)}
                             >
@@ -285,15 +242,9 @@ export default function QualificationPage() {
                             </select>
                         </div>
 
-                        <div>
-                            <label style={labelStyle}>Current Lead Sources</label>
-                            <div
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(2, 1fr)",
-                                    gap: "0.5rem",
-                                }}
-                            >
+                        <div className="form-group">
+                            <label className="form-label text-[color:var(--text-secondary)]">Current Lead Sources</label>
+                            <div className="grid grid-cols-2 gap-2">
                                 {LEAD_SOURCES.map((source) => {
                                     const selected = currentLeadSources.includes(source);
                                     return (
@@ -307,24 +258,10 @@ export default function QualificationPage() {
                                                         : [...prev, source]
                                                 );
                                             }}
-                                            style={{
-                                                padding: "0.5rem 0.75rem",
-                                                fontSize: "0.8rem",
-                                                borderRadius: "var(--radius-sm)",
-                                                border: `1px solid ${selected
-                                                    ? "var(--brand-orange)"
-                                                    : "var(--border-default)"
-                                                    }`,
-                                                background: selected
-                                                    ? "var(--brand-orange-glow)"
-                                                    : "transparent",
-                                                color: selected
-                                                    ? "var(--brand-orange-light)"
-                                                    : "var(--text-secondary)",
-                                                cursor: "pointer",
-                                                textAlign: "left",
-                                                transition: "all 0.15s",
-                                            }}
+                                            className={`py-2 px-3 text-[0.8rem] rounded-[var(--radius-sm)] border cursor-pointer text-left transition-all ${selected
+                                                    ? "border-[var(--brand-orange)] bg-[var(--brand-orange-glow)] text-[color:var(--brand-orange-light)]"
+                                                    : "border-[var(--border-default)] bg-transparent text-[color:var(--text-secondary)]"
+                                                }`}
                                         >
                                             {source}
                                         </button>
@@ -333,13 +270,13 @@ export default function QualificationPage() {
                             </div>
                         </div>
 
-                        <div>
-                            <label htmlFor="monthlyBudget" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="monthlyBudget" className="form-label text-[color:var(--text-secondary)]">
                                 Monthly Marketing Budget *
                             </label>
                             <select
                                 id="monthlyBudget"
-                                style={selectStyle}
+                                className="select-field"
                                 value={monthlyBudget}
                                 onChange={(e) => setMonthlyBudget(e.target.value)}
                             >
@@ -354,58 +291,29 @@ export default function QualificationPage() {
 
                 {/* Step 3: Goals */}
                 {step === 3 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                        <h2 style={{ fontSize: "1.15rem", marginBottom: "0.25rem" }}>
-                            Your Goals
-                        </h2>
+                    <div className="form-section">
+                        <h2 className="text-lg mb-1">Your Goals</h2>
 
-                        <div>
-                            <label htmlFor="goals" style={labelStyle}>
+                        <div className="form-group">
+                            <label htmlFor="goals" className="form-label text-[color:var(--text-secondary)]">
                                 What are your goals with cash offer leads?
                             </label>
                             <textarea
                                 id="goals"
-                                className="input-field"
+                                className="textarea-field"
                                 placeholder="Tell us what you hope to achieve..."
                                 value={goals}
                                 onChange={(e) => setGoals(e.target.value)}
                                 rows={5}
-                                style={{
-                                    resize: "vertical",
-                                    minHeight: "8rem",
-                                }}
                             />
                         </div>
 
                         {/* Summary */}
-                        <div
-                            style={{
-                                padding: "1rem",
-                                background: "var(--bg-secondary)",
-                                borderRadius: "var(--radius-md)",
-                                border: "1px solid var(--border-subtle)",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize: "0.8rem",
-                                    fontWeight: 600,
-                                    color: "var(--text-muted)",
-                                    marginBottom: "0.75rem",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.04em",
-                                }}
-                            >
+                        <div className="p-4 bg-[var(--bg-secondary)] rounded-[var(--radius-md)] border border-[var(--border-subtle)]">
+                            <div className="text-[0.8rem] font-semibold text-[color:var(--text-muted)] mb-3 uppercase tracking-wide">
                                 Summary
                             </div>
-                            <div
-                                style={{
-                                    display: "grid",
-                                    gap: "0.375rem",
-                                    fontSize: "0.85rem",
-                                    color: "var(--text-secondary)",
-                                }}
-                            >
+                            <div className="grid gap-1.5 text-[0.85rem] text-[color:var(--text-secondary)]">
                                 <div><strong>Business:</strong> {businessName} ({businessType})</div>
                                 <div><strong>Market:</strong> {marketArea}</div>
                                 <div><strong>Experience:</strong> {yearsExperience}</div>
@@ -420,32 +328,15 @@ export default function QualificationPage() {
 
                 {/* Error */}
                 {error && (
-                    <div
-                        style={{
-                            marginTop: "1rem",
-                            padding: "0.75rem 1rem",
-                            borderRadius: "var(--radius-md)",
-                            background: "rgba(239, 68, 68, 0.1)",
-                            border: "1px solid rgba(239, 68, 68, 0.2)",
-                            color: "#ef4444",
-                            fontSize: "0.875rem",
-                        }}
-                    >
+                    <div className="mt-4 py-3 px-4 rounded-[var(--radius-md)] bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-[#ef4444] text-sm">
                         {error}
                     </div>
                 )}
 
                 {/* Navigation */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: "1.5rem",
-                        gap: "0.75rem",
-                    }}
-                >
+                <div className="flex justify-between mt-6 gap-3">
                     {step > 1 ? (
-                        <button onClick={prevStep} className="btn-ghost" style={{ flex: 1 }}>
+                        <button onClick={prevStep} className="btn-ghost flex-1">
                             ← Back
                         </button>
                     ) : (
@@ -453,18 +344,14 @@ export default function QualificationPage() {
                     )}
 
                     {step < 3 ? (
-                        <button onClick={nextStep} className="btn-primary" style={{ flex: 1 }}>
+                        <button onClick={nextStep} className="btn-primary flex-1">
                             Continue →
                         </button>
                     ) : (
                         <button
                             onClick={handleSubmit}
-                            className="btn-primary"
+                            className={`btn-primary flex-1 ${loading ? "opacity-70" : ""}`}
                             disabled={loading}
-                            style={{
-                                flex: 1,
-                                opacity: loading ? 0.7 : 1,
-                            }}
                         >
                             {loading ? "Submitting..." : "Submit Qualification"}
                         </button>
@@ -473,14 +360,7 @@ export default function QualificationPage() {
             </div>
 
             {/* Step label */}
-            <p
-                style={{
-                    textAlign: "center",
-                    marginTop: "1rem",
-                    fontSize: "0.75rem",
-                    color: "var(--text-muted)",
-                }}
-            >
+            <p className="text-center mt-4 text-xs text-[color:var(--text-muted)]">
                 Step {step} of 3
             </p>
         </div>

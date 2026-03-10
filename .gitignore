@@ -28,3 +28,6 @@ Thumbs.db
 # Debug
 npm-debug.log*
 pnpm-debug.log*
+
+# Excluded: separate project accidentally in repo
+prpm-extract/
