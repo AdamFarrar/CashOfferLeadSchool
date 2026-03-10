@@ -83,7 +83,7 @@ export default function LandingPage() {
         <>
             {/* ── NAV (sticky) ── */}
             <nav className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[rgba(5,5,5,0.7)] backdrop-blur-xl">
-                <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
                         <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-sm">🏠</span>
                         COCS
@@ -97,13 +97,13 @@ export default function LandingPage() {
 
             <main>
                 {/* ═══ 1. HERO ═══ */}
-                <section className="relative overflow-hidden py-32 md:py-40">
+                <section className="relative overflow-hidden py-[120px]">
                     {/* Radial glow */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
                         <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.1)_0%,transparent_70%)]" />
                     </div>
 
-                    <div className="max-w-6xl mx-auto px-6 text-center relative space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-8">
                         <Badge className="animate-fade-in-up">● Season 1 — Now Enrolling</Badge>
 
                         <h1 className="animate-fade-in-up animate-delay-100 text-5xl md:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-[1.1]">
@@ -136,7 +136,7 @@ export default function LandingPage() {
 
                 {/* ═══ 2. CATEGORY SHIFT ═══ */}
                 <section className="py-24 bg-[var(--bg-secondary)]">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The Problem"
                             heading="This Isn't Another Lead Gen Course"
@@ -163,7 +163,7 @@ export default function LandingPage() {
 
                 {/* ═══ 3. WHY TEAMS LEAK LEADS ═══ */}
                 <section className="py-24">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The Leak"
                             heading="Why Your Team Leaks Leads"
@@ -189,7 +189,7 @@ export default function LandingPage() {
 
                 {/* ═══ 4. 12-WEEK SYSTEM ═══ */}
                 <section id="system" className="py-24 bg-[var(--bg-secondary)]">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="The System"
                             heading="12 Weeks. 4 Modules. Installed."
@@ -219,7 +219,7 @@ export default function LandingPage() {
 
                 {/* ═══ 5. INSTALLATION TIMELINE ═══ */}
                 <section className="py-24">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="Inside the Program"
                             heading="What You'll Install Each Week"
@@ -270,7 +270,7 @@ export default function LandingPage() {
 
                 {/* ═══ 6. GUEST OPERATORS ═══ */}
                 <section className="py-24 bg-[var(--bg-secondary)]">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="Real Operators"
                             heading="Every Guest Has a Live Operation"
@@ -296,7 +296,7 @@ export default function LandingPage() {
 
                 {/* ═══ 7. WHAT YOU RECEIVE ═══ */}
                 <section className="py-24">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="What's Included"
                             heading="What You Receive"
@@ -323,7 +323,7 @@ export default function LandingPage() {
                         <div className="w-[30rem] h-[30rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.08)_0%,transparent_70%)]" />
                     </div>
 
-                    <div className="max-w-6xl mx-auto px-6 text-center relative space-y-6">
+                    <div className="max-w-[1100px] mx-auto px-6 text-center relative space-y-6">
                         <Badge>Limited Seats</Badge>
                         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Ready to Install a Real Conversion System?</h2>
                         <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto text-base leading-relaxed">
@@ -340,7 +340,7 @@ export default function LandingPage() {
 
                 {/* ═══ 9. FAQ ═══ */}
                 <section className="py-24">
-                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                    <div className="max-w-[1100px] mx-auto px-6 space-y-8">
                         <SectionHeader
                             badge="FAQ"
                             heading="Common Questions"
@@ -355,7 +355,7 @@ export default function LandingPage() {
 
             {/* ── FOOTER ── */}
             <footer className="border-t border-[var(--border-subtle)] py-8">
-                <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-[color:var(--text-muted)]">
+                <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-[color:var(--text-muted)]">
                     <span>&copy; 2026 Cash Offer Conversion School. All rights reserved.</span>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Privacy</a>
