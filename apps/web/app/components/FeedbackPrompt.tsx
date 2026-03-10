@@ -91,23 +91,13 @@ export function FeedbackPrompt({
 
     if (submitted) {
         return (
-            <div
-                className="glass-card animate-fade-in-up"
-                style={{
-                    padding: "1.25rem 1.5rem",
-                    marginTop: "1.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    borderLeft: "3px solid rgba(34, 197, 94, 0.4)",
-                }}
-            >
-                <span style={{ fontSize: "1.25rem" }}>✓</span>
+            <div className="glass-card animate-fade-in-up px-6 py-5 mt-6 flex items-center gap-3 border-l-[3px] border-green-500/40">
+                <span className="text-xl">✓</span>
                 <div>
-                    <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                    <div className="font-semibold text-[0.9rem]">
                         Thank you for your feedback!
                     </div>
-                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+                    <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">
                         Your input helps us build a better platform.
                     </p>
                 </div>
@@ -116,79 +106,42 @@ export function FeedbackPrompt({
     }
 
     return (
-        <div
-            className="glass-card animate-fade-in-up animate-delay-400"
-            style={{
-                padding: "1.5rem",
-                marginTop: "1.5rem",
-                borderLeft: "3px solid rgba(249, 115, 22, 0.3)",
-            }}
-        >
+        <div className="glass-card animate-fade-in-up animate-delay-400 p-6 mt-6 border-l-[3px] border-orange-500/30">
             {/* Header */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    marginBottom: expanded ? "1.25rem" : 0,
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+            <div className={`flex justify-between items-start ${expanded ? "mb-5" : ""}`}>
+                <div className="flex items-center gap-2.5">
                     <span
-                        style={{
-                            width: "2rem",
-                            height: "2rem",
-                            borderRadius: "var(--radius-md)",
-                            background: "var(--brand-orange-glow)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "0.9rem",
-                        }}
+                        className="w-8 h-8 rounded-[var(--radius-md)] flex items-center justify-center text-[0.9rem]"
+                        style={{ background: "var(--brand-orange-glow)" }}
                     >
                         💬
                     </span>
                     <div>
-                        <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                        <div className="font-semibold text-[0.9rem]">
                             How was your experience?
                         </div>
-                        <p style={{ fontSize: "0.775rem", color: "var(--text-secondary)" }}>
+                        <p className="text-[0.775rem] text-[var(--text-secondary)]">
                             Quick feedback helps us improve.
                         </p>
                     </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "0.25rem" }}>
+                <div className="flex gap-1">
                     {!expanded && (
                         <button
                             onClick={() => {
                                 track(FeedbackOpened, { context, stakeholder_group: stakeholderGroup });
                                 setExpanded(true);
                             }}
-                            style={{
-                                padding: "0.35rem 0.75rem",
-                                fontSize: "0.75rem",
-                                fontWeight: 600,
-                                background: "var(--brand-orange)",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "var(--radius-sm)",
-                                cursor: "pointer",
-                            }}
+                            className="px-3 py-1.5 text-xs font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer"
+                            style={{ background: "var(--brand-orange)" }}
                         >
                             Share Feedback
                         </button>
                     )}
                     <button
                         onClick={handleDismiss}
-                        style={{
-                            padding: "0.35rem 0.5rem",
-                            fontSize: "0.75rem",
-                            background: "transparent",
-                            color: "var(--text-muted)",
-                            border: "none",
-                            cursor: "pointer",
-                        }}
+                        className="px-2 py-1.5 text-xs bg-transparent text-[var(--text-muted)] border-none cursor-pointer"
                         title="Dismiss"
                     >
                         ✕
@@ -198,35 +151,29 @@ export function FeedbackPrompt({
 
             {/* Expanded form */}
             {expanded && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div className="flex flex-col gap-4">
                     {/* Rating */}
                     <div>
-                        <label style={{ fontSize: "0.775rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
+                        <label className="text-[0.775rem] text-[var(--text-secondary)] block mb-2">
                             Rating (optional)
                         </label>
-                        <div style={{ display: "flex", gap: "0.375rem", alignItems: "center" }}>
+                        <div className="flex gap-1.5 items-center">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <button
                                     key={n}
                                     onClick={() => setRating(n)}
+                                    className="w-8 h-8 rounded-[var(--radius-sm)] text-[0.8rem] font-semibold cursor-pointer transition-all duration-150"
                                     style={{
-                                        width: "2rem",
-                                        height: "2rem",
-                                        borderRadius: "var(--radius-sm)",
                                         border: `1px solid ${rating >= n ? "var(--brand-orange)" : "var(--border-subtle)"}`,
                                         background: rating >= n ? "var(--brand-orange-glow)" : "transparent",
                                         color: rating >= n ? "var(--brand-orange)" : "var(--text-muted)",
-                                        fontSize: "0.8rem",
-                                        fontWeight: 600,
-                                        cursor: "pointer",
-                                        transition: "all 0.15s",
                                     }}
                                 >
                                     {n}
                                 </button>
                             ))}
                             {rating > 0 && (
-                                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginLeft: "0.5rem" }}>
+                                <span className="text-xs text-[var(--text-secondary)] ml-2">
                                     {RATING_LABELS[rating]}
                                 </span>
                             )}
@@ -235,21 +182,13 @@ export function FeedbackPrompt({
 
                     {/* Type selector */}
                     <div>
-                        <label style={{ fontSize: "0.775rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
+                        <label className="text-[0.775rem] text-[var(--text-secondary)] block mb-2">
                             Type
                         </label>
                         <select
                             value={feedbackType}
                             onChange={(e) => setFeedbackType(e.target.value)}
-                            style={{
-                                padding: "0.5rem",
-                                fontSize: "0.825rem",
-                                background: "var(--bg-primary)",
-                                color: "var(--text-primary)",
-                                border: "1px solid var(--border-subtle)",
-                                borderRadius: "var(--radius-sm)",
-                                width: "100%",
-                            }}
+                            className="p-2 text-[0.825rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] w-full"
                         >
                             <option value="general">General Feedback</option>
                             <option value="feature_request">Feature Request</option>
@@ -261,7 +200,7 @@ export function FeedbackPrompt({
 
                     {/* Body */}
                     <div>
-                        <label style={{ fontSize: "0.775rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
+                        <label className="text-[0.775rem] text-[var(--text-secondary)] block mb-2">
                             Your feedback
                         </label>
                         <textarea
@@ -270,26 +209,16 @@ export function FeedbackPrompt({
                             placeholder="Tell us what you think..."
                             rows={3}
                             maxLength={2000}
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                fontSize: "0.85rem",
-                                background: "var(--bg-primary)",
-                                color: "var(--text-primary)",
-                                border: "1px solid var(--border-subtle)",
-                                borderRadius: "var(--radius-sm)",
-                                resize: "vertical",
-                                lineHeight: 1.5,
-                            }}
+                            className="w-full p-3 text-[0.85rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] resize-y leading-relaxed"
                         />
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textAlign: "right", marginTop: "0.25rem" }}>
+                        <div className="text-[0.65rem] text-[var(--text-muted)] text-right mt-1">
                             {body.length}/2000
                         </div>
                     </div>
 
                     {/* Error */}
                     {error && (
-                        <div style={{ fontSize: "0.8rem", color: "var(--error-text)", padding: "0.5rem", background: "rgba(239, 68, 68, 0.1)", borderRadius: "var(--radius-sm)" }}>
+                        <div className="text-[0.8rem] text-[var(--error-text)] p-2 bg-red-500/10 rounded-[var(--radius-sm)]">
                             {error}
                         </div>
                     )}
@@ -298,13 +227,7 @@ export function FeedbackPrompt({
                     <button
                         onClick={handleSubmit}
                         disabled={submitting}
-                        className="btn-primary"
-                        style={{
-                            fontSize: "0.825rem",
-                            padding: "0.625rem 1.25rem",
-                            alignSelf: "flex-end",
-                            opacity: submitting ? 0.6 : 1,
-                        }}
+                        className={`btn-primary text-[0.825rem] px-5 py-2.5 self-end ${submitting ? "opacity-60" : ""}`}
                     >
                         {submitting ? "Submitting..." : "Submit Feedback"}
                     </button>

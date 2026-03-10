@@ -68,10 +68,7 @@ export function FeedbackWidget({
     }, [body, feedbackType, stakeholderGroup]);
 
     return (
-        <div
-            className="glass-card"
-            style={{ padding: expanded ? "1.5rem" : "1rem 1.5rem" }}
-        >
+        <div className={`glass-card ${expanded ? "p-6" : "px-6 py-4"}`}>
             {/* Collapsed header */}
             <div
                 onClick={() => {
@@ -83,30 +80,20 @@ export function FeedbackWidget({
                         }
                     }
                 }}
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                    userSelect: "none",
-                }}
+                className="flex items-center justify-between cursor-pointer select-none"
             >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                    <span style={{ fontSize: "1rem" }}>
+                <div className="flex items-center gap-2.5">
+                    <span className="text-base">
                         {submitted ? "✓" : "💬"}
                     </span>
-                    <span style={{ fontWeight: 600, fontSize: "0.875rem" }}>
+                    <span className="font-semibold text-sm">
                         {submitted ? "Feedback sent!" : "Share Feedback"}
                     </span>
                 </div>
                 {!submitted && (
                     <span
-                        style={{
-                            fontSize: "0.75rem",
-                            color: "var(--text-muted)",
-                            transition: "transform 0.2s",
-                            transform: expanded ? "rotate(180deg)" : "rotate(0)",
-                        }}
+                        className="text-xs text-[var(--text-muted)] transition-transform duration-200"
+                        style={{ transform: expanded ? "rotate(180deg)" : "rotate(0)" }}
                     >
                         ▼
                     </span>
@@ -115,19 +102,12 @@ export function FeedbackWidget({
 
             {/* Expanded form */}
             {expanded && !submitted && (
-                <div style={{ marginTop: "1.25rem", display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+                <div className="mt-5 flex flex-col gap-3.5">
                     {/* Type */}
                     <select
                         value={feedbackType}
                         onChange={(e) => setFeedbackType(e.target.value)}
-                        style={{
-                            padding: "0.5rem",
-                            fontSize: "0.8rem",
-                            background: "var(--bg-primary)",
-                            color: "var(--text-primary)",
-                            border: "1px solid var(--border-subtle)",
-                            borderRadius: "var(--radius-sm)",
-                        }}
+                        className="p-2 text-[0.8rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)]"
                     >
                         <option value="general">General</option>
                         <option value="feature_request">Feature Request</option>
@@ -143,22 +123,12 @@ export function FeedbackWidget({
                         placeholder="What's on your mind?"
                         rows={3}
                         maxLength={2000}
-                        style={{
-                            width: "100%",
-                            padding: "0.625rem",
-                            fontSize: "0.825rem",
-                            background: "var(--bg-primary)",
-                            color: "var(--text-primary)",
-                            border: "1px solid var(--border-subtle)",
-                            borderRadius: "var(--radius-sm)",
-                            resize: "vertical",
-                            lineHeight: 1.5,
-                        }}
+                        className="w-full p-2.5 text-[0.825rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] resize-y leading-relaxed"
                     />
 
                     {/* Error */}
                     {error && (
-                        <div style={{ fontSize: "0.75rem", color: "var(--error-text)" }}>
+                        <div className="text-xs text-[var(--error-text)]">
                             {error}
                         </div>
                     )}
@@ -167,13 +137,7 @@ export function FeedbackWidget({
                     <button
                         onClick={handleSubmit}
                         disabled={submitting}
-                        className="btn-primary"
-                        style={{
-                            fontSize: "0.8rem",
-                            padding: "0.5rem 1rem",
-                            alignSelf: "flex-end",
-                            opacity: submitting ? 0.6 : 1,
-                        }}
+                        className={`btn-primary text-[0.8rem] px-4 py-2 self-end ${submitting ? "opacity-60" : ""}`}
                     >
                         {submitting ? "Sending..." : "Send"}
                     </button>

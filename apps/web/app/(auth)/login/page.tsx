@@ -50,26 +50,20 @@ function LoginForm() {
 
     return (
         <>
-            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
+            <div className="text-center mb-8">
+                <h1 className="text-2xl mb-2">
                     Welcome Back
                 </h1>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                <p className="text-[0.9rem] text-[var(--text-secondary)]">
                     Sign in to continue your journey.
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div>
                     <label
                         htmlFor="email"
-                        style={{
-                            display: "block",
-                            fontSize: "0.825rem",
-                            fontWeight: 600,
-                            color: "var(--text-secondary)",
-                            marginBottom: "0.5rem",
-                        }}
+                        className="block text-[0.825rem] font-semibold text-[var(--text-secondary)] mb-2"
                     >
                         Email
                     </label>
@@ -86,31 +80,16 @@ function LoginForm() {
                 </div>
 
                 <div>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "0.5rem",
-                        }}
-                    >
+                    <div className="flex justify-between items-center mb-2">
                         <label
                             htmlFor="password"
-                            style={{
-                                fontSize: "0.825rem",
-                                fontWeight: 600,
-                                color: "var(--text-secondary)",
-                            }}
+                            className="text-[0.825rem] font-semibold text-[var(--text-secondary)]"
                         >
                             Password
                         </label>
                         <Link
                             href="/forgot-password"
-                            style={{
-                                fontSize: "0.75rem",
-                                color: "var(--brand-orange)",
-                                textDecoration: "none",
-                            }}
+                            className="text-xs text-[var(--brand-orange)] no-underline"
                         >
                             Forgot?
                         </Link>
@@ -128,50 +107,25 @@ function LoginForm() {
                 </div>
 
                 {error && (
-                    <div
-                        style={{
-                            padding: "0.75rem 1rem",
-                            borderRadius: "var(--radius-md)",
-                            background: "rgba(239, 68, 68, 0.1)",
-                            border: "1px solid rgba(239, 68, 68, 0.2)",
-                            color: "#ef4444",
-                            fontSize: "0.875rem",
-                        }}
-                    >
+                    <div className="px-4 py-3 rounded-[var(--radius-md)] bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
                         {error}
                     </div>
                 )}
 
                 <button
                     type="submit"
-                    className="btn-primary"
+                    className={`btn-primary w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                     disabled={loading}
-                    style={{
-                        width: "100%",
-                        opacity: loading ? 0.7 : 1,
-                        cursor: loading ? "not-allowed" : "pointer",
-                    }}
                 >
                     {loading ? "Signing In..." : "Sign In"}
                 </button>
             </form>
 
-            <p
-                style={{
-                    textAlign: "center",
-                    marginTop: "1.5rem",
-                    fontSize: "0.85rem",
-                    color: "var(--text-secondary)",
-                }}
-            >
+            <p className="text-center mt-6 text-[0.85rem] text-[var(--text-secondary)]">
                 Don&apos;t have an account?{" "}
                 <Link
                     href="/register"
-                    style={{
-                        color: "var(--brand-orange)",
-                        textDecoration: "none",
-                        fontWeight: 600,
-                    }}
+                    className="text-[var(--brand-orange)] no-underline font-semibold"
                 >
                     Sign up
                 </Link>
@@ -183,8 +137,8 @@ function LoginForm() {
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div style={{ textAlign: "center", padding: "2rem" }}>
-                <div style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Loading...</div>
+            <div className="text-center p-8">
+                <div className="text-[var(--text-muted)] text-[0.9rem]">Loading...</div>
             </div>
         }>
             <LoginForm />

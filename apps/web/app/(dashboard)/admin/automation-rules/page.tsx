@@ -31,6 +31,11 @@ type Rule = {
 const EVENT_OPTIONS = Object.values(DOMAIN_EVENTS) as string[];
 const CHANNEL_OPTIONS = ["email", "webhook", "notification"];
 
+const adminInputCls = "px-3 py-2 text-[0.825rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] w-full";
+const adminLabelCls = "text-[0.7rem] font-semibold text-[var(--text-muted)] mb-1 block";
+const adminBtnPrimaryCls = "px-4 py-2 text-[0.825rem] font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer";
+const adminBtnGhostCls = "px-4 py-2 text-[0.825rem] bg-transparent text-[var(--text-muted)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] cursor-pointer";
+
 export default function AutomationRulesPage() {
     const { data: session } = useSession();
     const { data: activeOrg } = useActiveOrganization();
@@ -101,150 +106,131 @@ export default function AutomationRulesPage() {
     };
 
     if (!["owner", "admin"].includes(userRole)) {
-        return <div style={{ textAlign: "center", padding: "3rem" }}><h1>Access Denied</h1></div>;
+        return <div className="text-center p-12"><h1>Access Denied</h1></div>;
     }
-
-    const inputStyle = {
-        padding: "0.5rem 0.75rem", fontSize: "0.825rem",
-        background: "var(--bg-primary)", color: "var(--text-primary)",
-        border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-        width: "100%",
-    };
 
     return (
         <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>Automation Rules</h1>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+                    <h1 className="text-2xl mb-1">Automation Rules</h1>
+                    <p className="text-[var(--text-secondary)] text-[0.85rem]">
                         Configure event-driven actions: email, webhook, notifications.
                     </p>
                 </div>
                 <button
                     onClick={() => setShowCreate(!showCreate)}
-                    style={{
-                        padding: "0.5rem 1rem", fontSize: "0.825rem", fontWeight: 600,
-                        background: "var(--brand-orange)", color: "#fff",
-                        border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                    }}
+                    className={adminBtnPrimaryCls}
+                    style={{ background: "var(--brand-orange)" }}
                 >
                     + New Rule
                 </button>
             </div>
 
             {showCreate && (
-                <div className="glass-card" style={{ padding: "1.25rem", marginBottom: "1.5rem" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                <div className="glass-card p-5 mb-6">
+                    <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Event</label>
-                            <select value={form.eventKey} onChange={(e) => setForm({ ...form, eventKey: e.target.value })} style={inputStyle}>
+                            <label className={adminLabelCls}>Event</label>
+                            <select value={form.eventKey} onChange={(e) => setForm({ ...form, eventKey: e.target.value })} className={adminInputCls}>
                                 {EVENT_OPTIONS.map((e: string) => <option key={e} value={e}>{e}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Name</label>
-                            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Rule name" style={inputStyle} />
+                            <label className={adminLabelCls}>Name</label>
+                            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Rule name" className={adminInputCls} />
                         </div>
                         <div>
-                            <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Channel</label>
-                            <select value={form.actionChannel} onChange={(e) => setForm({ ...form, actionChannel: e.target.value })} style={inputStyle}>
+                            <label className={adminLabelCls}>Channel</label>
+                            <select value={form.actionChannel} onChange={(e) => setForm({ ...form, actionChannel: e.target.value })} className={adminInputCls}>
                                 {CHANNEL_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Priority</label>
-                            <input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: parseInt(e.target.value) || 100 })} style={inputStyle} />
+                            <label className={adminLabelCls}>Priority</label>
+                            <input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: parseInt(e.target.value) || 100 })} className={adminInputCls} />
                         </div>
                         {form.actionChannel === "email" && (
-                            <div style={{ gridColumn: "1 / -1" }}>
-                                <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Template Key</label>
-                                <input value={form.templateKey} onChange={(e) => setForm({ ...form, templateKey: e.target.value })} placeholder="e.g. verification" style={inputStyle} />
+                            <div className="col-span-2">
+                                <label className={adminLabelCls}>Template Key</label>
+                                <input value={form.templateKey} onChange={(e) => setForm({ ...form, templateKey: e.target.value })} placeholder="e.g. verification" className={adminInputCls} />
                             </div>
                         )}
                         {form.actionChannel === "webhook" && (
-                            <div style={{ gridColumn: "1 / -1" }}>
-                                <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.25rem", display: "block" }}>Webhook URL</label>
-                                <input value={form.webhookUrl} onChange={(e) => setForm({ ...form, webhookUrl: e.target.value })} placeholder="https://..." style={inputStyle} />
+                            <div className="col-span-2">
+                                <label className={adminLabelCls}>Webhook URL</label>
+                                <input value={form.webhookUrl} onChange={(e) => setForm({ ...form, webhookUrl: e.target.value })} placeholder="https://..." className={adminInputCls} />
                             </div>
                         )}
                     </div>
-                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-                        <button onClick={handleCreate} disabled={creating} style={{
-                            padding: "0.5rem 1rem", fontSize: "0.825rem", fontWeight: 600,
-                            background: "var(--brand-orange)", color: "#fff",
-                            border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                            opacity: creating ? 0.5 : 1,
-                        }}>
+                    <div className="flex gap-2 mt-4">
+                        <button
+                            onClick={handleCreate}
+                            disabled={creating}
+                            className={`${adminBtnPrimaryCls} ${creating ? "opacity-50" : ""}`}
+                            style={{ background: "var(--brand-orange)" }}
+                        >
                             {creating ? "Creating..." : "Create Rule"}
                         </button>
-                        <button onClick={() => setShowCreate(false)} style={{
-                            padding: "0.5rem 1rem", fontSize: "0.825rem",
-                            background: "transparent", color: "var(--text-muted)",
-                            border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                        }}>Cancel</button>
+                        <button onClick={() => setShowCreate(false)} className={adminBtnGhostCls}>Cancel</button>
                     </div>
                 </div>
             )}
 
             {loading ? (
-                <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>Loading rules...</div>
+                <div className="text-center p-12 text-[var(--text-muted)]">Loading rules...</div>
             ) : rules.length === 0 ? (
-                <div className="glass-card" style={{ padding: "2rem", textAlign: "center", color: "var(--text-muted)" }}>
+                <div className="glass-card p-8 text-center text-[var(--text-muted)]">
                     No automation rules configured. Seed rules will be created with the migration.
                 </div>
             ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="flex flex-col gap-3">
                     {rules.map((r) => (
-                        <div key={r.id} className="glass-card" style={{ padding: "1.25rem", opacity: r.enabled ? 1 : 0.6 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div key={r.id} className={`glass-card p-5 ${r.enabled ? "" : "opacity-60"}`}>
+                            <div className="flex justify-between items-start">
                                 <div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                                        <h3 style={{ fontSize: "0.95rem", fontWeight: 600 }}>{r.name}</h3>
-                                        <span style={{
-                                            fontSize: "0.6rem", fontWeight: 700, textTransform: "uppercase",
-                                            padding: "0.1rem 0.4rem", borderRadius: "var(--radius-full)",
-                                            background: r.enabled ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                                            color: r.enabled ? "rgba(34, 197, 94, 0.9)" : "rgba(239, 68, 68, 0.9)",
-                                        }}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="text-[0.95rem] font-semibold">{r.name}</h3>
+                                        {/* Status badge — dynamic color based on enabled state */}
+                                        <span
+                                            className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded-full"
+                                            style={{
+                                                background: r.enabled ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                                                color: r.enabled ? "rgba(34, 197, 94, 0.9)" : "rgba(239, 68, 68, 0.9)",
+                                            }}
+                                        >
                                             {r.enabled ? "active" : "disabled"}
                                         </span>
-                                        <span style={{
-                                            fontSize: "0.6rem", padding: "0.1rem 0.4rem",
-                                            borderRadius: "var(--radius-full)", background: "var(--border-subtle)", color: "var(--text-muted)",
-                                        }}>
+                                        <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[var(--border-subtle)] text-[var(--text-muted)]">
                                             {r.actionChannel}
                                         </span>
                                     </div>
-                                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                                    <div className="text-[0.8rem] text-[var(--text-secondary)]">
                                         <code>{r.eventKey}</code> → <code>{r.actionType}</code>
                                         {(r.actionConfig as any)?.templateKey && (
                                             <span> · template: <code>{(r.actionConfig as any).templateKey}</code></span>
                                         )}
                                     </div>
-                                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                                    <div className="text-[0.7rem] text-[var(--text-muted)] mt-1">
                                         Priority: {r.priority} · {r.organizationId ? "org-specific" : "system"}
                                     </div>
                                 </div>
-                                <div style={{ display: "flex", gap: "0.375rem" }}>
+                                <div className="flex gap-1.5">
+                                    {/* Toggle button — dynamic colors based on current enabled state */}
                                     <button
                                         onClick={() => handleToggle(r.id, r.enabled)}
+                                        className="px-2.5 py-1.5 text-[0.72rem] font-semibold rounded-[var(--radius-sm)] cursor-pointer"
                                         style={{
-                                            padding: "0.35rem 0.6rem", fontSize: "0.72rem", fontWeight: 600,
                                             background: r.enabled ? "rgba(239, 68, 68, 0.1)" : "rgba(34, 197, 94, 0.1)",
                                             color: r.enabled ? "rgba(239, 68, 68, 0.9)" : "rgba(34, 197, 94, 0.9)",
                                             border: `1px solid ${r.enabled ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.2)"}`,
-                                            borderRadius: "var(--radius-sm)", cursor: "pointer",
                                         }}
                                     >
                                         {r.enabled ? "Disable" : "Enable"}
                                     </button>
                                     <button
                                         onClick={() => handleDelete(r.id)}
-                                        style={{
-                                            padding: "0.35rem 0.6rem", fontSize: "0.72rem",
-                                            background: "transparent", border: "1px solid var(--border-subtle)",
-                                            borderRadius: "var(--radius-sm)", color: "var(--text-muted)", cursor: "pointer",
-                                        }}
+                                        className="px-2.5 py-1.5 text-[0.72rem] bg-transparent border border-[var(--border-subtle)] rounded-[var(--radius-sm)] text-[var(--text-muted)] cursor-pointer"
                                     >
                                         🗑
                                     </button>

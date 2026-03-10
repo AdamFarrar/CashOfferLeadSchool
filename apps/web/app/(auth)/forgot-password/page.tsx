@@ -2,43 +2,23 @@ import Link from "next/link";
 
 export default function ForgotPasswordPage() {
     return (
-        <div style={{ textAlign: "center" }}>
-            <div
-                style={{
-                    width: "4rem",
-                    height: "4rem",
-                    borderRadius: "50%",
-                    background: "var(--brand-orange-glow)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.75rem",
-                    margin: "0 auto 1.5rem",
-                }}
-            >
+        <div className="text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-[1.75rem] mx-auto mb-6" style={{ background: "var(--brand-orange-glow)" }}>
                 🔑
             </div>
 
-            <h1 style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>
+            <h1 className="text-2xl mb-3">
                 Reset Password
             </h1>
 
-            <p
-                style={{
-                    color: "var(--text-secondary)",
-                    fontSize: "0.9rem",
-                    lineHeight: 1.6,
-                    marginBottom: "2rem",
-                }}
-            >
+            <p className="text-[0.9rem] text-[var(--text-secondary)] leading-relaxed mb-8">
                 Password reset will be available in a future update. Please contact
                 support if you need help accessing your account.
             </p>
 
             <Link
                 href="/login"
-                className="btn-ghost"
-                style={{ width: "100%", display: "flex" }}
+                className="btn-ghost w-full flex"
             >
                 ← Back to Login
             </Link>

@@ -23,6 +23,8 @@ type Template = {
     updatedAt: Date;
 };
 
+const adminInputCls = "px-3 py-2 text-[0.825rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)]";
+
 export default function EmailTemplatesPage() {
     const { data: session } = useSession();
     const { data: activeOrg } = useActiveOrganization();
@@ -67,93 +69,64 @@ export default function EmailTemplatesPage() {
 
     if (!["owner", "admin"].includes(userRole)) {
         return (
-            <div style={{ textAlign: "center", padding: "3rem" }}>
-                <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Access Denied</h1>
-                <p style={{ color: "var(--text-secondary)" }}>Admin access required.</p>
+            <div className="text-center p-12">
+                <h1 className="text-2xl mb-2">Access Denied</h1>
+                <p className="text-[var(--text-secondary)]">Admin access required.</p>
             </div>
         );
     }
 
     return (
         <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>Email Templates</h1>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+                    <h1 className="text-2xl mb-1">Email Templates</h1>
+                    <p className="text-[var(--text-secondary)] text-[0.85rem]">
                         Manage email templates with drag-and-drop editing.
                     </p>
                 </div>
                 <button
                     onClick={() => setShowCreate(!showCreate)}
-                    style={{
-                        padding: "0.5rem 1rem",
-                        fontSize: "0.825rem",
-                        fontWeight: 600,
-                        background: "var(--brand-orange)",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "var(--radius-sm)",
-                        cursor: "pointer",
-                    }}
+                    className="px-4 py-2 text-[0.825rem] font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer"
+                    style={{ background: "var(--brand-orange)" }}
                 >
                     + New Template
                 </button>
             </div>
 
             {showCreate && (
-                <div className="glass-card" style={{ padding: "1.25rem", marginBottom: "1.5rem" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="glass-card p-5 mb-6">
+                    <div className="flex flex-col gap-3">
                         <input
                             value={newKey}
                             onChange={(e) => setNewKey(e.target.value)}
                             placeholder="Template key (e.g. welcome_email)"
-                            style={{
-                                padding: "0.5rem 0.75rem", fontSize: "0.825rem",
-                                background: "var(--bg-primary)", color: "var(--text-primary)",
-                                border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                            }}
+                            className={adminInputCls}
                         />
                         <input
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
                             placeholder="Display name"
-                            style={{
-                                padding: "0.5rem 0.75rem", fontSize: "0.825rem",
-                                background: "var(--bg-primary)", color: "var(--text-primary)",
-                                border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                            }}
+                            className={adminInputCls}
                         />
                         <input
                             value={newDesc}
                             onChange={(e) => setNewDesc(e.target.value)}
                             placeholder="Description (optional)"
-                            style={{
-                                padding: "0.5rem 0.75rem", fontSize: "0.825rem",
-                                background: "var(--bg-primary)", color: "var(--text-primary)",
-                                border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                            }}
+                            className={adminInputCls}
                         />
-                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <div className="flex gap-2">
                             <button
                                 onClick={handleCreate}
                                 disabled={creating}
-                                style={{
-                                    padding: "0.5rem 1rem", fontSize: "0.825rem", fontWeight: 600,
-                                    background: "var(--brand-orange)", color: "#fff",
-                                    border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                                    opacity: creating ? 0.5 : 1,
-                                }}
+                                className={`px-4 py-2 text-[0.825rem] font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer ${creating ? "opacity-50" : ""}`}
+                                style={{ background: "var(--brand-orange)" }}
                             >
                                 {creating ? "Creating..." : "Create"}
                             </button>
                             <button
                                 onClick={() => setShowCreate(false)}
-                                style={{
-                                    padding: "0.5rem 1rem", fontSize: "0.825rem",
-                                    background: "transparent", color: "var(--text-muted)",
-                                    border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                                    cursor: "pointer",
-                                }}
+                                className="px-4 py-2 text-[0.825rem] bg-transparent text-[var(--text-muted)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -163,66 +136,57 @@ export default function EmailTemplatesPage() {
             )}
 
             {loading ? (
-                <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
+                <div className="text-center p-12 text-[var(--text-muted)]">
                     Loading templates...
                 </div>
             ) : templates.length === 0 ? (
-                <div className="glass-card" style={{ padding: "2rem", textAlign: "center", color: "var(--text-muted)" }}>
+                <div className="glass-card p-8 text-center text-[var(--text-muted)]">
                     No templates yet. Create one to get started.
                 </div>
             ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="flex flex-col gap-3">
                     {templates.map((t) => (
                         <div
                             key={t.id}
-                            className="glass-card"
-                            style={{ padding: "1.25rem", cursor: "pointer" }}
+                            className="glass-card p-5 cursor-pointer"
                             onClick={() => router.push(`/admin/email-templates/${t.id}`)}
                         >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <div className="flex justify-between items-start">
                                 <div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                                        <h3 style={{ fontSize: "0.95rem", fontWeight: 600 }}>{t.name}</h3>
-                                        <span style={{
-                                            fontSize: "0.65rem", padding: "0.1rem 0.4rem",
-                                            borderRadius: "var(--radius-full)",
-                                            background: t.organizationId ? "rgba(59, 130, 246, 0.1)" : "rgba(34, 197, 94, 0.1)",
-                                            color: t.organizationId ? "rgba(59, 130, 246, 0.9)" : "rgba(34, 197, 94, 0.9)",
-                                        }}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="text-[0.95rem] font-semibold">{t.name}</h3>
+                                        {/* Dynamic org vs system badge */}
+                                        <span
+                                            className="text-[0.65rem] px-1.5 py-0.5 rounded-full"
+                                            style={{
+                                                background: t.organizationId ? "rgba(59, 130, 246, 0.1)" : "rgba(34, 197, 94, 0.1)",
+                                                color: t.organizationId ? "rgba(59, 130, 246, 0.9)" : "rgba(34, 197, 94, 0.9)",
+                                            }}
+                                        >
                                             {t.organizationId ? "org" : "system"}
                                         </span>
                                     </div>
-                                    <code style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{t.key}</code>
+                                    <code className="text-xs text-[var(--text-muted)]">{t.key}</code>
                                     {t.description && (
-                                        <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>{t.description}</p>
+                                        <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">{t.description}</p>
                                     )}
                                 </div>
-                                <div style={{ display: "flex", gap: "0.375rem", alignItems: "center" }}>
+                                <div className="flex gap-1.5 items-center">
                                     <button
                                         onClick={(e) => { e.stopPropagation(); router.push(`/admin/email-templates/${t.id}/editor`); }}
-                                        style={{
-                                            padding: "0.35rem 0.75rem", fontSize: "0.72rem", fontWeight: 600,
-                                            background: "rgba(99, 102, 241, 0.1)", color: "rgba(99, 102, 241, 0.9)",
-                                            border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "var(--radius-sm)",
-                                            cursor: "pointer",
-                                        }}
+                                        className="px-3 py-1.5 text-[0.72rem] font-semibold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 rounded-[var(--radius-sm)] cursor-pointer"
                                     >
                                         Edit ✏️
                                     </button>
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleDelete(t.id); }}
-                                        style={{
-                                            padding: "0.35rem 0.75rem", fontSize: "0.72rem",
-                                            background: "transparent", color: "var(--text-muted)",
-                                            border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                                            cursor: "pointer",
-                                        }}
+                                        className="px-3 py-1.5 text-[0.72rem] bg-transparent text-[var(--text-muted)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] cursor-pointer"
                                     >
                                         🗑
                                     </button>
                                 </div>
                             </div>
-                            <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.5rem" }}>
+                            <div className="text-[0.7rem] text-[var(--text-muted)] mt-2">
                                 Updated {new Date(t.updatedAt).toLocaleDateString()}
                             </div>
                         </div>

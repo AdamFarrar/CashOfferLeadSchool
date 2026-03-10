@@ -57,26 +57,20 @@ export default function RegisterPage() {
 
     return (
         <>
-            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
+            <div className="text-center mb-8">
+                <h1 className="text-2xl mb-2">
                     Create Your Account
                 </h1>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                <p className="text-[0.9rem] text-[var(--text-secondary)]">
                     Start your qualification journey today.
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div>
                     <label
                         htmlFor="name"
-                        style={{
-                            display: "block",
-                            fontSize: "0.825rem",
-                            fontWeight: 600,
-                            color: "var(--text-secondary)",
-                            marginBottom: "0.5rem",
-                        }}
+                        className="block text-[0.825rem] font-semibold text-[var(--text-secondary)] mb-2"
                     >
                         Full Name
                     </label>
@@ -95,13 +89,7 @@ export default function RegisterPage() {
                 <div>
                     <label
                         htmlFor="email"
-                        style={{
-                            display: "block",
-                            fontSize: "0.825rem",
-                            fontWeight: 600,
-                            color: "var(--text-secondary)",
-                            marginBottom: "0.5rem",
-                        }}
+                        className="block text-[0.825rem] font-semibold text-[var(--text-secondary)] mb-2"
                     >
                         Email
                     </label>
@@ -120,13 +108,7 @@ export default function RegisterPage() {
                 <div>
                     <label
                         htmlFor="password"
-                        style={{
-                            display: "block",
-                            fontSize: "0.825rem",
-                            fontWeight: 600,
-                            color: "var(--text-secondary)",
-                            marginBottom: "0.5rem",
-                        }}
+                        className="block text-[0.825rem] font-semibold text-[var(--text-secondary)] mb-2"
                     >
                         Password
                     </label>
@@ -142,35 +124,24 @@ export default function RegisterPage() {
                         autoComplete="new-password"
                     />
                     {password.length > 0 && (
-                        <div style={{ marginTop: "0.5rem" }}>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "0.25rem",
-                                    marginBottom: "0.25rem",
-                                }}
-                            >
+                        <div className="mt-2">
+                            <div className="flex gap-1 mb-1">
                                 {[1, 2, 3, 4].map((level) => (
                                     <div
                                         key={level}
+                                        className="flex-1 h-[3px] rounded-sm transition-colors duration-200"
                                         style={{
-                                            flex: 1,
-                                            height: "3px",
-                                            borderRadius: "2px",
                                             background:
                                                 level <= passwordStrength.level
                                                     ? passwordStrength.color
                                                     : "var(--border-default)",
-                                            transition: "background 0.2s",
                                         }}
                                     />
                                 ))}
                             </div>
                             <span
-                                style={{
-                                    fontSize: "0.7rem",
-                                    color: passwordStrength.color,
-                                }}
+                                className="text-[0.7rem]"
+                                style={{ color: passwordStrength.color }}
                             >
                                 {passwordStrength.label}
                             </span>
@@ -179,50 +150,25 @@ export default function RegisterPage() {
                 </div>
 
                 {error && (
-                    <div
-                        style={{
-                            padding: "0.75rem 1rem",
-                            borderRadius: "var(--radius-md)",
-                            background: "rgba(239, 68, 68, 0.1)",
-                            border: "1px solid rgba(239, 68, 68, 0.2)",
-                            color: "#ef4444",
-                            fontSize: "0.875rem",
-                        }}
-                    >
+                    <div className="px-4 py-3 rounded-[var(--radius-md)] bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
                         {error}
                     </div>
                 )}
 
                 <button
                     type="submit"
-                    className="btn-primary"
+                    className={`btn-primary w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                     disabled={loading}
-                    style={{
-                        width: "100%",
-                        opacity: loading ? 0.7 : 1,
-                        cursor: loading ? "not-allowed" : "pointer",
-                    }}
                 >
                     {loading ? "Creating Account..." : "Create Account"}
                 </button>
             </form>
 
-            <p
-                style={{
-                    textAlign: "center",
-                    marginTop: "1.5rem",
-                    fontSize: "0.85rem",
-                    color: "var(--text-secondary)",
-                }}
-            >
+            <p className="text-center mt-6 text-[0.85rem] text-[var(--text-secondary)]">
                 Already have an account?{" "}
                 <Link
                     href="/login"
-                    style={{
-                        color: "var(--brand-orange)",
-                        textDecoration: "none",
-                        fontWeight: 600,
-                    }}
+                    className="text-[var(--brand-orange)] no-underline font-semibold"
                 >
                     Log in
                 </Link>

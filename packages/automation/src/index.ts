@@ -4,7 +4,7 @@
 
 export { registerAutomationListener } from "./listener";
 export { AUTOMATION_EVENTS } from "./events";
-export { evaluateRules, evaluateCondition } from "./evaluator";
+export { evaluateRules, evaluateCondition, validateConditionDepth, MAX_CONDITION_DEPTH } from "./evaluator";
 export { planActions } from "./planner";
 export { dispatchActions } from "./dispatcher";
 

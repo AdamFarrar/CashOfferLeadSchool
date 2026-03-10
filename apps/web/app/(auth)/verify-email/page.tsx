@@ -35,85 +35,38 @@ function VerifyEmailForm() {
     }
 
     return (
-        <div style={{ textAlign: "center" }}>
-            <div
-                style={{
-                    width: "4rem",
-                    height: "4rem",
-                    borderRadius: "50%",
-                    background: "var(--brand-orange-glow)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.75rem",
-                    margin: "0 auto 1.5rem",
-                }}
-            >
+        <div className="text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-[1.75rem] mx-auto mb-6" style={{ background: "var(--brand-orange-glow)" }}>
                 ✉️
             </div>
 
-            <h1 style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>
+            <h1 className="text-2xl mb-3">
                 Check Your Inbox
             </h1>
 
-            <p
-                style={{
-                    color: "var(--text-secondary)",
-                    fontSize: "0.9rem",
-                    lineHeight: 1.6,
-                    marginBottom: "0.5rem",
-                }}
-            >
+            <p className="text-[0.9rem] text-[var(--text-secondary)] leading-relaxed mb-2">
                 We&apos;ve sent a verification link to
             </p>
             {email && (
-                <p
-                    style={{
-                        fontWeight: 600,
-                        fontSize: "0.95rem",
-                        marginBottom: "2rem",
-                    }}
-                >
+                <p className="font-semibold text-[0.95rem] mb-8">
                     {email}
                 </p>
             )}
 
-            <p
-                style={{
-                    color: "var(--text-muted)",
-                    fontSize: "0.825rem",
-                    lineHeight: 1.6,
-                    marginBottom: "2rem",
-                }}
-            >
+            <p className="text-[0.825rem] text-[var(--text-muted)] leading-relaxed mb-8">
                 Click the link in the email to verify your account. The link expires in
                 24 hours.
             </p>
 
             {resent ? (
-                <div
-                    style={{
-                        padding: "0.75rem 1rem",
-                        borderRadius: "var(--radius-md)",
-                        background: "rgba(34, 197, 94, 0.1)",
-                        border: "1px solid rgba(34, 197, 94, 0.2)",
-                        color: "#22c55e",
-                        fontSize: "0.875rem",
-                        marginBottom: "1.5rem",
-                    }}
-                >
+                <div className="px-4 py-3 rounded-[var(--radius-md)] bg-green-500/10 border border-green-500/20 text-green-500 text-sm mb-6">
                     Verification email resent successfully.
                 </div>
             ) : (
                 <button
                     onClick={handleResend}
                     disabled={loading || !email}
-                    className="btn-ghost"
-                    style={{
-                        width: "100%",
-                        marginBottom: "1.5rem",
-                        opacity: loading || !email ? 0.5 : 1,
-                    }}
+                    className={`btn-ghost w-full mb-6 ${loading || !email ? "opacity-50" : ""}`}
                 >
                     {loading ? "Sending..." : "Resend Verification Email"}
                 </button>
@@ -121,11 +74,7 @@ function VerifyEmailForm() {
 
             <Link
                 href="/login"
-                style={{
-                    color: "var(--text-muted)",
-                    fontSize: "0.825rem",
-                    textDecoration: "none",
-                }}
+                className="text-[0.825rem] text-[var(--text-muted)] no-underline"
             >
                 Already verified? Log in →
             </Link>
@@ -136,8 +85,8 @@ function VerifyEmailForm() {
 export default function VerifyEmailPage() {
     return (
         <Suspense fallback={
-            <div style={{ textAlign: "center", padding: "2rem" }}>
-                <div style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Loading...</div>
+            <div className="text-center p-8">
+                <div className="text-[var(--text-muted)] text-[0.9rem]">Loading...</div>
             </div>
         }>
             <VerifyEmailForm />

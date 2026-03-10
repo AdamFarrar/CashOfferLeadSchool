@@ -118,35 +118,31 @@ export default function EditorPage() {
     };
 
     if (!["owner", "admin"].includes(userRole)) {
-        return <div style={{ textAlign: "center", padding: "3rem" }}><h1>Access Denied</h1></div>;
+        return <div className="text-center p-12"><h1>Access Denied</h1></div>;
     }
 
     return (
         <div>
             {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <div className="flex justify-between items-center mb-4">
                 <div>
                     <button
                         onClick={() => router.push(`/admin/email-templates/${templateId}`)}
-                        style={{ fontSize: "0.8rem", color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", marginBottom: "0.5rem" }}
+                        className="text-[0.8rem] text-[var(--text-muted)] bg-none border-none cursor-pointer mb-2"
                     >
                         ← Back to versions
                     </button>
-                    <h1 style={{ fontSize: "1.25rem" }}>
+                    <h1 className="text-xl">
                         Edit: {template?.name || "Loading..."}
                     </h1>
                 </div>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    {saved && <span style={{ fontSize: "0.8rem", color: "rgba(34, 197, 94, 0.9)" }}>Saved ✓</span>}
+                <div className="flex gap-2 items-center">
+                    {saved && <span className="text-[0.8rem] text-green-500">Saved ✓</span>}
                     <button
                         onClick={handleSave}
                         disabled={saving || !subject.trim()}
-                        style={{
-                            padding: "0.5rem 1rem", fontSize: "0.825rem", fontWeight: 600,
-                            background: "var(--brand-orange)", color: "#fff",
-                            border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                            opacity: saving || !subject.trim() ? 0.5 : 1,
-                        }}
+                        className={`px-4 py-2 text-[0.825rem] font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer ${saving || !subject.trim() ? "opacity-50" : ""}`}
+                        style={{ background: "var(--brand-orange)" }}
                     >
                         {saving ? "Saving..." : "Save Version"}
                     </button>
@@ -154,59 +150,41 @@ export default function EditorPage() {
             </div>
 
             {/* Subject Line */}
-            <div style={{ marginBottom: "1rem" }}>
-                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.25rem", display: "block" }}>
+            <div className="mb-4">
+                <label className="text-[0.8rem] font-semibold text-[var(--text-secondary)] mb-1 block">
                     Email Subject
                 </label>
                 <input
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. Welcome to {{app_name}}"
-                    style={{
-                        width: "100%", padding: "0.5rem 0.75rem", fontSize: "0.9rem",
-                        background: "var(--bg-primary)", color: "var(--text-primary)",
-                        border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                    }}
+                    className="w-full px-3 py-2 text-[0.9rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)]"
                 />
             </div>
 
-            {/* Editor */}
+            {/* Editor — container needs border styling */}
             <div
                 ref={containerRef}
-                style={{
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: "var(--radius-sm)",
-                    overflow: "hidden",
-                    marginBottom: "1rem",
-                }}
+                className="border border-[var(--border-subtle)] rounded-[var(--radius-sm)] overflow-hidden mb-4"
             />
 
             {/* Test Send */}
-            <div className="glass-card" style={{ padding: "1rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>Test:</span>
+            <div className="glass-card p-4 flex gap-2 items-center">
+                <span className="text-[0.8rem] font-semibold text-[var(--text-secondary)]">Test:</span>
                 <input
                     value={testEmail}
                     onChange={(e) => setTestEmail(e.target.value)}
                     placeholder="test@example.com"
-                    style={{
-                        flex: 1, padding: "0.4rem 0.6rem", fontSize: "0.825rem",
-                        background: "var(--bg-primary)", color: "var(--text-primary)",
-                        border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)",
-                    }}
+                    className="flex-1 px-2.5 py-1.5 text-[0.825rem] bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)]"
                 />
                 <button
                     onClick={handleTestSend}
                     disabled={sending || !testEmail.trim()}
-                    style={{
-                        padding: "0.4rem 0.75rem", fontSize: "0.8rem", fontWeight: 600,
-                        background: "rgba(59, 130, 246, 0.1)", color: "rgba(59, 130, 246, 0.9)",
-                        border: "1px solid rgba(59, 130, 246, 0.2)", borderRadius: "var(--radius-sm)",
-                        cursor: "pointer", opacity: sending ? 0.5 : 1,
-                    }}
+                    className={`px-3 py-1.5 text-[0.8rem] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-[var(--radius-sm)] cursor-pointer ${sending ? "opacity-50" : ""}`}
                 >
                     {sending ? "Sending..." : "Send Test"}
                 </button>
-                {sendResult && <span style={{ fontSize: "0.8rem" }}>{sendResult}</span>}
+                {sendResult && <span className="text-[0.8rem]">{sendResult}</span>}
             </div>
         </div>
     );

@@ -78,51 +78,53 @@ export default function TemplateDetailPage() {
     };
 
     if (!["owner", "admin"].includes(userRole)) {
-        return <div style={{ textAlign: "center", padding: "3rem" }}><h1>Access Denied</h1></div>;
+        return <div className="text-center p-12"><h1>Access Denied</h1></div>;
     }
 
     if (loading) {
-        return <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>Loading...</div>;
+        return <div className="text-center p-12 text-[var(--text-muted)]">Loading...</div>;
     }
 
     return (
         <div>
             {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+            <div className="flex justify-between items-center mb-8">
                 <div>
                     <button
                         onClick={() => router.push("/admin/email-templates")}
-                        style={{ fontSize: "0.8rem", color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", marginBottom: "0.5rem" }}
+                        className="text-[0.8rem] text-[var(--text-muted)] bg-none border-none cursor-pointer mb-2"
                     >
                         ← Back to templates
                     </button>
-                    <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>{template?.name}</h1>
-                    <code style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{template?.key}</code>
+                    <h1 className="text-2xl mb-1">{template?.name}</h1>
+                    <code className="text-xs text-[var(--text-muted)]">{template?.key}</code>
                     {template?.description && (
-                        <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>{template.description}</p>
+                        <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">{template.description}</p>
                     )}
                 </div>
                 <button
                     onClick={() => router.push(`/admin/email-templates/${templateId}/editor`)}
-                    style={{
-                        padding: "0.5rem 1rem", fontSize: "0.825rem", fontWeight: 600,
-                        background: "var(--brand-orange)", color: "#fff",
-                        border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                    }}
+                    className="px-4 py-2 text-[0.825rem] font-semibold text-white border-none rounded-[var(--radius-sm)] cursor-pointer"
+                    style={{ background: "var(--brand-orange)" }}
                 >
                     Open Editor
                 </button>
             </div>
 
-            {/* Preview Modal */}
+            {/* Preview Modal — uses inline styles for fixed overlay positioning (whitelisted) */}
             {previewHtml && (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
-                    onClick={() => setPreviewHtml(null)}>
-                    <div style={{ background: "#fff", borderRadius: "8px", width: "640px", maxHeight: "80vh", overflow: "auto", padding: "1rem" }}
-                        onClick={(e) => e.stopPropagation()}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
+                <div
+                    className="fixed inset-0 z-[1000] flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.7)" }}
+                    onClick={() => setPreviewHtml(null)}
+                >
+                    <div
+                        className="bg-white rounded-lg w-[640px] max-h-[80vh] overflow-auto p-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between mb-4">
                             <strong>Preview</strong>
-                            <button onClick={() => setPreviewHtml(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem" }}>✕</button>
+                            <button onClick={() => setPreviewHtml(null)} className="bg-none border-none cursor-pointer text-xl">✕</button>
                         </div>
                         <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
                     </div>
@@ -130,57 +132,45 @@ export default function TemplateDetailPage() {
             )}
 
             {/* Versions */}
-            <h2 style={{ fontSize: "1rem", marginBottom: "1rem" }}>Version History ({versions.length})</h2>
+            <h2 className="text-base mb-4">Version History ({versions.length})</h2>
 
             {versions.length === 0 ? (
-                <div className="glass-card" style={{ padding: "2rem", textAlign: "center", color: "var(--text-muted)" }}>
+                <div className="glass-card p-8 text-center text-[var(--text-muted)]">
                     No versions yet. Open the editor to create one.
                 </div>
             ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="flex flex-col gap-3">
                     {versions.map((v) => (
-                        <div key={v.id} className="glass-card" style={{ padding: "1.25rem" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div key={v.id} className="glass-card p-5">
+                            <div className="flex justify-between items-start">
                                 <div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                                        <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>v{v.version}</span>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-semibold text-[0.9rem]">v{v.version}</span>
                                         {v.published && (
-                                            <span style={{
-                                                fontSize: "0.6rem", fontWeight: 700, textTransform: "uppercase",
-                                                padding: "0.1rem 0.4rem", borderRadius: "var(--radius-full)",
-                                                background: "rgba(34, 197, 94, 0.15)", color: "rgba(34, 197, 94, 0.9)",
-                                            }}>
+                                            <span className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-500">
                                                 PUBLISHED
                                             </span>
                                         )}
                                     </div>
-                                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                                    <div className="text-[0.8rem] text-[var(--text-secondary)]">
                                         Subject: {v.subject}
                                     </div>
-                                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                                    <div className="text-[0.7rem] text-[var(--text-muted)] mt-1">
                                         Created {new Date(v.createdAt).toLocaleString()}
                                         {v.publishedAt && ` · Published ${new Date(v.publishedAt).toLocaleString()}`}
                                     </div>
                                 </div>
-                                <div style={{ display: "flex", gap: "0.375rem" }}>
+                                <div className="flex gap-1.5">
                                     <button
                                         onClick={() => handlePreview(v.htmlBody, v.subject)}
-                                        style={{
-                                            padding: "0.35rem 0.6rem", fontSize: "0.72rem",
-                                            background: "transparent", border: "1px solid var(--border-subtle)",
-                                            borderRadius: "var(--radius-sm)", color: "var(--text-secondary)", cursor: "pointer",
-                                        }}
+                                        className="px-2.5 py-1.5 text-[0.72rem] bg-transparent border border-[var(--border-subtle)] rounded-[var(--radius-sm)] text-[var(--text-secondary)] cursor-pointer"
                                     >
                                         👁 Preview
                                     </button>
                                     {!v.published && (
                                         <button
                                             onClick={() => handlePublish(v.id)}
-                                            style={{
-                                                padding: "0.35rem 0.6rem", fontSize: "0.72rem", fontWeight: 600,
-                                                background: "rgba(34, 197, 94, 0.1)", color: "rgba(34, 197, 94, 0.9)",
-                                                border: "1px solid rgba(34, 197, 94, 0.2)", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                                            }}
+                                            className="px-2.5 py-1.5 text-[0.72rem] font-semibold bg-green-500/10 text-green-500 border border-green-500/20 rounded-[var(--radius-sm)] cursor-pointer"
                                         >
                                             Publish
                                         </button>
@@ -188,11 +178,7 @@ export default function TemplateDetailPage() {
                                     {v.published ? null : (
                                         <button
                                             onClick={() => handleRollback(v.id)}
-                                            style={{
-                                                padding: "0.35rem 0.6rem", fontSize: "0.72rem",
-                                                background: "rgba(234, 179, 8, 0.1)", color: "rgba(234, 179, 8, 0.9)",
-                                                border: "1px solid rgba(234, 179, 8, 0.2)", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                                            }}
+                                            className="px-2.5 py-1.5 text-[0.72rem] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-[var(--radius-sm)] cursor-pointer"
                                         >
                                             Rollback
                                         </button>

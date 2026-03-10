@@ -10,6 +10,8 @@ import {
     toggleAutomationRule,
 } from "@cocs/services";
 import { isUrlBlocked } from "@cocs/automation/ssrf";
+import { validateConditionDepth } from "@cocs/automation";
+import type { ConditionExpression } from "@cocs/automation";
 
 // =============================================================================
 // Automation Rule Server Actions — Admin Only
@@ -32,6 +34,14 @@ export async function createAutomationRuleAction(data: {
     priority?: number;
 }) {
     const identity = await requireAdmin();
+
+    // Validate condition depth (prevent recursion abuse)
+    if (data.conditions) {
+        const depthResult = validateConditionDepth(data.conditions as ConditionExpression);
+        if (!depthResult.valid) {
+            return { success: false, error: depthResult.error };
+        }
+    }
 
     // Validate webhook URLs at creation time — not just execution
     if (data.actionChannel === "webhook") {
@@ -62,6 +72,14 @@ export async function updateAutomationRuleAction(
     },
 ) {
     await requireAdmin();
+
+    // Validate condition depth on update
+    if (data.conditions) {
+        const depthResult = validateConditionDepth(data.conditions as ConditionExpression);
+        if (!depthResult.valid) {
+            return { success: false, error: depthResult.error };
+        }
+    }
 
     // Re-validate webhook URLs on config update
     if (data.actionConfig) {

@@ -18,75 +18,30 @@ export default function ConfirmationPage() {
     }, []);
 
     return (
-        <div
-            style={{
-                maxWidth: "32rem",
-                margin: "2rem auto",
-                textAlign: "center",
-            }}
-        >
+        <div className="max-w-lg mx-auto mt-8 text-center">
             {/* Success icon */}
             <div
-                className="animate-fade-in-up"
+                className="animate-fade-in-up w-20 h-20 rounded-full flex items-center justify-center text-4xl mx-auto mb-8 border-2 border-green-500/30"
                 style={{
-                    width: "5rem",
-                    height: "5rem",
-                    borderRadius: "50%",
                     background:
                         "linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05))",
-                    border: "2px solid rgba(34, 197, 94, 0.3)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "2.25rem",
-                    margin: "0 auto 2rem",
                 }}
             >
                 ✓
             </div>
 
-            <h1
-                className="animate-fade-in-up animate-delay-100"
-                style={{
-                    fontSize: "1.75rem",
-                    marginBottom: "0.75rem",
-                }}
-            >
+            <h1 className="animate-fade-in-up animate-delay-100 text-[1.75rem] mb-3">
                 Qualification Complete!
             </h1>
 
-            <p
-                className="animate-fade-in-up animate-delay-200"
-                style={{
-                    color: "var(--text-secondary)",
-                    fontSize: "1rem",
-                    lineHeight: 1.6,
-                    marginBottom: "2.5rem",
-                }}
-            >
+            <p className="animate-fade-in-up animate-delay-200 text-[var(--text-secondary)] text-base leading-relaxed mb-10">
                 Your operator qualification has been submitted. Here&apos;s what
                 happens next.
             </p>
 
             {/* Timeline */}
-            <div
-                className="glass-card animate-fade-in-up animate-delay-300"
-                style={{
-                    padding: "2rem",
-                    textAlign: "left",
-                    marginBottom: "2rem",
-                }}
-            >
-                <h2
-                    style={{
-                        fontSize: "0.8rem",
-                        fontWeight: 600,
-                        color: "var(--text-muted)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.04em",
-                        marginBottom: "1.25rem",
-                    }}
-                >
+            <div className="glass-card animate-fade-in-up animate-delay-300 p-8 text-left mb-8">
+                <h2 className="text-[0.8rem] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-5">
                     What Happens Next
                 </h2>
 
@@ -115,46 +70,25 @@ export default function ConfirmationPage() {
                 ].map((item, i) => (
                     <div
                         key={item.title}
-                        style={{
-                            display: "flex",
-                            gap: "1rem",
-                            padding: "0.75rem 0",
-                            borderTop:
-                                i > 0 ? "1px solid var(--border-subtle)" : "none",
-                        }}
+                        className={`flex gap-4 py-3 ${i > 0 ? "border-t border-[var(--border-subtle)]" : ""}`}
                     >
-                        <div style={{ fontSize: "1.25rem", flexShrink: 0 }}>
+                        <div className="text-xl shrink-0">
                             {item.icon}
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    marginBottom: "0.25rem",
-                                }}
-                            >
-                                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-center mb-1">
+                                <span className="font-semibold text-[0.9rem]">
                                     {item.title}
                                 </span>
+                                {/* Dynamic status color from data array */}
                                 <span
-                                    style={{
-                                        fontSize: "0.7rem",
-                                        color: item.color,
-                                        fontWeight: 600,
-                                    }}
+                                    className="text-[0.7rem] font-semibold"
+                                    style={{ color: item.color }}
                                 >
                                     {item.status}
                                 </span>
                             </div>
-                            <p
-                                style={{
-                                    fontSize: "0.825rem",
-                                    color: "var(--text-secondary)",
-                                    lineHeight: 1.5,
-                                }}
-                            >
+                            <p className="text-[0.825rem] text-[var(--text-secondary)] leading-normal">
                                 {item.desc}
                             </p>
                         </div>
@@ -171,7 +105,7 @@ export default function ConfirmationPage() {
 
             {/* Post-qualification feedback prompt */}
             {userId && (
-                <div style={{ textAlign: "left" }}>
+                <div className="text-left">
                     <FeedbackPrompt
                         stakeholderGroup="pilot_user"
                         context="qualification"

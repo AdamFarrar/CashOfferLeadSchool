@@ -2,6 +2,7 @@
 // @cocs/automation — Rule Evaluator
 // =============================================================================
 // Loads rules from DB, evaluates conditions against event payload.
+// Safety: MAX_CONDITION_DEPTH = 5 prevents recursive condition abuse.
 // =============================================================================
 
 import type { DomainEvent } from "@cocs/events";
@@ -9,6 +10,12 @@ import type { AutomationRule, ConditionExpression } from "./types";
 import { db } from "@cocs/database/client";
 import { automationRule } from "@cocs/database/schema";
 import { eq, and, or, isNull } from "drizzle-orm";
+
+/**
+ * Maximum nesting depth for condition expressions.
+ * Prevents infinite recursion from malformed or adversarial rules.
+ */
+export const MAX_CONDITION_DEPTH = 5;
 
 /**
  * Find all enabled rules matching this event.
@@ -67,12 +74,23 @@ export async function evaluateRules(event: DomainEvent): Promise<AutomationRule[
 
 /**
  * Evaluate a condition expression against event payload.
- * Returns false on malformed input — never throws to caller.
+ * Returns false on malformed input or depth exceeded — never throws to caller.
+ * @param depth - Current nesting depth (starts at 0). Exceeding MAX_CONDITION_DEPTH returns false.
  */
 export function evaluateCondition(
     condition: ConditionExpression,
     payload: Record<string, unknown>,
+    depth: number = 0,
 ): boolean {
+    // Safety: bail out if condition tree is too deep
+    if (depth >= MAX_CONDITION_DEPTH) {
+        console.warn(
+            `[AUTOMATION] Condition depth limit (${MAX_CONDITION_DEPTH}) exceeded. ` +
+            `Returning false for safety.`,
+        );
+        return false;
+    }
+
     const actual = payload[condition.field];
     let result = false;
 
@@ -105,13 +123,42 @@ export function evaluateCondition(
             return false;
     }
 
-    // AND/OR sub-conditions
+    // AND/OR sub-conditions (pass depth + 1)
     if (condition.and) {
-        result = result && condition.and.every(sub => evaluateCondition(sub, payload));
+        result = result && condition.and.every(sub => evaluateCondition(sub, payload, depth + 1));
     }
     if (condition.or) {
-        result = result || condition.or.some(sub => evaluateCondition(sub, payload));
+        result = result || condition.or.some(sub => evaluateCondition(sub, payload, depth + 1));
     }
 
     return result;
+}
+
+/**
+ * Validate that a condition expression does not exceed the maximum depth.
+ * Use this at rule creation/update time to reject overly-nested conditions.
+ * @returns `{ valid: true }` or `{ valid: false, error: string }`
+ */
+export function validateConditionDepth(
+    condition: ConditionExpression,
+    currentDepth: number = 0,
+): { valid: true } | { valid: false; error: string } {
+    if (currentDepth >= MAX_CONDITION_DEPTH) {
+        return {
+            valid: false,
+            error: `Condition nesting exceeds maximum depth of ${MAX_CONDITION_DEPTH}.`,
+        };
+    }
+
+    const children = [
+        ...(condition.and || []),
+        ...(condition.or || []),
+    ];
+
+    for (const child of children) {
+        const childResult = validateConditionDepth(child, currentDepth + 1);
+        if (!childResult.valid) return childResult;
+    }
+
+    return { valid: true };
 }
