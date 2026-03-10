@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     output: "standalone",
+    serverExternalPackages: ["jsdom", "isomorphic-dompurify", "juice"],
     transpilePackages: [
         "@cocs/auth",
         "@cocs/database",
