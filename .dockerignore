@@ -19,6 +19,5 @@ scripts/
 .dockerignore
 Dockerfile
 docker-compose*.yml
-turbo.json
 tsconfig.base.json
 vitest.config.*
