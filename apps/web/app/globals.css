@@ -11,17 +11,17 @@
 /* ---------- Design Tokens ---------- */
 :root {
   /* Background layers */
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0f;
-  --bg-card: #111118;
-  --bg-card-hover: #161622;
-  --bg-elevated: #1a1a2e;
+  --bg-primary: #0b0b0b;
+  --bg-secondary: #141414;
+  --bg-card: #1a1a1a;
+  --bg-card-hover: #222222;
+  --bg-elevated: #252525;
 
   /* Text */
-  --text-primary: #f0f0f5;
-  --text-secondary: #a0a0b8;
-  --text-muted: #6b6b80;
-  --text-inverse: #050505;
+  --text-primary: #f5f1eb;
+  --text-secondary: #a8a29e;
+  --text-muted: #78716c;
+  --text-inverse: #0b0b0b;
 
   /* Brand */
   --brand-orange: #f97316;
@@ -36,9 +36,9 @@
   --accent-purple: #8b5cf6;
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-hover: rgba(255, 255, 255, 0.18);
 
   /* Shadows */
   --shadow-glow: 0 0 60px rgba(249, 115, 22, 0.08);
@@ -99,7 +99,7 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
+    line-height: 1.65;
     overflow-x: hidden;
   }
 
@@ -617,7 +617,7 @@
   right: 0;
   z-index: 50;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(5, 5, 5, 0.8);
+  background: rgba(11, 11, 11, 0.85);
   backdrop-filter: blur(16px);
 }
 

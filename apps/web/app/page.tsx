@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { TrackedCta } from "./components/TrackedCta";
 import { FaqAccordion } from "./components/FaqAccordion";
-import { Card, CardContent, Badge } from "@cocs/ui";
+import { Badge } from "@cocs/ui";
 
 export const metadata: Metadata = {
     title: "Cash Offer Conversion School — 12-Week Installation System for Operators",
@@ -353,12 +353,10 @@ export default function LandingPage() {
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
                                 { icon: "🏗️", label: "Founders who built their operation from scratch" },
                             ].map((item) => (
-                                <Card key={item.label} className="text-center shadow-sm">
-                                    <CardContent className="p-6 space-y-3">
-                                        <div className="text-3xl">{item.icon}</div>
-                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{item.label}</p>
-                                    </CardContent>
-                                </Card>
+                                <div key={item.label} className="text-center rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)" }}>
+                                    <div className="text-3xl">{item.icon}</div>
+                                    <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{item.label}</p>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -374,13 +372,11 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
-                                <Card key={d.title} className="shadow-sm">
-                                    <CardContent className="p-6 space-y-3">
-                                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-card)] flex items-center justify-center text-xl">{d.icon}</div>
-                                        <h3 className="text-xl" style={{ fontWeight: 600 }}>{d.title}</h3>
-                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{d.detail}</p>
-                                    </CardContent>
-                                </Card>
+                                <div key={d.title} className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)" }}>
+                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{ background: "var(--bg-elevated)" }}>{d.icon}</div>
+                                    <h3 className="text-xl" style={{ fontWeight: 600 }}>{d.title}</h3>
+                                    <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{d.detail}</p>
+                                </div>
                             ))}
                         </div>
                     </div>
