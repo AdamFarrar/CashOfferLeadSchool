@@ -22,10 +22,10 @@ FROM node:20-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
+# Copy everything including source
 COPY . .
 
-# Re-run install to restore pnpm workspace symlinks after COPY
+# Full install with all source present — ensures workspace symlinks resolve
 RUN pnpm install --frozen-lockfile
 
 ENV NEXT_TELEMETRY_DISABLED=1
