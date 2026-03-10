@@ -59,10 +59,10 @@ export default function RegisterPage() {
         <>
             <div className="text-center mb-8">
                 <h1 className="text-2xl mb-2">
-                    Create Your Account
+                    Save My Seat
                 </h1>
                 <p className="text-[0.9rem] text-[var(--text-secondary)]">
-                    Start your qualification journey today.
+                    Join Season 1 of the Cash Offer Conversion School.
                 </p>
             </div>
 
@@ -160,12 +160,12 @@ export default function RegisterPage() {
                     className={`btn-primary w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                     disabled={loading}
                 >
-                    {loading ? "Creating Account..." : "Create Account"}
+                    {loading ? "Reserving your seat..." : "Save My Seat"}
                 </button>
             </form>
 
             <p className="text-center mt-6 text-[0.85rem] text-[var(--text-secondary)]">
-                Already have an account?{" "}
+                Already enrolled?{" "}
                 <Link
                     href="/login"
                     className="text-[var(--brand-orange)] no-underline font-semibold"

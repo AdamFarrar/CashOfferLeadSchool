@@ -55,7 +55,7 @@ function LoginForm() {
                     Welcome Back
                 </h1>
                 <p className="text-[0.9rem] text-[var(--text-secondary)]">
-                    Sign in to continue your journey.
+                    Sign in to continue the program.
                 </p>
             </div>
 
@@ -122,12 +122,12 @@ function LoginForm() {
             </form>
 
             <p className="text-center mt-6 text-[0.85rem] text-[var(--text-secondary)]">
-                Don&apos;t have an account?{" "}
+                Not enrolled yet?{" "}
                 <Link
                     href="/register"
                     className="text-[var(--brand-orange)] no-underline font-semibold"
                 >
-                    Sign up
+                    Save your seat
                 </Link>
             </p>
         </>

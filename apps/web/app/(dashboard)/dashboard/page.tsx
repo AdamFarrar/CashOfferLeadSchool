@@ -8,6 +8,74 @@ import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
 
+// ── Season Configuration ──
+const SEASON_LABEL = "Season 1";
+const TOTAL_WEEKS = 12;
+const CURRENT_WEEK = 1; // Will be dynamic in Phase 2
+
+const MODULES = [
+    { number: 1, title: "Convert for the Appointment", weeks: "Weeks 1–3" },
+    { number: 2, title: "The Appointment", weeks: "Weeks 4–6" },
+    { number: 3, title: "Offer Mechanics", weeks: "Weeks 7–9" },
+    { number: 4, title: "Nurture", weeks: "Weeks 10–12" },
+];
+
+function getCurrentModule(week: number) {
+    if (week <= 3) return MODULES[0];
+    if (week <= 6) return MODULES[1];
+    if (week <= 9) return MODULES[2];
+    return MODULES[3];
+}
+
+function SessionCountdown({ targetDate }: { targetDate: string | null }) {
+    const [timeLeft, setTimeLeft] = useState("");
+    const [isLive, setIsLive] = useState(false);
+
+    useEffect(() => {
+        if (!targetDate) return;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const target = new Date(targetDate!).getTime();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                setIsLive(true);
+                setTimeLeft("Live Now");
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (days > 0) {
+                setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+            } else {
+                setTimeLeft(`${hours}h ${minutes}m`);
+            }
+        }
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 60_000);
+        return () => clearInterval(interval);
+    }, [targetDate]);
+
+    if (!targetDate) {
+        return (
+            <div className="text-[color:var(--text-muted)] text-sm">
+                Session date not yet scheduled
+            </div>
+        );
+    }
+
+    return (
+        <div className={`text-xl font-bold ${isLive ? "text-green-400" : "text-[color:var(--brand-orange)]"}`}>
+            {timeLeft}
+        </div>
+    );
+}
+
 export default function DashboardPage() {
     const { data: session } = useSession();
     const firstName = session?.user?.name?.split(" ")[0] || "there";
@@ -15,6 +83,12 @@ export default function DashboardPage() {
     const { data: activeOrg } = useActiveOrganization();
     const organizationId = activeOrg?.id || "";
     const [qualCompleted, setQualCompleted] = useState(false);
+
+    const currentModule = getCurrentModule(CURRENT_WEEK);
+    const progressPercent = Math.round((CURRENT_WEEK / TOTAL_WEEKS) * 100);
+
+    // Read NEXT_SESSION_DATE from env (passed at build time)
+    const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
 
     useEffect(() => {
         if (userId) {
@@ -45,96 +119,117 @@ export default function DashboardPage() {
                     Welcome back, {firstName} 👋
                 </h1>
                 <p className="text-[color:var(--text-secondary)] text-[0.95rem]">
-                    Here&apos;s what&apos;s happening in your qualification journey.
+                    {SEASON_LABEL} • Week {CURRENT_WEEK} of {TOTAL_WEEKS}
                 </p>
             </div>
 
-            {/* Status cards */}
-            <div className="dashboard-grid mb-10">
-                {/* Qualification card */}
+            {/* Qualification prompt if not completed */}
+            {!qualCompleted && (
                 <Link
                     href="/qualify"
-                    className="glass-card p-6 no-underline text-inherit"
+                    className="glass-card p-5 no-underline text-inherit flex items-center gap-4 mb-6 border border-[var(--brand-orange)]/30"
                 >
-                    <div className="flex items-center gap-3 mb-4">
-                        <div
-                            className="w-10 h-10 rounded-[var(--radius-md)] flex items-center justify-center text-lg"
-                            style={{ background: qualCompleted ? "rgba(34, 197, 94, 0.1)" : "var(--brand-orange-glow)" }}
-                        >
-                            {qualCompleted ? "✅" : "📋"}
-                        </div>
-                        <div>
-                            <div className="font-semibold text-[0.95rem]">Qualification</div>
-                            <div className={`text-xs font-semibold ${qualCompleted ? "text-[#22c55e]" : "text-[color:var(--brand-orange)]"}`}>
-                                {qualCompleted ? "Completed" : "Action Required"}
-                            </div>
+                    <div className="icon-box shrink-0">📋</div>
+                    <div className="flex-1">
+                        <div className="font-semibold text-[0.95rem]">Help Us Tailor This</div>
+                        <div className="text-[0.85rem] text-[color:var(--text-secondary)]">
+                            Complete a few quick questions so we can personalize your experience.
                         </div>
                     </div>
-                    <p className="text-[0.85rem] text-[color:var(--text-secondary)] leading-normal">
-                        {qualCompleted
-                            ? "Your operator qualification is complete. You can review or update it anytime."
-                            : "Complete your operator qualification to unlock the full platform."}
-                    </p>
+                    <span className="text-[color:var(--brand-orange)] text-sm font-semibold">Start →</span>
                 </Link>
+            )}
 
-                {/* Academy card */}
-                <div className="phase-card">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[rgba(59,130,246,0.1)] flex items-center justify-center text-lg">
-                            🎓
-                        </div>
-                        <div>
-                            <div className="font-semibold text-[0.95rem]">Academy</div>
-                            <div className="text-xs text-[color:var(--text-muted)]">Coming in Phase 2</div>
-                        </div>
-                    </div>
-                    <p className="text-[0.85rem] text-[color:var(--text-muted)] leading-normal">
-                        Video courses, downloads, and structured learning paths.
-                    </p>
+            {/* Season Progress */}
+            <div className="glass-card p-6 mb-6">
+                <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-[0.9rem] font-semibold">Season Progress</h2>
+                    <span className="text-xs text-[color:var(--text-muted)]">{progressPercent}%</span>
                 </div>
-
-                {/* Coaching card */}
-                <div className="phase-card">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[rgba(139,92,246,0.1)] flex items-center justify-center text-lg">
-                            💬
-                        </div>
-                        <div>
-                            <div className="font-semibold text-[0.95rem]">Coaching</div>
-                            <div className="text-xs text-[color:var(--text-muted)]">Coming in Phase 5</div>
-                        </div>
-                    </div>
-                    <p className="text-[0.85rem] text-[color:var(--text-muted)] leading-normal">
-                        1-on-1 coaching, live sessions, and expert guidance.
-                    </p>
+                <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden mb-3">
+                    <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                            width: `${progressPercent}%`,
+                            background: "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
+                        }}
+                    />
+                </div>
+                <div className="flex items-center gap-2 text-[0.85rem] text-[color:var(--text-secondary)]">
+                    <span className="text-[color:var(--brand-orange)] font-semibold">Module {currentModule.number}</span>
+                    <span>—</span>
+                    <span>{currentModule.title}</span>
                 </div>
             </div>
 
-            {/* Quick info */}
-            <div className="glass-card p-6 flex items-center gap-4 mb-5">
-                <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0"
-                    style={{ background: "rgba(34, 197, 94, 0.1)" }}
-                >
-                    {qualCompleted ? "🎉" : "💡"}
-                </div>
-                <div>
-                    <div className="font-semibold text-[0.9rem] mb-1">
-                        {qualCompleted ? "You're All Set" : "Getting Started"}
+            {/* Two-column: Next Session + This Week */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Next Live Session */}
+                <div className="glass-card p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="icon-box">📡</div>
+                        <h2 className="text-[0.9rem] font-semibold">Next Live Session</h2>
                     </div>
-                    <p className="text-[0.825rem] text-[color:var(--text-secondary)] leading-normal">
-                        {qualCompleted
-                            ? "Your qualification is complete. We're preparing your personalized learning path. More features coming soon!"
-                            : <>Start by completing your{" "}
-                                <Link
-                                    href="/qualify"
-                                    className="text-[color:var(--brand-orange)] no-underline"
-                                >
-                                    qualification form
-                                </Link>
-                                . This helps us tailor your learning path and match you with the right resources.</>}
-                    </p>
+                    <SessionCountdown targetDate={nextSessionDate} />
+                    {nextSessionDate && (
+                        <p className="text-xs text-[color:var(--text-muted)] mt-2">
+                            {new Date(nextSessionDate).toLocaleDateString("en-US", {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                            })}
+                        </p>
+                    )}
                 </div>
+
+                {/* This Week's Episode */}
+                <div className="glass-card p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="icon-box">🎬</div>
+                        <h2 className="text-[0.9rem] font-semibold">This Week&apos;s Episode</h2>
+                    </div>
+                    <div className="text-[0.95rem] font-semibold mb-1">
+                        Episode {CURRENT_WEEK}
+                    </div>
+                    <div className="text-[0.85rem] text-[color:var(--text-secondary)] mb-1">
+                        Module {currentModule.number} — {currentModule.title}
+                    </div>
+                    <div className="text-xs text-[color:var(--text-muted)]">
+                        Guest Operator (TBA)
+                    </div>
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <Link
+                    href="#"
+                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
+                >
+                    <div className="text-2xl mb-2">📡</div>
+                    <div className="font-semibold text-[0.9rem]">Join Live</div>
+                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Coming soon</div>
+                </Link>
+
+                <Link
+                    href="/downloads"
+                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
+                >
+                    <div className="text-2xl mb-2">📥</div>
+                    <div className="font-semibold text-[0.9rem]">Download Assets</div>
+                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Scripts & SOPs</div>
+                </Link>
+
+                <Link
+                    href="/audit"
+                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
+                >
+                    <div className="text-2xl mb-2">📋</div>
+                    <div className="font-semibold text-[0.9rem]">Book Audit</div>
+                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Pipeline review</div>
+                </Link>
             </div>
 
             {/* Feedback widget */}

@@ -153,9 +153,9 @@ export default function QualificationPage() {
     return (
         <div className="qualify-container">
             <div className="mb-8">
-                <h1 className="text-2xl mb-2">Operator Qualification</h1>
+                <h1 className="text-2xl mb-2">Help Us Tailor This</h1>
                 <p className="text-[color:var(--text-secondary)] text-[0.9rem]">
-                    Tell us about your business so we can tailor your experience.
+                    A few quick questions so we can personalize your Season 1 experience.
                 </p>
             </div>
 
@@ -259,8 +259,8 @@ export default function QualificationPage() {
                                                 );
                                             }}
                                             className={`py-2 px-3 text-[0.8rem] rounded-[var(--radius-sm)] border cursor-pointer text-left transition-all ${selected
-                                                    ? "border-[var(--brand-orange)] bg-[var(--brand-orange-glow)] text-[color:var(--brand-orange-light)]"
-                                                    : "border-[var(--border-default)] bg-transparent text-[color:var(--text-secondary)]"
+                                                ? "border-[var(--brand-orange)] bg-[var(--brand-orange-glow)] text-[color:var(--brand-orange-light)]"
+                                                : "border-[var(--border-default)] bg-transparent text-[color:var(--text-secondary)]"
                                                 }`}
                                         >
                                             {source}
@@ -353,7 +353,7 @@ export default function QualificationPage() {
                             className={`btn-primary flex-1 ${loading ? "opacity-70" : ""}`}
                             disabled={loading}
                         >
-                            {loading ? "Submitting..." : "Submit Qualification"}
+                            {loading ? "Submitting..." : "Complete"}
                         </button>
                     )}
                 </div>

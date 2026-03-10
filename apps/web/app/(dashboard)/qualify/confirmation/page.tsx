@@ -31,12 +31,11 @@ export default function ConfirmationPage() {
             </div>
 
             <h1 className="animate-fade-in-up animate-delay-100 text-[1.75rem] mb-3">
-                Qualification Complete!
+                You&apos;re In
             </h1>
 
             <p className="animate-fade-in-up animate-delay-200 text-[var(--text-secondary)] text-base leading-relaxed mb-10">
-                Your operator qualification has been submitted. Here&apos;s what
-                happens next.
+                Your seat for Season 1 is confirmed. Here&apos;s what happens next.
             </p>
 
             {/* Timeline */}
@@ -48,22 +47,22 @@ export default function ConfirmationPage() {
                 {[
                     {
                         icon: "📋",
-                        title: "Review",
-                        desc: "We'll review your qualification within 24 hours.",
+                        title: "Tailoring Your Experience",
+                        desc: "We're personalizing your program based on your answers.",
                         status: "In Progress",
                         color: "var(--brand-orange)",
                     },
                     {
-                        icon: "🎓",
-                        title: "Academy Access",
-                        desc: "Once approved, you'll unlock the full learning platform.",
+                        icon: "📧",
+                        title: "Welcome Email",
+                        desc: "You'll receive your Season 1 welcome kit within 24 hours.",
                         status: "Upcoming",
                         color: "var(--text-muted)",
                     },
                     {
                         icon: "🚀",
-                        title: "Start Converting",
-                        desc: "Apply your training and begin generating cash offers.",
+                        title: "Season 1 Begins",
+                        desc: "Explore your program console and get ready for Week 1.",
                         status: "Upcoming",
                         color: "var(--text-muted)",
                     },
@@ -100,7 +99,7 @@ export default function ConfirmationPage() {
                 href="/dashboard"
                 className="btn-primary animate-fade-in-up animate-delay-400"
             >
-                Go to Dashboard →
+                Go to Your Program Console →
             </Link>
 
             {/* Post-qualification feedback prompt */}

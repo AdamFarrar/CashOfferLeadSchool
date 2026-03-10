@@ -7,11 +7,12 @@ import { authClient, signOut, useSession } from "@cocs/auth/client";
 import { resetIdentity } from "@cocs/analytics";
 
 const NAV_ITEMS = [
-    { href: "/dashboard", label: "Dashboard", icon: "📊" },
-    { href: "/qualify", label: "Qualification", icon: "✅" },
-    { href: "#", label: "Academy", icon: "🎓", locked: true },
-    { href: "#", label: "Coaching", icon: "💬", locked: true },
-    { href: "#", label: "Analytics", icon: "📈", locked: true },
+    { href: "/dashboard", label: "Home", icon: "🏠" },
+    { href: "/episodes", label: "Episodes", icon: "🎬" },
+    { href: "/downloads", label: "Downloads", icon: "📥" },
+    { href: "/discussion", label: "Discussion", icon: "💬" },
+    { href: "/notes", label: "My Notes", icon: "📝" },
+    { href: "/audit", label: "Book Audit", icon: "📋" },
 ];
 
 const ADMIN_NAV_ITEMS = [
@@ -83,17 +84,12 @@ export default function DashboardLayout({
                         return (
                             <Link
                                 key={item.label}
-                                href={item.locked ? "#" : item.href}
+                                href={item.href}
                                 onClick={() => setSidebarOpen(false)}
-                                className={`sidebar-link ${active ? "sidebar-link-active font-semibold" : ""} ${item.locked ? "sidebar-link-locked" : ""}`}
+                                className={`sidebar-link ${active ? "sidebar-link-active font-semibold" : ""}`}
                             >
                                 <span className="text-base">{item.icon}</span>
                                 {item.label}
-                                {item.locked && (
-                                    <span className="ml-auto text-[0.65rem] py-px px-1.5 rounded-full bg-[var(--border-subtle)] text-[color:var(--text-muted)]">
-                                        Soon
-                                    </span>
-                                )}
                             </Link>
                         );
                     })}
