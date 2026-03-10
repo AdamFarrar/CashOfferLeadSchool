@@ -78,27 +78,36 @@ const FAQS = [
     },
 ];
 
+// ── Shared Section Header ──
+function SectionIntro({ badge, heading, body }: { badge: string; heading: string; body?: string }) {
+    return (
+        <div className="text-center mb-12">
+            <span className="badge mb-4 inline-flex">{badge}</span>
+            <h2 className="section-heading">{heading}</h2>
+            {body && (
+                <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-base leading-relaxed">
+                    {body}
+                </p>
+            )}
+        </div>
+    );
+}
+
 export default function LandingPage() {
     return (
         <>
             {/* ===== NAV BAR ===== */}
             <nav className="nav-bar">
-                <div className="section-container nav-inner">
+                <div className="max-w-7xl mx-auto px-6 nav-inner">
                     <Link href="/" className="nav-logo">
                         <span className="nav-logo-icon">🏠</span>
                         COCS
                     </Link>
                     <div className="flex items-center gap-3">
-                        <Link
-                            href="/login"
-                            className="btn-ghost py-2 px-5 text-sm"
-                        >
+                        <Link href="/login" className="btn-ghost py-2 px-5 text-sm">
                             Log In
                         </Link>
-                        <Link
-                            href="/register"
-                            className="btn-primary py-2 px-5 text-sm"
-                        >
+                        <Link href="/register" className="btn-primary py-2 px-5 text-sm">
                             Save My Seat
                         </Link>
                     </div>
@@ -143,59 +152,41 @@ export default function LandingPage() {
 
                 {/* ===== 2. CATEGORY SHIFT ===== */}
                 <section className="section-padded section-bordered-top">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">The Problem</span>
-                            <h2 className="section-heading">This Isn&apos;t Another Lead Gen Course</h2>
-                            <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-lg leading-relaxed">
-                                Most training teaches you how to buy leads. None of it teaches you how to
-                                convert them. The gap between &ldquo;lead received&rdquo; and &ldquo;contract signed&rdquo; is where
-                                teams fail — and where revenue dies.
-                            </p>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="The Problem"
+                            heading="This Isn't Another Lead Gen Course"
+                            body={'Most training teaches you how to buy leads. None of it teaches you how to convert them. The gap between \u201Clead received\u201D and \u201Ccontract signed\u201D is where teams fail \u2014 and where revenue dies.'}
+                        />
 
-                        <div className="grid-auto-fit gap-6">
-                            <div className="glass-card p-6 text-center">
-                                <div className="text-4xl mb-4">📉</div>
-                                <h3 className="text-xl mb-3">Courses Teach Theory</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
-                                    They hand you information and leave. No systems, no scripts,
-                                    no accountability for whether your team actually improves.
-                                </p>
-                            </div>
-                            <div className="glass-card p-6 text-center">
-                                <div className="text-4xl mb-4">🔧</div>
-                                <h3 className="text-xl mb-3">This Installs Systems</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
-                                    Every week you install a specific conversion system into your operation.
-                                    Scripts, SOPs, and live coaching to make sure it sticks.
-                                </p>
-                            </div>
-                            <div className="glass-card p-6 text-center">
-                                <div className="text-4xl mb-4">🎯</div>
-                                <h3 className="text-xl mb-3">Operators, Not Gurus</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
-                                    Every guest has a live operation. They&apos;re closing deals this month,
-                                    not teaching from a stage.
-                                </p>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { icon: "📉", title: "Courses Teach Theory", body: "They hand you information and leave. No systems, no scripts, no accountability for whether your team actually improves." },
+                                { icon: "🔧", title: "This Installs Systems", body: "Every week you install a specific conversion system into your operation. Scripts, SOPs, and live coaching to make sure it sticks." },
+                                { icon: "🎯", title: "Operators, Not Gurus", body: "Every guest has a live operation. They're closing deals this month, not teaching from a stage." },
+                            ].map((card) => (
+                                <div key={card.title} className="glass-card p-6 text-center">
+                                    <div className="text-4xl mb-4">{card.icon}</div>
+                                    <h3 className="text-xl font-semibold mb-3">{card.title}</h3>
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
+                                        {card.body}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
 
                 {/* ===== 3. WHY TEAMS LEAK LEADS ===== */}
                 <section className="section-padded section-bg-alt section-bordered-top section-bordered-bottom">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">The Leak</span>
-                            <h2 className="section-heading">Why Your Team Leaks Leads</h2>
-                            <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-lg leading-relaxed">
-                                You&apos;re spending money on leads. Your team is &ldquo;working&rdquo; them.
-                                But the conversion rate tells the real story.
-                            </p>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="The Leak"
+                            heading="Why Your Team Leaks Leads"
+                            body={'You\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
+                        />
 
-                        <div className="grid-auto-fit-lg max-w-3xl mx-auto">
+                        <div className="max-w-3xl mx-auto space-y-6">
                             {[
                                 { icon: "🕐", label: "Slow speed to lead — the first 5 minutes matter more than the first 5 days" },
                                 { icon: "📞", label: "No call script — reps improvise every call and wonder why results vary" },
@@ -203,9 +194,9 @@ export default function LandingPage() {
                                 { icon: "💰", label: "Offers that don't land — you second-guess comps, miss repair estimates, or underbid" },
                                 { icon: "📭", label: "No follow-up system — leads go cold because nobody owns the nurture pipeline" },
                             ].map((leak) => (
-                                <div key={leak.label} className="flex items-start gap-4 mb-6">
+                                <div key={leak.label} className="flex items-start gap-4">
                                     <div className="icon-box shrink-0">{leak.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">{leak.label}</p>
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{leak.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -214,15 +205,12 @@ export default function LandingPage() {
 
                 {/* ===== 4. THE 12-WEEK INSTALLATION SYSTEM ===== */}
                 <section id="system" className="section-padded section-bordered-bottom">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">The System</span>
-                            <h2 className="section-heading">12 Weeks. 4 Modules. Installed.</h2>
-                            <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-lg leading-relaxed">
-                                Each week covers one piece of the conversion system.
-                                By week 12, your team has a complete, battle-tested playbook.
-                            </p>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="The System"
+                            heading="12 Weeks. 4 Modules. Installed."
+                            body="Each week covers one piece of the conversion system. By week 12, your team has a complete, battle-tested playbook."
+                        />
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             {MODULES.map((mod) => (
@@ -230,11 +218,11 @@ export default function LandingPage() {
                                     <div className="flex items-center gap-3 mb-4">
                                         <div className="step-number">{mod.number}</div>
                                         <div>
-                                            <h3 className="text-lg font-semibold">{mod.title}</h3>
+                                            <h3 className="text-xl font-semibold">{mod.title}</h3>
                                             <span className="text-[color:var(--text-muted)] text-xs">{mod.weeks} • {mod.episodes} episodes</span>
                                         </div>
                                     </div>
-                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {mod.description}
                                     </p>
                                 </div>
@@ -245,26 +233,26 @@ export default function LandingPage() {
 
                 {/* ===== 5. MODULE BREAKDOWN (Episode Preview) ===== */}
                 <section className="section-padded section-bg-alt section-bordered-bottom">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">Inside the Program</span>
-                            <h2 className="section-heading">What You&apos;ll Install Each Week</h2>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="Inside the Program"
+                            heading="What You'll Install Each Week"
+                        />
 
-                        <div className="max-w-3xl mx-auto">
+                        <div className="max-w-3xl mx-auto space-y-10">
                             {MODULES.map((mod) => (
-                                <div key={mod.number} className="mb-10">
-                                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                <div key={mod.number}>
+                                    <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                                         <span className="text-[color:var(--brand-orange)]">Module {mod.number}</span>
                                         <span className="text-[color:var(--text-muted)]">—</span>
                                         {mod.title}
                                     </h3>
-                                    <div className="flex flex-col gap-3">
+                                    <div className="space-y-3">
                                         {Array.from({ length: mod.episodes }, (_, i) => (
-                                            <div key={i} className="glass-card p-4 flex items-center gap-4">
+                                            <div key={i} className="glass-card p-6 flex items-center gap-4">
                                                 <div className="icon-box shrink-0 text-sm">🎬</div>
                                                 <div className="flex-1">
-                                                    <div className="font-semibold text-[0.9rem]">
+                                                    <div className="font-semibold text-base">
                                                         Episode {(Number(mod.number) - 1) * 3 + i + 1}
                                                     </div>
                                                     <div className="text-[color:var(--text-muted)] text-xs">
@@ -283,17 +271,14 @@ export default function LandingPage() {
 
                 {/* ===== 6. GUEST OPERATORS ===== */}
                 <section className="section-padded section-bordered-bottom">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">Real Operators</span>
-                            <h2 className="section-heading">Every Guest Has a Live Operation</h2>
-                            <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-lg leading-relaxed">
-                                No talking heads. No motivational speakers. Every guest operator is
-                                actively closing cash offer deals — this month, not last year.
-                            </p>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="Real Operators"
+                            heading="Every Guest Has a Live Operation"
+                            body="No talking heads. No motivational speakers. Every guest operator is actively closing cash offer deals — this month, not last year."
+                        />
 
-                        <div className="grid-auto-fit max-w-3xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                             {[
                                 { icon: "🎙️", label: "Operators who run their own disposition desks" },
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
@@ -301,7 +286,7 @@ export default function LandingPage() {
                             ].map((item) => (
                                 <div key={item.label} className="glass-card p-6 text-center">
                                     <div className="text-3xl mb-3">{item.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {item.label}
                                     </p>
                                 </div>
@@ -312,18 +297,18 @@ export default function LandingPage() {
 
                 {/* ===== 7. WHAT YOU RECEIVE ===== */}
                 <section className="section-padded section-bg-alt section-bordered-top section-bordered-bottom">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">What&apos;s Included</span>
-                            <h2 className="section-heading">What You Receive</h2>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="What's Included"
+                            heading="What You Receive"
+                        />
 
-                        <div className="grid-auto-fit">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
                                 <div key={d.title} className="glass-card p-6">
                                     <div className="icon-box mb-4">{d.icon}</div>
-                                    <h3 className="text-lg mb-2 font-semibold">{d.title}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
+                                    <h3 className="text-xl font-semibold mb-2">{d.title}</h3>
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {d.detail}
                                     </p>
                                 </div>
@@ -336,10 +321,10 @@ export default function LandingPage() {
                 <section className="section-padded section-bordered-bottom relative overflow-hidden">
                     <div aria-hidden="true" className="cta-glow" />
 
-                    <div className="section-container text-center relative">
+                    <div className="max-w-7xl mx-auto px-6 text-center relative">
                         <span className="badge mb-6 inline-flex">Limited Seats</span>
                         <h2 className="section-heading mb-4">Ready to Install a Real Conversion System?</h2>
-                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mb-8 text-lg leading-relaxed">
+                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mb-8 text-base leading-relaxed">
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
@@ -351,17 +336,17 @@ export default function LandingPage() {
 
                 {/* ===== 9. FAQ ===== */}
                 <section className="section-padded">
-                    <div className="section-container">
-                        <div className="text-center mb-16">
-                            <span className="badge mb-4 inline-flex">FAQ</span>
-                            <h2 className="section-heading">Common Questions</h2>
-                        </div>
+                    <div className="max-w-7xl mx-auto px-6">
+                        <SectionIntro
+                            badge="FAQ"
+                            heading="Common Questions"
+                        />
 
-                        <div className="max-w-2xl mx-auto flex flex-col gap-6">
+                        <div className="max-w-2xl mx-auto space-y-6">
                             {FAQS.map((faq) => (
                                 <div key={faq.q} className="glass-card p-6">
-                                    <h3 className="text-sm font-semibold mb-2">{faq.q}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
+                                    <h3 className="text-base font-semibold mb-2">{faq.q}</h3>
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
                                         {faq.a}
                                     </p>
                                 </div>
@@ -373,7 +358,7 @@ export default function LandingPage() {
 
             {/* ===== FOOTER ===== */}
             <footer className="site-footer">
-                <div className="section-container footer-inner">
+                <div className="max-w-7xl mx-auto px-6 footer-inner">
                     <span>© 2026 Cash Offer Conversion School. All rights reserved.</span>
                     <div className="flex gap-6">
                         <a href="#" className="footer-link">Privacy</a>
