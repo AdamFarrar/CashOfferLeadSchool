@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TrackedCta } from "./components/TrackedCta";
+import { FaqAccordion } from "./components/FaqAccordion";
+import { Card, CardContent, Badge } from "@cocs/ui";
 
 export const metadata: Metadata = {
     title: "Cash Offer Conversion School — 12-Week Installation System for Operators",
@@ -14,7 +16,8 @@ export const metadata: Metadata = {
     },
 };
 
-// ── Module Data ──
+// ── Data ──
+
 const MODULES = [
     {
         number: "01",
@@ -55,108 +58,89 @@ const DELIVERABLES = [
     { icon: "🔁", title: "Replay Access", detail: "Every session recorded — revisit any module at your own pace" },
 ];
 
-const FAQS = [
-    {
-        q: "Who is this for?",
-        a: "Operators and teams running — or planning to run — a cash offer lead generation and conversion business. If you're buying leads, running a disposition desk, or want to start, this is built for you.",
-    },
-    {
-        q: "What's the time commitment?",
-        a: "One episode per week plus a live session. Plan for 2–3 hours per week. Everything is recorded if you miss a session.",
-    },
-    {
-        q: "Is this a course or a coaching program?",
-        a: "Neither. It's an installation system. You install proven conversion systems into your operation over 12 weeks with live support from operators who've done it.",
-    },
-    {
-        q: "Do I need experience?",
-        a: "Some familiarity with real estate or lead generation is helpful, but not required. The qualification form helps us tailor the experience to your level.",
-    },
-    {
-        q: "What happens after the 12 weeks?",
-        a: "You keep replay access and your downloads. Graduates also get access to advanced audit reviews and future seasons.",
-    },
-];
 
-// ── Shared Section Header ──
-function SectionIntro({ badge, heading, body }: { badge: string; heading: string; body?: string }) {
+
+// ── Section Header ──
+
+function SectionHeader({ badge, heading, sub }: { badge: string; heading: string; sub?: string }) {
     return (
-        <div className="text-center mb-12">
-            <span className="badge mb-4 inline-flex">{badge}</span>
-            <h2 className="section-heading">{heading}</h2>
-            {body && (
-                <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto mt-4 text-base leading-relaxed">
-                    {body}
+        <div className="text-center space-y-4 mb-12">
+            <Badge>{badge}</Badge>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">{heading}</h2>
+            {sub && (
+                <p className="text-[color:var(--text-secondary)] max-w-2xl mx-auto text-base leading-relaxed">
+                    {sub}
                 </p>
             )}
         </div>
     );
 }
 
+// ── Page ──
+
 export default function LandingPage() {
     return (
         <>
-            {/* ===== NAV BAR (sticky via .nav-bar CSS) ===== */}
-            <nav className="nav-bar">
-                <div className="max-w-7xl mx-auto px-6 nav-inner">
-                    <Link href="/" className="nav-logo">
-                        <span className="nav-logo-icon">🏠</span>
+            {/* ── NAV (sticky) ── */}
+            <nav className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[rgba(5,5,5,0.7)] backdrop-blur-xl">
+                <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
+                        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-sm">🏠</span>
                         COCS
                     </Link>
                     <div className="flex items-center gap-3">
-                        <Link href="/login" className="btn-ghost py-2 px-5 text-sm">
-                            Log In
-                        </Link>
-                        <Link href="/register" className="btn-primary py-2 px-5 text-sm">
-                            Save My Seat
-                        </Link>
+                        <Link href="/login" className="btn-ghost py-2 px-5 text-sm">Log In</Link>
+                        <Link href="/register" className="btn-primary py-2 px-5 text-sm">Save My Seat</Link>
                     </div>
                 </div>
             </nav>
 
             <main>
-                {/* ===== 1. HERO — dark ===== */}
-                <section className="hero-section">
-                    <div aria-hidden="true" className="hero-glow" />
-
-                    <div className="animate-fade-in-up relative">
-                        <span className="badge mb-6">● Season 1 — Now Enrolling</span>
+                {/* ═══ 1. HERO ═══ */}
+                <section className="relative overflow-hidden py-32 md:py-40">
+                    {/* Radial glow */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+                        <div className="w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.1)_0%,transparent_70%)]" />
                     </div>
 
-                    <h1 className="animate-fade-in-up animate-delay-100 hero-title">
-                        The 12-Week System That{" "}
-                        <span className="text-gradient-brand">Installs Conversion</span>
-                        {" "}Into Your Operation
-                    </h1>
+                    <div className="max-w-6xl mx-auto px-6 text-center relative space-y-8">
+                        <Badge className="animate-fade-in-up">● Season 1 — Now Enrolling</Badge>
 
-                    <p className="animate-fade-in-up animate-delay-200 hero-subtitle">
-                        Stop guessing why leads don&apos;t close. Install the scripts, systems,
-                        and operator habits that turn cash offer leads into signed contracts.
-                    </p>
+                        <h1 className="animate-fade-in-up animate-delay-100 text-5xl md:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-[1.1]">
+                            The 12-Week System That{" "}
+                            <span className="text-gradient-brand">Installs Conversion</span>
+                            {" "}Into Your Operation
+                        </h1>
 
-                    <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-4 relative">
-                        <TrackedCta href="/register" className="btn-primary text-lg px-8 py-3" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
-                            Save My Seat for Season 1
-                        </TrackedCta>
-                        <a href="#system" className="btn-ghost text-lg px-8 py-3">
-                            See the System
-                        </a>
-                    </div>
+                        <p className="animate-fade-in-up animate-delay-200 text-lg text-[color:var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
+                            Stop guessing why leads don&apos;t close. Install the scripts, systems,
+                            and operator habits that turn cash offer leads into signed contracts.
+                        </p>
 
-                    <div className="animate-fade-in-up animate-delay-500 trust-bar relative">
-                        <span>✓ 12 weeks, live</span>
-                        <span>✓ Real operators, not theory</span>
-                        <span>✓ Install and keep the systems</span>
+                        <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-4 mt-8">
+                            <TrackedCta href="/register" className="btn-primary text-lg px-8 py-3.5 rounded-xl" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
+                                Save My Seat for Season 1
+                            </TrackedCta>
+                            <a href="#system" className="btn-ghost text-lg px-8 py-3.5 rounded-xl">
+                                See the System
+                            </a>
+                        </div>
+
+                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm text-[color:var(--text-muted)]">
+                            <span>✓ 12 weeks, live</span>
+                            <span>✓ Real operators, not theory</span>
+                            <span>✓ Install and keep the systems</span>
+                        </div>
                     </div>
                 </section>
 
-                {/* ===== 2. CATEGORY SHIFT — alt (contrast from hero) ===== */}
-                <section className="section-padded section-bg-alt">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 2. CATEGORY SHIFT ═══ */}
+                <section className="py-24 bg-[var(--bg-secondary)]">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="The Problem"
                             heading="This Isn't Another Lead Gen Course"
-                            body={'Most training teaches you how to buy leads. None of it teaches you how to convert them. The gap between \u201Clead received\u201D and \u201Ccontract signed\u201D is where teams fail \u2014 and where revenue dies.'}
+                            sub={'Most training teaches you how to buy leads. None of it teaches you how to convert them. The gap between \u201Clead received\u201D and \u201Ccontract signed\u201D is where teams fail \u2014 and where revenue dies.'}
                         />
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -164,26 +148,26 @@ export default function LandingPage() {
                                 { icon: "📉", title: "Courses Teach Theory", body: "They hand you information and leave. No systems, no scripts, no accountability for whether your team actually improves." },
                                 { icon: "🔧", title: "This Installs Systems", body: "Every week you install a specific conversion system into your operation. Scripts, SOPs, and live coaching to make sure it sticks." },
                                 { icon: "🎯", title: "Operators, Not Gurus", body: "Every guest has a live operation. They're closing deals this month, not teaching from a stage." },
-                            ].map((card) => (
-                                <div key={card.title} className="glass-card p-5 text-center">
-                                    <div className="text-4xl mb-3">{card.icon}</div>
-                                    <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
-                                        {card.body}
-                                    </p>
-                                </div>
+                            ].map((c) => (
+                                <Card key={c.title} className="text-center">
+                                    <CardContent className="p-6 space-y-3">
+                                        <div className="text-4xl">{c.icon}</div>
+                                        <h3 className="text-xl font-semibold">{c.title}</h3>
+                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{c.body}</p>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 3. WHY TEAMS LEAK LEADS — dark ===== */}
-                <section className="section-padded">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 3. WHY TEAMS LEAK LEADS ═══ */}
+                <section className="py-24">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="The Leak"
                             heading="Why Your Team Leaks Leads"
-                            body={'\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
+                            sub={'You\u2019re spending money on leads. Your team is \u201Cworking\u201D them. But the conversion rate tells the real story.'}
                         />
 
                         <div className="max-w-3xl mx-auto space-y-5">
@@ -195,89 +179,84 @@ export default function LandingPage() {
                                 { icon: "📭", label: "No follow-up system — leads go cold because nobody owns the nurture pipeline" },
                             ].map((leak) => (
                                 <div key={leak.label} className="flex items-start gap-4">
-                                    <div className="icon-box shrink-0">{leak.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{leak.label}</p>
+                                    <div className="w-10 h-10 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-xl shrink-0">{leak.icon}</div>
+                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed pt-2">{leak.label}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 4. THE 12-WEEK INSTALLATION SYSTEM — alt ===== */}
-                <section id="system" className="section-padded section-bg-alt">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 4. 12-WEEK SYSTEM ═══ */}
+                <section id="system" className="py-24 bg-[var(--bg-secondary)]">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="The System"
                             heading="12 Weeks. 4 Modules. Installed."
-                            body="Each week covers one piece of the conversion system. By week 12, your team has a complete, battle-tested playbook."
+                            sub="Each week covers one piece of the conversion system. By week 12, your team has a complete, battle-tested playbook."
                         />
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             {MODULES.map((mod) => (
-                                <div key={mod.number} className="glass-card p-5">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="step-number">{mod.number}</div>
-                                        <div>
-                                            <h3 className="text-xl font-semibold">{mod.title}</h3>
-                                            <span className="text-[color:var(--text-muted)] text-xs">{mod.weeks} • {mod.episodes} episodes</span>
+                                <Card key={mod.number}>
+                                    <CardContent className="p-6 space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg">
+                                                {mod.number}
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-semibold">{mod.title}</h3>
+                                                <span className="text-xs text-[color:var(--text-muted)]">{mod.weeks} • {mod.episodes} episodes</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
-                                        {mod.description}
-                                    </p>
-                                </div>
+                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{mod.description}</p>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 5. INSTALLATION TIMELINE — dark ===== */}
-                <section className="section-padded">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 5. INSTALLATION TIMELINE ═══ */}
+                <section className="py-24">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="Inside the Program"
                             heading="What You'll Install Each Week"
                         />
 
-                        {/* Timeline layout — vertical line with weekly steps */}
                         <div className="max-w-2xl mx-auto relative">
                             {/* Timeline spine */}
                             <div
-                                className="absolute left-6 top-0 bottom-0 w-px"
+                                className="absolute left-[23px] top-0 bottom-0 w-px"
                                 style={{ background: 'linear-gradient(to bottom, var(--brand-orange), var(--border-subtle))' }}
                                 aria-hidden="true"
                             />
 
-                            <div className="space-y-12">
+                            <div className="space-y-10">
                                 {MODULES.map((mod) => (
                                     <div key={mod.number} className="relative">
                                         {/* Module marker */}
-                                        <div className="flex items-center gap-4 mb-5">
-                                            <div className="step-number relative z-10">{mod.number}</div>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center font-bold text-white text-lg relative z-10">
+                                                {mod.number}
+                                            </div>
                                             <div>
                                                 <h3 className="text-xl font-semibold">{mod.title}</h3>
                                                 <span className="text-xs text-[color:var(--text-muted)]">{mod.weeks}</span>
                                             </div>
                                         </div>
 
-                                        {/* Episode steps */}
-                                        <div className="pl-16 space-y-3">
+                                        {/* Episodes */}
+                                        <div className="ml-[47px] space-y-0">
                                             {Array.from({ length: mod.episodes }, (_, i) => {
                                                 const epNum = (Number(mod.number) - 1) * 3 + i + 1;
                                                 return (
-                                                    <div key={i} className="flex items-center gap-3">
-                                                        {/* Step dot */}
-                                                        <div
-                                                            className="w-2 h-2 rounded-full shrink-0"
-                                                            style={{ background: 'var(--brand-orange)', marginLeft: '-2.55rem' }}
-                                                        />
-                                                        <div className="flex-1 flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
-                                                            <div>
-                                                                <span className="font-semibold text-sm">Episode {epNum}</span>
-                                                                <span className="text-xs text-[color:var(--text-muted)] ml-2">Guest Operator (TBA)</span>
-                                                            </div>
-                                                            <span className="text-xs text-[color:var(--text-muted)]">Week {epNum}</span>
-                                                        </div>
+                                                    <div key={i} className="flex items-center gap-3 py-3 border-b border-[var(--border-subtle)] last:border-b-0">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-orange)] shrink-0" />
+                                                        <span className="text-sm font-medium flex-1">Episode {epNum}</span>
+                                                        <span className="text-xs text-[color:var(--text-muted)]">Guest Operator (TBA)</span>
+                                                        <Badge variant="outline" className="text-xs">Week {epNum}</Badge>
                                                     </div>
                                                 );
                                             })}
@@ -289,13 +268,13 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ===== 6. GUEST OPERATORS — alt ===== */}
-                <section className="section-padded section-bg-alt">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 6. GUEST OPERATORS ═══ */}
+                <section className="py-24 bg-[var(--bg-secondary)]">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="Real Operators"
                             heading="Every Guest Has a Live Operation"
-                            body="No talking heads. No motivational speakers. Every guest operator is actively closing cash offer deals — this month, not last year."
+                            sub="No talking heads. No motivational speakers. Every guest operator is actively closing cash offer deals — this month, not last year."
                         />
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
@@ -304,85 +283,83 @@ export default function LandingPage() {
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
                                 { icon: "🏗️", label: "Founders who built their operation from scratch" },
                             ].map((item) => (
-                                <div key={item.label} className="glass-card p-5 text-center">
-                                    <div className="text-3xl mb-3">{item.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
-                                        {item.label}
-                                    </p>
-                                </div>
+                                <Card key={item.label} className="text-center">
+                                    <CardContent className="p-6 space-y-3">
+                                        <div className="text-3xl">{item.icon}</div>
+                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{item.label}</p>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 7. WHAT YOU RECEIVE — dark ===== */}
-                <section className="section-padded">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 7. WHAT YOU RECEIVE ═══ */}
+                <section className="py-24">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="What's Included"
                             heading="What You Receive"
                         />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
-                                <div key={d.title} className="glass-card p-5">
-                                    <div className="icon-box mb-3">{d.icon}</div>
-                                    <h3 className="text-xl font-semibold mb-2">{d.title}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
-                                        {d.detail}
-                                    </p>
-                                </div>
+                                <Card key={d.title}>
+                                    <CardContent className="p-6 space-y-3">
+                                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-xl">{d.icon}</div>
+                                        <h3 className="text-xl font-semibold">{d.title}</h3>
+                                        <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">{d.detail}</p>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ===== 8. AUDIT CTA — alt with glow ===== */}
-                <section className="section-padded section-bg-alt relative overflow-hidden">
-                    <div aria-hidden="true" className="cta-glow" />
+                {/* ═══ 8. PRIMARY CTA ═══ */}
+                <section className="py-24 bg-[var(--bg-secondary)] relative overflow-hidden">
+                    {/* Glow */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+                        <div className="w-[30rem] h-[30rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.08)_0%,transparent_70%)]" />
+                    </div>
 
-                    <div className="max-w-7xl mx-auto px-6 text-center relative">
-                        <span className="badge mb-6 inline-flex">Limited Seats</span>
-                        <h2 className="section-heading mb-4">Ready to Install a Real Conversion System?</h2>
-                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto mb-10 text-base leading-relaxed">
+                    <div className="max-w-6xl mx-auto px-6 text-center relative space-y-6">
+                        <Badge>Limited Seats</Badge>
+                        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Ready to Install a Real Conversion System?</h2>
+                        <p className="text-[color:var(--text-secondary)] max-w-lg mx-auto text-base leading-relaxed">
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
-                        <TrackedCta href="/register" className="btn-primary text-lg px-10 py-4" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
-                            Save My Seat for Season 1
-                        </TrackedCta>
+                        <div className="pt-4">
+                            <TrackedCta href="/register" className="btn-primary text-lg px-10 py-4 rounded-xl" ctaId="audit_cta_save_seat" ctaText="Save My Seat for Season 1" section="audit_cta">
+                                Save My Seat for Season 1
+                            </TrackedCta>
+                        </div>
                     </div>
                 </section>
 
-                {/* ===== 9. FAQ — dark ===== */}
-                <section className="section-padded">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <SectionIntro
+                {/* ═══ 9. FAQ ═══ */}
+                <section className="py-24">
+                    <div className="max-w-6xl mx-auto px-6 space-y-8">
+                        <SectionHeader
                             badge="FAQ"
                             heading="Common Questions"
                         />
 
-                        <div className="max-w-2xl mx-auto space-y-4">
-                            {FAQS.map((faq) => (
-                                <div key={faq.q} className="glass-card p-5">
-                                    <h3 className="text-base font-semibold mb-2">{faq.q}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-base leading-relaxed">
-                                        {faq.a}
-                                    </p>
-                                </div>
-                            ))}
+                        <div className="max-w-3xl mx-auto">
+                            <FaqAccordion />
                         </div>
                     </div>
                 </section>
             </main>
 
-            {/* ===== FOOTER ===== */}
-            <footer className="site-footer">
-                <div className="max-w-7xl mx-auto px-6 footer-inner">
-                    <span>© 2026 Cash Offer Conversion School. All rights reserved.</span>
+            {/* ── FOOTER ── */}
+            <footer className="border-t border-[var(--border-subtle)] py-8">
+                <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-[color:var(--text-muted)]">
+                    <span>&copy; 2026 Cash Offer Conversion School. All rights reserved.</span>
                     <div className="flex gap-6">
-                        <a href="#" className="footer-link">Privacy</a>
-                        <a href="#" className="footer-link">Terms</a>
+                        <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Privacy</a>
+                        <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Terms</a>
                     </div>
                 </div>
             </footer>

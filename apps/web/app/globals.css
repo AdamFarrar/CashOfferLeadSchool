@@ -58,9 +58,14 @@
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-card: var(--bg-card);
   --color-bg-elevated: var(--bg-elevated);
+  --color-bg-alt: var(--bg-secondary);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
+  --color-text: var(--text-primary);
+  --color-primary: var(--brand-orange);
+  --color-secondary: var(--brand-orange-dark);
+  --color-card-bg: var(--bg-card);
   --color-brand: var(--brand-orange);
   --color-brand-light: var(--brand-orange-light);
   --color-brand-dark: var(--brand-orange-dark);
