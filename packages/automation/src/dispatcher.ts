@@ -10,13 +10,17 @@ import type { PlannedAction, ChannelExecutor, ExecutorContext, ExecutorResult } 
 import { db } from "@cocs/database/client";
 import { automationActionLog } from "@cocs/database/schema";
 import { eq, and } from "drizzle-orm";
-import { emailExecutor } from "./executors/email";
 import { webhookExecutor } from "./executors/webhook";
 import { noopExecutor } from "./executors/noop";
 
 // ── Channel Executor Registry ──
-const EXECUTORS: Record<string, ChannelExecutor> = {
-    email: emailExecutor,
+// Email executor is lazy-loaded to avoid importing jsdom at startup.
+// jsdom reads CSS files via __dirname which breaks in Next.js standalone bundles.
+const EXECUTORS: Record<string, ChannelExecutor | (() => Promise<ChannelExecutor>)> = {
+    email: async () => {
+        const { emailExecutor } = await import("./executors/email");
+        return emailExecutor;
+    },
     webhook: webhookExecutor,
     notification: noopExecutor,
 };
@@ -68,11 +72,16 @@ async function executeAction(
     }
 
     // 2. Execute via channel executor
-    const executor = EXECUTORS[action.channel];
-    if (!executor) {
+    const entry = EXECUTORS[action.channel];
+    if (!entry) {
         await updateActionStatus(context.eventId, action.ruleId, "failed", `Unknown channel: ${action.channel}`);
         return;
     }
+
+    // Resolve lazy executors (e.g. email — loaded on-demand to avoid jsdom at startup)
+    const executor: ChannelExecutor = typeof entry === "function" && !("execute" in entry)
+        ? await (entry as () => Promise<ChannelExecutor>)()
+        : entry as ChannelExecutor;
 
     let result: ExecutorResult;
     try {
