@@ -20,6 +20,9 @@ COPY packages/services/package.json ./packages/services/package.json
 COPY packages/analytics/package.json ./packages/analytics/package.json
 COPY packages/experiments/package.json ./packages/experiments/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
+COPY packages/email/package.json ./packages/email/package.json
+COPY packages/automation/package.json ./packages/automation/package.json
+COPY packages/events/package.json ./packages/events/package.json
 
 RUN pnpm install --frozen-lockfile
 
