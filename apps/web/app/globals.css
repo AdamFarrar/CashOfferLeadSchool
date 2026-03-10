@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../packages/ui";
 
 /* =============================================================================
    Cash Offer Conversion School — Design System

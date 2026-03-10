@@ -14,8 +14,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         return React.createElement("div", {
             ref,
             className: cn(
-                "rounded-xl border border-[var(--color-border)] bg-[var(--color-card-bg)]",
-                "shadow-sm transition-shadow hover:shadow-md",
+                "rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-card-bg)]",
+                "shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-elevated)]",
                 className,
             ),
             ...props,
@@ -39,7 +39,7 @@ export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes
     ({ className, ...props }, ref) => {
         return React.createElement("div", {
             ref,
-            className: cn("px-6 py-4", className),
+            className: cn("p-6", className),
             ...props,
         });
     },
