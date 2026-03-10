@@ -23,8 +23,10 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules 2>/dev/null || true
 COPY . .
+
+# Re-run install to restore pnpm workspace symlinks after COPY
+RUN pnpm install --frozen-lockfile
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build --filter=@cocs/web
