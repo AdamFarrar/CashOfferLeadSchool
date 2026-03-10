@@ -154,27 +154,27 @@ export default function LandingPage() {
                             </p>
                         </div>
 
-                        <div className="grid-auto-fit">
-                            <div className="glass-card p-8 text-center">
+                        <div className="grid-auto-fit gap-6">
+                            <div className="glass-card p-6 text-center">
                                 <div className="text-4xl mb-4">📉</div>
                                 <h3 className="text-xl mb-3">Courses Teach Theory</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem]">
+                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
                                     They hand you information and leave. No systems, no scripts,
                                     no accountability for whether your team actually improves.
                                 </p>
                             </div>
-                            <div className="glass-card p-8 text-center">
+                            <div className="glass-card p-6 text-center">
                                 <div className="text-4xl mb-4">🔧</div>
                                 <h3 className="text-xl mb-3">This Installs Systems</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem]">
+                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
                                     Every week you install a specific conversion system into your operation.
                                     Scripts, SOPs, and live coaching to make sure it sticks.
                                 </p>
                             </div>
-                            <div className="glass-card p-8 text-center">
+                            <div className="glass-card p-6 text-center">
                                 <div className="text-4xl mb-4">🎯</div>
                                 <h3 className="text-xl mb-3">Operators, Not Gurus</h3>
-                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem]">
+                                <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
                                     Every guest has a live operation. They&apos;re closing deals this month,
                                     not teaching from a stage.
                                 </p>
@@ -205,7 +205,7 @@ export default function LandingPage() {
                             ].map((leak) => (
                                 <div key={leak.label} className="flex items-start gap-4 mb-6">
                                     <div className="icon-box shrink-0">{leak.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-[0.95rem] leading-relaxed">{leak.label}</p>
+                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">{leak.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -226,7 +226,7 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             {MODULES.map((mod) => (
-                                <div key={mod.number} className="glass-card p-8">
+                                <div key={mod.number} className="glass-card p-6">
                                     <div className="flex items-center gap-3 mb-4">
                                         <div className="step-number">{mod.number}</div>
                                         <div>
@@ -234,7 +234,7 @@ export default function LandingPage() {
                                             <span className="text-[color:var(--text-muted)] text-xs">{mod.weeks} • {mod.episodes} episodes</span>
                                         </div>
                                     </div>
-                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-[0.95rem]">
+                                    <p className="text-[color:var(--text-secondary)] leading-relaxed text-sm">
                                         {mod.description}
                                     </p>
                                 </div>
@@ -301,7 +301,7 @@ export default function LandingPage() {
                             ].map((item) => (
                                 <div key={item.label} className="glass-card p-6 text-center">
                                     <div className="text-3xl mb-3">{item.icon}</div>
-                                    <p className="text-[color:var(--text-secondary)] text-[0.95rem] leading-relaxed">
+                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
                                         {item.label}
                                     </p>
                                 </div>
@@ -323,7 +323,7 @@ export default function LandingPage() {
                                 <div key={d.title} className="glass-card p-6">
                                     <div className="icon-box mb-4">{d.icon}</div>
                                     <h3 className="text-lg mb-2 font-semibold">{d.title}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-[0.9rem] leading-relaxed">
+                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
                                         {d.detail}
                                     </p>
                                 </div>
@@ -360,8 +360,8 @@ export default function LandingPage() {
                         <div className="max-w-2xl mx-auto flex flex-col gap-6">
                             {FAQS.map((faq) => (
                                 <div key={faq.q} className="glass-card p-6">
-                                    <h3 className="text-[0.95rem] font-semibold mb-2">{faq.q}</h3>
-                                    <p className="text-[color:var(--text-secondary)] text-[0.9rem] leading-relaxed">
+                                    <h3 className="text-sm font-semibold mb-2">{faq.q}</h3>
+                                    <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
                                         {faq.a}
                                     </p>
                                 </div>

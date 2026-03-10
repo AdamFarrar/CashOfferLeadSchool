@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EpisodeCard, ModuleHeader, SectionHeader } from "@/app/components/ui/Cards";
 
 export const metadata: Metadata = {
     title: "Episodes — Cash Offer Conversion School",
@@ -51,61 +52,26 @@ const MODULES = [
 export default function EpisodesPage() {
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-[1.75rem] mb-2">Episodes</h1>
-                <p className="text-[color:var(--text-secondary)] text-[0.95rem]">
-                    Season 1 — 12 episodes across 4 modules
-                </p>
-            </div>
+            <SectionHeader
+                title="Episodes"
+                subtitle="Season 1 — 12 episodes across 4 modules"
+            />
 
             {MODULES.map((mod) => (
                 <div key={mod.number} className="mb-10">
-                    <div className="flex items-center gap-3 mb-4">
-                        <span className="text-[color:var(--brand-orange)] font-bold text-sm">
-                            MODULE {mod.number}
-                        </span>
-                        <span className="text-[color:var(--text-muted)] text-sm">—</span>
-                        <span className="font-semibold text-[0.95rem]">{mod.title}</span>
-                        <span className="text-xs text-[color:var(--text-muted)] ml-auto">{mod.weeks}</span>
-                    </div>
-
+                    <ModuleHeader
+                        moduleNumber={mod.number}
+                        title={mod.title}
+                        weeks={mod.weeks}
+                    />
                     <div className="flex flex-col gap-3">
                         {mod.episodes.map((ep) => (
-                            <div key={ep.number} className="glass-card p-5">
-                                <div className="flex items-start gap-4">
-                                    <div className="icon-box shrink-0 text-sm">🎬</div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="badge text-xs shrink-0">Ep {ep.number}</span>
-                                            <h3 className="font-semibold text-[0.9rem] truncate">{ep.title}</h3>
-                                        </div>
-                                        <p className="text-xs text-[color:var(--text-muted)]">{ep.guest}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2 shrink-0">
-                                        <button
-                                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                                            disabled
-                                            title="Coming soon"
-                                        >
-                                            📥 Download
-                                        </button>
-                                        <button
-                                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                                            disabled
-                                            title="Coming soon"
-                                        >
-                                            ▶ Replay
-                                        </button>
-                                        <button
-                                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                                            disabled
-                                            title="Coming soon"
-                                        >
-                                            📝 Notes
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <EpisodeCard
+                                key={ep.number}
+                                episodeNumber={ep.number}
+                                title={ep.title}
+                                guest={ep.guest}
+                            />
                         ))}
                     </div>
                 </div>

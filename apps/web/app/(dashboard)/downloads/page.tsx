@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SectionHeader, FeatureCard } from "@/app/components/ui/Cards";
 
 export const metadata: Metadata = {
     title: "Downloads — Cash Offer Conversion School",
@@ -47,23 +48,21 @@ const DOWNLOAD_CATEGORIES = [
 export default function DownloadsPage() {
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-[1.75rem] mb-2">Downloads</h1>
-                <p className="text-[color:var(--text-secondary)] text-[0.95rem]">
-                    Scripts, checklists, and SOPs — ready to install in your operation.
-                </p>
-            </div>
+            <SectionHeader
+                title="Downloads"
+                subtitle="Scripts, checklists, and SOPs — ready to install in your operation."
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {DOWNLOAD_CATEGORIES.map((cat) => (
                     <div key={cat.title} className="glass-card p-6">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="icon-box">{cat.icon}</div>
-                            <h2 className="font-semibold text-[0.95rem]">{cat.title}</h2>
+                            <h2 className="font-semibold text-sm">{cat.title}</h2>
                         </div>
                         <ul className="flex flex-col gap-2">
                             {cat.items.map((item) => (
-                                <li key={item} className="flex items-center gap-3 text-[0.85rem] text-[color:var(--text-secondary)]">
+                                <li key={item} className="flex items-center gap-3 text-sm text-[color:var(--text-secondary)]">
                                     <span className="text-[color:var(--text-muted)]">📥</span>
                                     <span className="flex-1">{item}</span>
                                     <span className="text-xs text-[color:var(--text-muted)]">Coming soon</span>

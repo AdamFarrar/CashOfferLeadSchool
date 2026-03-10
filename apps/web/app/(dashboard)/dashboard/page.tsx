@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, useActiveOrganization } from "@cocs/auth/client";
 import { FeedbackWidget } from "@/app/components/FeedbackWidget";
+import { ProgramCard } from "@/app/components/ui/Cards";
 import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
@@ -118,7 +119,7 @@ export default function DashboardPage() {
                 <h1 className="text-[1.75rem] mb-2">
                     Welcome back, {firstName} 👋
                 </h1>
-                <p className="text-[color:var(--text-secondary)] text-[0.95rem]">
+                <p className="text-[color:var(--text-secondary)] text-sm">
                     {SEASON_LABEL} • Week {CURRENT_WEEK} of {TOTAL_WEEKS}
                 </p>
             </div>
@@ -131,8 +132,8 @@ export default function DashboardPage() {
                 >
                     <div className="icon-box shrink-0">📋</div>
                     <div className="flex-1">
-                        <div className="font-semibold text-[0.95rem]">Help Us Tailor This</div>
-                        <div className="text-[0.85rem] text-[color:var(--text-secondary)]">
+                        <div className="font-semibold text-sm">Help Us Tailor This</div>
+                        <div className="text-xs text-[color:var(--text-secondary)]">
                             Complete a few quick questions so we can personalize your experience.
                         </div>
                     </div>
@@ -143,7 +144,7 @@ export default function DashboardPage() {
             {/* Season Progress */}
             <div className="glass-card p-6 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-[0.9rem] font-semibold">Season Progress</h2>
+                    <h2 className="text-sm font-semibold">Season Progress</h2>
                     <span className="text-xs text-[color:var(--text-muted)]">{progressPercent}%</span>
                 </div>
                 <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden mb-3">
@@ -155,7 +156,7 @@ export default function DashboardPage() {
                         }}
                     />
                 </div>
-                <div className="flex items-center gap-2 text-[0.85rem] text-[color:var(--text-secondary)]">
+                <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
                     <span className="text-[color:var(--brand-orange)] font-semibold">Module {currentModule.number}</span>
                     <span>—</span>
                     <span>{currentModule.title}</span>
@@ -168,7 +169,7 @@ export default function DashboardPage() {
                 <div className="glass-card p-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="icon-box">📡</div>
-                        <h2 className="text-[0.9rem] font-semibold">Next Live Session</h2>
+                        <h2 className="text-sm font-semibold">Next Live Session</h2>
                     </div>
                     <SessionCountdown targetDate={nextSessionDate} />
                     {nextSessionDate && (
@@ -188,12 +189,12 @@ export default function DashboardPage() {
                 <div className="glass-card p-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="icon-box">🎬</div>
-                        <h2 className="text-[0.9rem] font-semibold">This Week&apos;s Episode</h2>
+                        <h2 className="text-sm font-semibold">This Week&apos;s Episode</h2>
                     </div>
-                    <div className="text-[0.95rem] font-semibold mb-1">
+                    <div className="text-sm font-semibold mb-1">
                         Episode {CURRENT_WEEK}
                     </div>
-                    <div className="text-[0.85rem] text-[color:var(--text-secondary)] mb-1">
+                    <div className="text-xs text-[color:var(--text-secondary)] mb-1">
                         Module {currentModule.number} — {currentModule.title}
                     </div>
                     <div className="text-xs text-[color:var(--text-muted)]">
@@ -204,32 +205,24 @@ export default function DashboardPage() {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <Link
+                <ProgramCard
                     href="#"
-                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
-                >
-                    <div className="text-2xl mb-2">📡</div>
-                    <div className="font-semibold text-[0.9rem]">Join Live</div>
-                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Coming soon</div>
-                </Link>
-
-                <Link
+                    icon="📡"
+                    title="Join Live"
+                    subtitle="Coming soon"
+                />
+                <ProgramCard
                     href="/downloads"
-                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
-                >
-                    <div className="text-2xl mb-2">📥</div>
-                    <div className="font-semibold text-[0.9rem]">Download Assets</div>
-                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Scripts & SOPs</div>
-                </Link>
-
-                <Link
+                    icon="📥"
+                    title="Download Assets"
+                    subtitle="Scripts & SOPs"
+                />
+                <ProgramCard
                     href="/audit"
-                    className="glass-card p-5 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors"
-                >
-                    <div className="text-2xl mb-2">📋</div>
-                    <div className="font-semibold text-[0.9rem]">Book Audit</div>
-                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Pipeline review</div>
-                </Link>
+                    icon="📋"
+                    title="Book Audit"
+                    subtitle="Pipeline review"
+                />
             </div>
 
             {/* Feedback widget */}
