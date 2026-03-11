@@ -42,7 +42,7 @@ export default function GlobalError({
                         style={{
                             padding: "0.75rem 1.5rem",
                             borderRadius: "0.5rem",
-                            background: "linear-gradient(135deg, #f97316, #ea580c)",
+                            background: "linear-gradient(135deg, #e32652, #c41e45)",
                             color: "#fff",
                             fontWeight: 600,
                             border: "none",

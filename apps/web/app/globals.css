@@ -18,17 +18,17 @@
   --bg-elevated: #252525;
 
   /* Text */
-  --text-primary: #f5f1eb;
-  --text-secondary: #a8a29e;
-  --text-muted: #78716c;
-  --text-inverse: #0b0b0b;
+  --text-primary: #ffffff;
+  --text-secondary: #d4d5d9;
+  --text-muted: #9ea0a9;
+  --text-inverse: #000000;
 
-  /* Brand */
-  --brand-orange: #f97316;
-  --brand-orange-light: #fb923c;
-  --brand-orange-dark: #ea580c;
-  --brand-orange-glow: rgba(249, 115, 22, 0.15);
-  --brand-amber: #f59e0b;
+  /* Brand (MasterClass red) */
+  --brand-orange: #e32652;
+  --brand-orange-light: #f04070;
+  --brand-orange-dark: #c41e45;
+  --brand-orange-glow: rgba(227, 38, 82, 0.15);
+  --brand-amber: #e32652;
 
   /* Accents */
   --accent-blue: #3b82f6;
@@ -41,7 +41,7 @@
   --border-hover: rgba(255, 255, 255, 0.18);
 
   /* Shadows */
-  --shadow-glow: 0 0 60px rgba(249, 115, 22, 0.08);
+  --shadow-glow: 0 0 60px rgba(227, 38, 82, 0.08);
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 8px 48px rgba(0, 0, 0, 0.6);
 
@@ -99,7 +99,8 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    line-height: 1.65;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
     overflow-x: hidden;
   }
 
@@ -110,10 +111,10 @@
   h4,
   h5,
   h6 {
-    font-family: "Playfair Display", Georgia, serif;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    font-weight: 700;
+    font-family: "Figtree", "Inter", system-ui, sans-serif;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    font-weight: 600;
   }
 }
 
@@ -289,9 +290,9 @@
 }
 
 .module-preview-number {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Figtree", "Inter", system-ui, sans-serif;
   font-size: 3rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--brand-orange);
   opacity: 0.3;
   line-height: 1;
