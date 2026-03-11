@@ -1,7 +1,7 @@
 // =============================================================================
 // @cocs/email — Renderer Pipeline
 // =============================================================================
-// Sanitize → Validate → Inject → Verify → Inline CSS
+// Sanitize → Validate → Inject → Verify
 // Sanitization happens BEFORE variable injection to prevent XSS.
 // =============================================================================
 
@@ -14,7 +14,13 @@ export interface RenderResult {
 }
 
 /**
- * Full render pipeline: sanitize → validate → inject → inline CSS.
+ * Full render pipeline: sanitize → validate → inject.
+ *
+ * Note: CSS inlining (juice) was removed because it requires filesystem
+ * access to read default-stylesheet.css, which breaks in Next.js standalone
+ * Docker builds. All templates use inline styles already.
+ * If <style> block support is needed later, add juice back with a proper
+ * Dockerfile COPY for its CSS assets.
  */
 export async function renderEmail(
     templateHtml: string,
@@ -42,25 +48,11 @@ export async function renderEmail(
     // Strip any remaining unresolved placeholders — never show {{key}} to users
     const cleaned = injected.replace(/\{\{\w+\}\}/g, "");
 
-    // 5. Inline CSS — convert <style> blocks to inline styles for email clients
-    //    Dynamic import: juice reads default-stylesheet.css from disk at module
-    //    load time. In Next.js standalone/Docker builds, that file doesn't exist.
-    //    Dynamic import defers the load so we can catch it.
-    //    Fallback templates use inline styles, so skipping juice is safe.
-    let inlined: string;
-    try {
-        const juice = (await import("juice")).default;
-        inlined = juice(cleaned, { extraCss: "" });
-    } catch (err) {
-        console.warn("[EMAIL] juice CSS inlining skipped:", err instanceof Error ? err.message : err);
-        inlined = cleaned;
-    }
-
     // Subject also gets placeholder injection (no sanitization needed — plain text)
     const renderedSubject = injectPlaceholders(templateSubject, data);
 
     return {
-        html: inlined,
+        html: cleaned,
         subject: renderedSubject,
     };
 }
