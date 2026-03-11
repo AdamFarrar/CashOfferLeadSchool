@@ -3,13 +3,15 @@
 // =============================================================================
 // Episode View — Client Component
 // =============================================================================
-// Renders episode video, description, notes, assets, and progress controls.
+// Renders episode detail: video player, description, notes, assets, transcript.
+// Uses EpisodePlayer as the canonical video component.
 // All data from DB. No hardcoded content.
 // =============================================================================
 
 import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import { markComplete, saveNote, logEpisodeStarted } from "@/app/actions/program";
+import { markComplete, saveNote } from "@/app/actions/program";
+import { EpisodePlayer } from "@/app/components/program/EpisodePlayer";
 import type { EpisodeDetail } from "@cocs/services";
 
 interface Props {
@@ -22,7 +24,7 @@ export function EpisodeView({ episode }: Props) {
     const [saving, setSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<string | null>(null);
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const episodeStartedFired = useRef(false);
+    const [showTranscript, setShowTranscript] = useState(false);
 
     const handleMarkComplete = useCallback(async () => {
         const result = await markComplete(episode.id);
@@ -31,12 +33,15 @@ export function EpisodeView({ episode }: Props) {
         }
     }, [episode.id]);
 
+    const handleAutoComplete = useCallback(() => {
+        setCompleted(true);
+    }, []);
+
     const handleNoteChange = useCallback(
         (value: string) => {
             setNoteContent(value);
             setSaveStatus(null);
 
-            // Debounced auto-save (1.5s after last keystroke)
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
             debounceTimer.current = setTimeout(async () => {
                 setSaving(true);
@@ -51,9 +56,6 @@ export function EpisodeView({ episode }: Props) {
         [episode.id],
     );
 
-    // Parse video embed URL
-    const embedUrl = getEmbedUrl(episode.videoUrl);
-
     return (
         <div>
             {/* Breadcrumb */}
@@ -67,7 +69,7 @@ export function EpisodeView({ episode }: Props) {
                 <span className="text-[color:var(--text-primary)]">{episode.title}</span>
             </div>
 
-            {/* Locked state */}
+            {/* Locked state — full page */}
             {episode.locked && (
                 <div className="glass-card p-12 text-center">
                     <div className="text-5xl mb-4">🔒</div>
@@ -83,35 +85,18 @@ export function EpisodeView({ episode }: Props) {
 
             {!episode.locked && (
                 <>
-                    {/* Video Player */}
-                    <div className="glass-card overflow-hidden mb-6">
-                        {embedUrl ? (
-                            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                                <iframe
-                                    src={embedUrl}
-                                    className="absolute inset-0 w-full h-full"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    title={episode.title}
-                                    onLoad={() => {
-                                        // Fire episode_started once when iframe loads (playback ready)
-                                        if (!episodeStartedFired.current) {
-                                            episodeStartedFired.current = true;
-                                            logEpisodeStarted(episode.id, { moduleId: episode.moduleId });
-                                        }
-                                    }}
-                                />
-                            </div>
-                        ) : (
-                            <div className="aspect-video bg-[var(--surface-raised)] flex items-center justify-center">
-                                <div className="text-center">
-                                    <div className="text-4xl mb-3">🎬</div>
-                                    <p className="text-[color:var(--text-muted)] text-sm">
-                                        Video coming soon
-                                    </p>
-                                </div>
-                            </div>
-                        )}
+                    {/* Video Player — canonical EpisodePlayer component */}
+                    <div className="mb-6">
+                        <EpisodePlayer
+                            episodeId={episode.id}
+                            moduleId={episode.moduleId}
+                            programId={episode.programId}
+                            videoUrl={episode.videoUrl}
+                            durationSeconds={episode.durationSeconds}
+                            lastPositionSeconds={episode.lastPositionSeconds}
+                            locked={episode.locked}
+                            onComplete={handleAutoComplete}
+                        />
                     </div>
 
                     {/* Episode Info + Controls */}
@@ -148,6 +133,26 @@ export function EpisodeView({ episode }: Props) {
                                     </p>
                                 )}
                             </div>
+
+                            {/* Transcript */}
+                            {episode.transcript && (
+                                <div className="glass-card p-6 mb-6">
+                                    <button
+                                        onClick={() => setShowTranscript(!showTranscript)}
+                                        className="flex items-center justify-between w-full text-left"
+                                    >
+                                        <h2 className="font-semibold text-sm">📜 Transcript</h2>
+                                        <span className="text-xs text-[color:var(--text-muted)]">
+                                            {showTranscript ? "Hide" : "Show"}
+                                        </span>
+                                    </button>
+                                    {showTranscript && (
+                                        <div className="mt-4 text-sm text-[color:var(--text-secondary)] leading-relaxed whitespace-pre-wrap max-h-[400px] overflow-y-auto">
+                                            {episode.transcript}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Notes */}
                             <div className="glass-card p-6 mb-6">
@@ -223,31 +228,4 @@ export function EpisodeView({ episode }: Props) {
             )}
         </div>
     );
-}
-
-// ── Video Embed URL Parser ──
-
-function getEmbedUrl(videoUrl: string | null): string | null {
-    if (!videoUrl) return null;
-
-    // YouTube
-    const ytMatch = videoUrl.match(
-        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    );
-    if (ytMatch) {
-        return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`;
-    }
-
-    // Vimeo
-    const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
-    if (vimeoMatch) {
-        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-    }
-
-    // Already an embed URL
-    if (videoUrl.includes("embed") || videoUrl.includes("player.vimeo.com")) {
-        return videoUrl;
-    }
-
-    return null;
 }

@@ -61,9 +61,12 @@ export interface EpisodeDetail {
     moduleId: string;
     moduleTitle: string;
     moduleOrderIndex: number;
+    programId: string;
     completed: boolean;
     locked: boolean;
     note: string | null;
+    transcript: string | null;
+    lastPositionSeconds: number;
     assets: { id: string; title: string; fileUrl: string; fileType: string | null }[];
     prevEpisodeId: string | null;
     nextEpisodeId: string | null;
@@ -281,15 +284,18 @@ export async function getEpisodeDetail(
         id: ep.id,
         title: ep.title,
         description: ep.description,
-        videoUrl: locked ? null : ep.videoUrl, // Enforce at query layer
+        videoUrl: locked ? null : ep.videoUrl,
         durationSeconds: ep.durationSeconds,
         unlockWeek: ep.unlockWeek,
         moduleId: mod.id,
         moduleTitle: mod.title,
         moduleOrderIndex: mod.orderIndex,
+        programId: mod.programId,
         completed,
         locked,
-        note: locked ? null : note, // No notes access for locked episodes
+        note: locked ? null : note,
+        transcript: locked ? null : ep.transcript ?? null,
+        lastPositionSeconds: progressRows[0]?.lastPositionSeconds ?? 0,
         assets: locked ? [] : assets.map((a) => ({
             id: a.id,
             title: a.title,
@@ -383,4 +389,175 @@ export async function getAllAssets(): Promise<
         .orderBy(asc(module.orderIndex), asc(episode.orderIndex));
 
     return assets;
+}
+
+// ── Resume Position ──
+
+export async function updateResumePosition(
+    userId: string,
+    episodeId: string,
+    positionSeconds: number,
+    durationSeconds: number | null,
+): Promise<{ autoCompleted: boolean }> {
+    const now = new Date();
+    const shouldAutoComplete = durationSeconds ? positionSeconds >= durationSeconds * 0.9 : false;
+
+    await db
+        .insert(episodeProgress)
+        .values({
+            userId,
+            episodeId,
+            lastPositionSeconds: positionSeconds,
+            lastWatchedAt: now,
+            completed: shouldAutoComplete,
+            completedAt: shouldAutoComplete ? now : null,
+        })
+        .onConflictDoUpdate({
+            target: [episodeProgress.userId, episodeProgress.episodeId],
+            set: {
+                lastPositionSeconds: positionSeconds,
+                lastWatchedAt: now,
+                ...(shouldAutoComplete ? { completed: true, completedAt: now } : {}),
+            },
+        });
+
+    return { autoCompleted: shouldAutoComplete };
+}
+
+// ── Dashboard Progress ──
+
+export interface DashboardProgress {
+    programTitle: string;
+    programId: string;
+    cohortStartDate: Date | null;
+    totalEpisodes: number;
+    completedEpisodes: number;
+    progressPercent: number;
+    currentWeek: number;
+    modules: {
+        id: string;
+        title: string;
+        orderIndex: number;
+        totalEpisodes: number;
+        completedEpisodes: number;
+    }[];
+    nextEpisode: { id: string; title: string; moduleTitle: string } | null;
+    resumeEpisode: { id: string; title: string; lastPositionSeconds: number } | null;
+}
+
+export async function getProgramProgressForDashboard(
+    userId: string,
+): Promise<DashboardProgress | null> {
+    // Get active program
+    const programs = await db
+        .select()
+        .from(program)
+        .where(eq(program.status, "active"))
+        .limit(1);
+
+    if (programs.length === 0) return null;
+    const prog = programs[0];
+
+    const cohortStartDate = prog.cohortStartDate;
+    const now = new Date();
+    const currentWeek = cohortStartDate
+        ? Math.floor((now.getTime() - cohortStartDate.getTime()) / (7 * 24 * 60 * 60 * 1000))
+        : 0;
+
+    // Get modules
+    const modules = await db
+        .select()
+        .from(module)
+        .where(eq(module.programId, prog.id))
+        .orderBy(asc(module.orderIndex));
+
+    // Get all episodes
+    const moduleIds = modules.map((m) => m.id);
+    if (moduleIds.length === 0) return null;
+
+    const episodes = await db
+        .select()
+        .from(episode)
+        .where(inArray(episode.moduleId, moduleIds))
+        .orderBy(asc(episode.orderIndex));
+
+    // Get progress
+    const episodeIds = episodes.map((e) => e.id);
+    const progress = episodeIds.length > 0
+        ? await db
+            .select()
+            .from(episodeProgress)
+            .where(
+                and(
+                    eq(episodeProgress.userId, userId),
+                    inArray(episodeProgress.episodeId, episodeIds),
+                ),
+            )
+        : [];
+
+    const progressMap = new Map(progress.map((p) => [p.episodeId, p]));
+    const completedEpisodes = progress.filter((p) => p.completed).length;
+
+    // Build module progress
+    const moduleStats = modules.map((mod) => {
+        const modEps = episodes.filter((e) => e.moduleId === mod.id);
+        const modCompleted = modEps.filter((e) => progressMap.get(e.id)?.completed).length;
+        return {
+            id: mod.id,
+            title: mod.title,
+            orderIndex: mod.orderIndex,
+            totalEpisodes: modEps.length,
+            completedEpisodes: modCompleted,
+        };
+    });
+
+    // Find next uncompleted unlocked episode
+    let nextEpisode = null;
+    for (const ep of episodes) {
+        const p = progressMap.get(ep.id);
+        if (!p?.completed && isEpisodeUnlocked(ep.unlockWeek, cohortStartDate)) {
+            const mod = modules.find((m) => m.id === ep.moduleId);
+            nextEpisode = {
+                id: ep.id,
+                title: ep.title,
+                moduleTitle: mod?.title ?? "",
+            };
+            break;
+        }
+    }
+
+    // Find most recently watched episode for resume
+    let resumeEpisode = null;
+    const recentProgress = progress
+        .filter((p) => p.lastWatchedAt && !p.completed && (p.lastPositionSeconds ?? 0) > 0)
+        .sort((a, b) => {
+            const aTime = a.lastWatchedAt?.getTime() ?? 0;
+            const bTime = b.lastWatchedAt?.getTime() ?? 0;
+            return bTime - aTime;
+        });
+
+    if (recentProgress.length > 0) {
+        const rp = recentProgress[0];
+        const ep = episodes.find((e) => e.id === rp.episodeId);
+        if (ep) {
+            resumeEpisode = {
+                id: ep.id,
+                title: ep.title,
+                lastPositionSeconds: rp.lastPositionSeconds ?? 0,
+            };
+        }
+    }
+
+    return {
+        programTitle: prog.title,
+        programId: prog.id,
+        cohortStartDate,
+        totalEpisodes: episodes.length,
+        completedEpisodes,
+        progressPercent: episodes.length > 0 ? Math.round((completedEpisodes / episodes.length) * 100) : 0,
+        currentWeek,
+        modules: moduleStats,
+        nextEpisode,
+        resumeEpisode,
+    };
 }

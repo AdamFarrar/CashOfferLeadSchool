@@ -1,10 +1,10 @@
 "use server";
 
 // =============================================================================
-// Program Server Actions — Phase 2
+// Program Server Actions — Phase 3
 // =============================================================================
-// Server actions for the program delivery system.
 // All actions use getServerIdentity() — never trust client.
+// Enhanced with resume watching, episode playback events, and dashboard progress.
 // =============================================================================
 
 import {
@@ -15,6 +15,8 @@ import {
     getUserNotes as getUserNotesSvc,
     getAllAssets,
     logEvent,
+    updateResumePosition as updateResumePositionSvc,
+    getProgramProgressForDashboard as getProgressSvc,
 } from "@cocs/services";
 import { getServerIdentity } from "./identity";
 
@@ -24,7 +26,6 @@ export async function getProgram() {
 
     const program = await getActiveProgram(identity.userId);
 
-    // Log event
     if (program) {
         await logEvent(
             identity.userId,
@@ -45,10 +46,6 @@ export async function getEpisode(episodeId: string) {
     const episode = await getEpisodeDetail(episodeId, identity.userId);
     if (!episode) return null;
 
-    // Lock enforcement is at the service query layer — videoUrl, note, assets
-    // are already null/empty for locked episodes.
-
-    // Log view event (even for locked episodes — useful for engagement analytics)
     await logEvent(
         identity.userId,
         identity.organizationId,
@@ -68,7 +65,6 @@ export async function markComplete(episodeId: string) {
     try {
         await markEpisodeCompleteSvc(identity.userId, episodeId);
 
-        // Log event
         await logEvent(
             identity.userId,
             identity.organizationId,
@@ -88,7 +84,6 @@ export async function saveNote(episodeId: string, content: string) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, error: "Authentication required." };
 
-    // Limit note length
     if (content.length > 10000) {
         return { success: false, error: "Note is too long (max 10,000 characters)." };
     }
@@ -96,7 +91,6 @@ export async function saveNote(episodeId: string, content: string) {
     try {
         await saveEpisodeNoteSvc(identity.userId, episodeId, content);
 
-        // Log event
         await logEvent(
             identity.userId,
             identity.organizationId,
@@ -127,22 +121,74 @@ export async function getDownloadAssets() {
     return getAllAssets();
 }
 
-export async function logEpisodeStarted(episodeId: string, metadata?: { moduleId?: string; programId?: string }) {
+// ── Phase 3: Playback Events ──
+
+export async function logPlaybackEvent(
+    episodeId: string,
+    eventType: "episode_started" | "episode_paused" | "episode_resumed" | "episode_completed",
+    metadata?: { moduleId?: string; programId?: string; positionSeconds?: number },
+) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false };
 
     await logEvent(
         identity.userId,
         identity.organizationId,
-        "episode_started",
+        eventType,
         "episode",
         episodeId,
         {
             episode_id: episodeId,
             module_id: metadata?.moduleId ?? null,
             program_id: metadata?.programId ?? null,
+            position_seconds: metadata?.positionSeconds ?? null,
         },
     );
 
     return { success: true };
+}
+
+// ── Phase 3: Resume Position ──
+
+export async function updatePosition(
+    episodeId: string,
+    positionSeconds: number,
+    durationSeconds: number | null,
+) {
+    const identity = await getServerIdentity();
+    if (!identity) return { success: false, autoCompleted: false };
+
+    try {
+        const result = await updateResumePositionSvc(
+            identity.userId,
+            episodeId,
+            positionSeconds,
+            durationSeconds,
+        );
+
+        if (result.autoCompleted) {
+            await logEvent(
+                identity.userId,
+                identity.organizationId,
+                "episode_completed",
+                "episode",
+                episodeId,
+                { auto: true, position_seconds: positionSeconds },
+            );
+        }
+
+        return { success: true, autoCompleted: result.autoCompleted };
+    } catch (err) {
+        console.error("[PROGRAM] Update position error:", err);
+        return { success: false, autoCompleted: false };
+    }
+}
+
+// ── Phase 3: Dashboard Progress ──
+
+export async function getDashboardProgress() {
+    const identity = await getServerIdentity();
+    if (!identity) return null;
+
+    return getProgressSvc(identity.userId);
 }

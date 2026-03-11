@@ -8,25 +8,8 @@ import { ProgramCard } from "@/app/components/ui/Cards";
 import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
-
-// ── Season Configuration ──
-const SEASON_LABEL = "Season 1";
-const TOTAL_WEEKS = 12;
-const CURRENT_WEEK = 1; // Will be dynamic in Phase 2
-
-const MODULES = [
-    { number: 1, title: "Convert for the Appointment", weeks: "Weeks 1–3" },
-    { number: 2, title: "The Appointment", weeks: "Weeks 4–6" },
-    { number: 3, title: "Offer Mechanics", weeks: "Weeks 7–9" },
-    { number: 4, title: "Nurture", weeks: "Weeks 10–12" },
-];
-
-function getCurrentModule(week: number) {
-    if (week <= 3) return MODULES[0];
-    if (week <= 6) return MODULES[1];
-    if (week <= 9) return MODULES[2];
-    return MODULES[3];
-}
+import { getDashboardProgress } from "@/app/actions/program";
+import type { DashboardProgress } from "@cocs/services";
 
 function SessionCountdown({ targetDate }: { targetDate: string | null }) {
     const [timeLeft, setTimeLeft] = useState("");
@@ -85,11 +68,8 @@ export default function DashboardPage() {
     const organizationId = activeOrg?.id || "";
     const [qualCompleted, setQualCompleted] = useState(false);
     const [showVerifiedToast, setShowVerifiedToast] = useState(false);
+    const [progress, setProgress] = useState<DashboardProgress | null>(null);
 
-    const currentModule = getCurrentModule(CURRENT_WEEK);
-    const progressPercent = Math.round((CURRENT_WEEK / TOTAL_WEEKS) * 100);
-
-    // Read NEXT_SESSION_DATE from env (passed at build time)
     const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
 
     useEffect(() => {
@@ -107,6 +87,12 @@ export default function DashboardPage() {
     useEffect(() => {
         if (userId) {
             identify(userId, { organizationId: organizationId || undefined });
+
+            // Fetch program progress from server
+            getDashboardProgress().then((data) => {
+                if (data) setProgress(data);
+            });
+
             getQualificationStatus().then((status) => {
                 const completed = !!status?.submittedAt;
                 if (completed) setQualCompleted(true);
@@ -124,6 +110,11 @@ export default function DashboardPage() {
             });
         }
     }, [userId, organizationId]);
+
+    // Derive current module from progress data
+    const currentModuleData = progress?.modules.find((m) => {
+        return m.completedEpisodes < m.totalEpisodes;
+    }) || progress?.modules[0];
 
     return (
         <div>
@@ -148,17 +139,20 @@ export default function DashboardPage() {
                     </button>
                 </div>
             )}
+
             {/* Welcome header */}
             <div className="mb-8">
                 <h1 className="text-[1.75rem] mb-2">
                     Welcome back, {firstName} 👋
                 </h1>
                 <p className="text-[color:var(--text-secondary)] text-sm">
-                    {SEASON_LABEL} • Week {CURRENT_WEEK} of {TOTAL_WEEKS}
+                    {progress
+                        ? `${progress.programTitle} • Week ${progress.currentWeek + 1} of ${progress.totalEpisodes}`
+                        : "Loading program data..."}
                 </p>
             </div>
 
-            {/* Qualification prompt if not completed */}
+            {/* Qualification prompt */}
             {!qualCompleted && (
                 <Link
                     href="/qualify"
@@ -175,30 +169,113 @@ export default function DashboardPage() {
                 </Link>
             )}
 
-            {/* Season Progress */}
+            {/* Program Progress — DB-driven */}
             <div className="glass-card p-6 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-semibold">Program Timeline</h2>
-                    <span className="text-xs text-[color:var(--text-muted)]">Week {CURRENT_WEEK} of {TOTAL_WEEKS}</span>
+                    <h2 className="text-sm font-semibold">Program Progress</h2>
+                    <span className="text-xs text-[color:var(--text-muted)]">
+                        {progress
+                            ? `${progress.completedEpisodes}/${progress.totalEpisodes} episodes`
+                            : "—"}
+                    </span>
                 </div>
                 <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden mb-3">
                     <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
-                            width: `${progressPercent}%`,
+                            width: `${progress?.progressPercent ?? 0}%`,
                             background: "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
                         }}
                     />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-                    <span className="text-[color:var(--brand-orange)] font-semibold">Module {currentModule.number}</span>
-                    <span>—</span>
-                    <span>{currentModule.title}</span>
-                </div>
+                {currentModuleData && (
+                    <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
+                        <span className="text-[color:var(--brand-orange)] font-semibold">
+                            Module {currentModuleData.orderIndex + 1}
+                        </span>
+                        <span>—</span>
+                        <span>{currentModuleData.title}</span>
+                        <span className="ml-auto text-[color:var(--text-muted)]">
+                            {currentModuleData.completedEpisodes}/{currentModuleData.totalEpisodes} done
+                        </span>
+                    </div>
+                )}
             </div>
 
-            {/* Two-column: Next Session + This Week */}
+            {/* Module Breakdown */}
+            {progress && progress.modules.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    {progress.modules.map((mod) => {
+                        const pct = mod.totalEpisodes > 0
+                            ? Math.round((mod.completedEpisodes / mod.totalEpisodes) * 100)
+                            : 0;
+                        return (
+                            <div key={mod.id} className="glass-card p-4">
+                                <div className="text-xs text-[color:var(--brand-orange)] font-semibold mb-1">
+                                    Module {mod.orderIndex + 1}
+                                </div>
+                                <div className="text-xs font-medium mb-2 truncate">{mod.title}</div>
+                                <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full transition-all duration-300"
+                                        style={{
+                                            width: `${pct}%`,
+                                            background: pct === 100
+                                                ? "var(--success-green, #22c55e)"
+                                                : "var(--brand-orange)",
+                                        }}
+                                    />
+                                </div>
+                                <div className="text-[10px] text-[color:var(--text-muted)] mt-1">
+                                    {mod.completedEpisodes}/{mod.totalEpisodes}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Two-column: Next/Resume Episode + Next Session */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Next / Resume Episode */}
+                <div className="glass-card p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="icon-box">🎬</div>
+                        <h2 className="text-sm font-semibold">
+                            {progress?.resumeEpisode ? "Resume Watching" : "Next Episode"}
+                        </h2>
+                    </div>
+                    {progress?.resumeEpisode ? (
+                        <Link
+                            href={`/episodes/${progress.resumeEpisode.id}`}
+                            className="no-underline text-inherit"
+                        >
+                            <div className="text-sm font-semibold mb-1">
+                                {progress.resumeEpisode.title}
+                            </div>
+                            <div className="text-xs text-[color:var(--text-muted)]">
+                                Resume from {formatTime(progress.resumeEpisode.lastPositionSeconds)}
+                            </div>
+                        </Link>
+                    ) : progress?.nextEpisode ? (
+                        <Link
+                            href={`/episodes/${progress.nextEpisode.id}`}
+                            className="no-underline text-inherit"
+                        >
+                            <div className="text-sm font-semibold mb-1">
+                                {progress.nextEpisode.title}
+                            </div>
+                            <div className="text-xs text-[color:var(--text-secondary)]">
+                                {progress.nextEpisode.moduleTitle}
+                            </div>
+                        </Link>
+                    ) : (
+                        <div className="text-xs text-[color:var(--text-muted)]">
+                            All available episodes completed!
+                        </div>
+                    )}
+                </div>
+
                 {/* Next Live Session */}
                 <div className="glass-card p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -218,32 +295,15 @@ export default function DashboardPage() {
                         </p>
                     )}
                 </div>
-
-                {/* This Week's Episode */}
-                <div className="glass-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="icon-box">🎬</div>
-                        <h2 className="text-sm font-semibold">This Week&apos;s Episode</h2>
-                    </div>
-                    <div className="text-sm font-semibold mb-1">
-                        Episode {CURRENT_WEEK}
-                    </div>
-                    <div className="text-xs text-[color:var(--text-secondary)] mb-1">
-                        Module {currentModule.number} — {currentModule.title}
-                    </div>
-                    <div className="text-xs text-[color:var(--text-muted)]">
-                        Guest Operator (TBA)
-                    </div>
-                </div>
             </div>
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                 <ProgramCard
-                    href="#"
-                    icon="📡"
-                    title="Join Live"
-                    subtitle="Coming soon"
+                    href="/episodes"
+                    icon="📺"
+                    title="Episodes"
+                    subtitle="Browse all episodes"
                 />
                 <ProgramCard
                     href="/downloads"
@@ -267,4 +327,10 @@ export default function DashboardPage() {
             )}
         </div>
     );
+}
+
+function formatTime(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
 }

@@ -66,6 +66,7 @@ export const episode = pgTable("episode", {
     durationSeconds: integer("duration_seconds"),
     orderIndex: integer("order_index").notNull().default(0),
     unlockWeek: integer("unlock_week").notNull().default(0),
+    transcript: text("transcript"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
     index("idx_episode_module_order").on(t.moduleId, t.orderIndex),
@@ -79,6 +80,8 @@ export const episodeProgress = pgTable("episode_progress", {
     episodeId: uuid("episode_id").notNull().references(() => episode.id, { onDelete: "cascade" }),
     completed: boolean("completed").notNull().default(false),
     completedAt: timestamp("completed_at", { withTimezone: true }),
+    lastPositionSeconds: integer("last_position_seconds").default(0),
+    lastWatchedAt: timestamp("last_watched_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
     uniqueIndex("idx_episode_progress_user_episode").on(t.userId, t.episodeId),
@@ -121,6 +124,7 @@ export const episodeNote = pgTable("episode_note", {
     userId: uuid("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
     episodeId: uuid("episode_id").notNull().references(() => episode.id, { onDelete: "cascade" }),
     content: text("content").notNull().default(""),
+    timestampSeconds: integer("timestamp_seconds"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
