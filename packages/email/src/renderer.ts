@@ -44,7 +44,16 @@ export function renderEmail(
     const cleaned = injected.replace(/\{\{\w+\}\}/g, "");
 
     // 5. Inline CSS — convert <style> blocks to inline styles for email clients
-    const inlined = juice(cleaned);
+    //    Wrapped in try/catch: juice reads default-stylesheet.css from disk via
+    //    __dirname, which doesn't exist in Next.js standalone/Docker builds.
+    //    Our fallback templates use inline styles, so skipping juice is safe.
+    let inlined: string;
+    try {
+        inlined = juice(cleaned, { extraCss: "" });
+    } catch (err) {
+        console.warn("[EMAIL] juice CSS inlining failed — using raw HTML:", err instanceof Error ? err.message : err);
+        inlined = cleaned;
+    }
 
     // Subject also gets placeholder injection (no sanitization needed — plain text)
     const renderedSubject = injectPlaceholders(templateSubject, data);
