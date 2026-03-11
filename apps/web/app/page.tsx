@@ -5,6 +5,14 @@ import { TrackedCta } from "./components/TrackedCta";
 import { FaqAccordion } from "./components/FaqAccordion";
 import { Badge } from "@cocs/ui";
 
+// ── Static image imports (bundled into _next/static/media/) ──
+import heroOperator from "../public/images/hero-operator.png";
+import operatorPhone from "../public/images/operator-phone.png";
+import teamStrategy from "../public/images/team-strategy.png";
+import whiteboardPlanning from "../public/images/whiteboard-planning.png";
+import operatorCrm from "../public/images/operator-crm.png";
+import operatorClosing from "../public/images/operator-closing.png";
+
 export const metadata: Metadata = {
     title: "Cash Offer Conversion School — 12-Week Installation System for Operators",
     description:
@@ -26,7 +34,7 @@ const MODULES = [
         description: "First-contact scripts, speed-to-lead systems, and the psychology of booking solid appointments from inbound leads.",
         weeks: "Weeks 1–3",
         episodes: 3,
-        image: "/images/operator-phone.png",
+        image: operatorPhone,
     },
     {
         number: "02",
@@ -34,7 +42,7 @@ const MODULES = [
         description: "How to run appointments that build trust, uncover motivation, and position your cash offer as the obvious solution.",
         weeks: "Weeks 4–6",
         episodes: 3,
-        image: "/images/team-strategy.png",
+        image: teamStrategy,
     },
     {
         number: "03",
@@ -42,7 +50,7 @@ const MODULES = [
         description: "Structuring offers that work for sellers and protect your margin. Comps, repair estimates, and creative deal structures.",
         weeks: "Weeks 7–9",
         episodes: 3,
-        image: "/images/whiteboard-planning.png",
+        image: whiteboardPlanning,
     },
     {
         number: "04",
@@ -50,7 +58,7 @@ const MODULES = [
         description: "The follow-up systems that convert cold leads over time. Drip sequences, re-engagement campaigns, and pipeline management.",
         weeks: "Weeks 10–12",
         episodes: 3,
-        image: "/images/operator-crm.png",
+        image: operatorCrm,
     },
 ];
 
@@ -64,10 +72,10 @@ const DELIVERABLES = [
 ];
 
 const OPERATORS = [
-    { name: "Marcus Rivera", line: "Closes 40+ deals per year", image: "/images/hero-operator.png" },
-    { name: "Sarah Chen", line: "Runs a six-figure dispositions desk", image: "/images/team-strategy.png" },
-    { name: "James Mitchell", line: "Specializes in off-market acquisitions", image: "/images/operator-closing.png" },
-    { name: "Danielle Brooks", line: "Built a 3-person conversion team from scratch", image: "/images/whiteboard-planning.png" },
+    { name: "Marcus Rivera", line: "Closes 40+ deals per year", image: heroOperator },
+    { name: "Sarah Chen", line: "Runs a six-figure dispositions desk", image: teamStrategy },
+    { name: "James Mitchell", line: "Specializes in off-market acquisitions", image: operatorClosing },
+    { name: "Danielle Brooks", line: "Built a 3-person conversion team from scratch", image: whiteboardPlanning },
 ];
 
 // ── Section Header ──
@@ -109,7 +117,7 @@ export default function LandingPage() {
                     {/* Background image */}
                     <div className="cinematic-hero-bg">
                         <Image
-                            src="/images/hero-operator.png"
+                            src={heroOperator}
                             alt="Real estate operator reviewing deal pipeline"
                             fill
                             priority
@@ -187,7 +195,7 @@ export default function LandingPage() {
                             <div className="editorial-row">
                                 <div className="editorial-image">
                                     <Image
-                                        src="/images/whiteboard-planning.png"
+                                        src={whiteboardPlanning}
                                         alt="Whiteboard conversion planning session"
                                         fill
                                         sizes="(max-width: 768px) 100vw, 50vw"
@@ -206,7 +214,7 @@ export default function LandingPage() {
                             <div className="editorial-row reverse">
                                 <div className="editorial-image">
                                     <Image
-                                        src="/images/operator-closing.png"
+                                        src={operatorClosing}
                                         alt="Operator closing a deal"
                                         fill
                                         sizes="(max-width: 768px) 100vw, 50vw"
@@ -236,7 +244,7 @@ export default function LandingPage() {
                         <div className="editorial-row">
                             <div className="editorial-image">
                                 <Image
-                                    src="/images/operator-crm.png"
+                                    src={operatorCrm}
                                     alt="Operator reviewing CRM pipeline"
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -387,7 +395,7 @@ export default function LandingPage() {
                     {/* Cinematic background */}
                     <div className="absolute inset-0">
                         <Image
-                            src="/images/operator-closing.png"
+                            src={operatorClosing}
                             alt=""
                             fill
                             sizes="100vw"
