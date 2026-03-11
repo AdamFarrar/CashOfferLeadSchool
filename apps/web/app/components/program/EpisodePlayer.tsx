@@ -6,9 +6,12 @@
 // Single reusable video player for all episode playback.
 // Emits rate-limited analytics events. Manages resume state.
 // No page-specific players — this is the canonical video component.
+//
+// ARCHITECTURE: hooks MUST be called before any conditional returns
+// (React rules-of-hooks). All branching is done in JSX, not via early returns.
 // =============================================================================
 
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { logPlaybackEvent, updatePosition } from "@/app/actions/program";
 
 interface EpisodePlayerProps {
@@ -42,7 +45,69 @@ export function EpisodePlayer({
     const currentPosition = useRef(lastPositionSeconds);
     const [isReady, setIsReady] = useState(false);
 
-    const eventMeta = { moduleId, programId, positionSeconds: currentPosition.current };
+    // Cleanup interval on unmount — MUST be before any conditional returns
+    useEffect(() => {
+        return () => {
+            if (positionUpdateTimer.current) {
+                clearInterval(positionUpdateTimer.current);
+                positionUpdateTimer.current = null;
+            }
+        };
+    }, []);
+
+    // Reset refs when episodeId changes (e.g. navigating between episodes)
+    useEffect(() => {
+        startedFired.current = false;
+        completedFired.current = false;
+        playbackState.current = "idle";
+        currentPosition.current = lastPositionSeconds;
+        setIsReady(false);
+
+        if (positionUpdateTimer.current) {
+            clearInterval(positionUpdateTimer.current);
+            positionUpdateTimer.current = null;
+        }
+    }, [episodeId, lastPositionSeconds]);
+
+    const startPositionTracking = useCallback(() => {
+        if (positionUpdateTimer.current) return;
+
+        positionUpdateTimer.current = setInterval(() => {
+            if (playbackState.current !== "playing") return;
+
+            currentPosition.current += 10;
+
+            // Write to progress table (NOT event_log — rate limited)
+            updatePosition(episodeId, currentPosition.current, durationSeconds).then(
+                (result) => {
+                    if (result.autoCompleted && !completedFired.current) {
+                        completedFired.current = true;
+                        logPlaybackEvent(episodeId, "episode_completed", {
+                            moduleId,
+                            programId,
+                            positionSeconds: currentPosition.current,
+                        });
+                        onComplete?.();
+                    }
+                },
+            );
+        }, 10_000);
+    }, [episodeId, moduleId, programId, durationSeconds, onComplete]);
+
+    const handleIframeLoad = useCallback(() => {
+        setIsReady(true);
+
+        if (!startedFired.current) {
+            startedFired.current = true;
+            playbackState.current = "playing";
+            logPlaybackEvent(episodeId, "episode_started", {
+                moduleId,
+                programId,
+                positionSeconds: currentPosition.current,
+            });
+            startPositionTracking();
+        }
+    }, [episodeId, moduleId, programId, startPositionTracking]);
 
     // ── Locked State ──
     if (locked) {
@@ -77,57 +142,6 @@ export function EpisodePlayer({
     }
 
     const embedUrl = getEmbedUrl(videoUrl, lastPositionSeconds);
-
-    // ── Playback Event Handlers ──
-
-    const handleIframeLoad = () => {
-        setIsReady(true);
-
-        // Fire episode_started once when iframe loads
-        if (!startedFired.current) {
-            startedFired.current = true;
-            playbackState.current = "playing";
-            logPlaybackEvent(episodeId, "episode_started", eventMeta);
-
-            // Start position tracking interval (~10s)
-            startPositionTracking();
-        }
-    };
-
-    const startPositionTracking = () => {
-        if (positionUpdateTimer.current) return;
-
-        positionUpdateTimer.current = setInterval(() => {
-            // Increment position estimate (iframe doesn't give us real-time position)
-            if (playbackState.current === "playing") {
-                currentPosition.current += 10;
-
-                // Write to progress table (NOT event_log — rate limited)
-                updatePosition(episodeId, currentPosition.current, durationSeconds).then(
-                    (result) => {
-                        if (result.autoCompleted && !completedFired.current) {
-                            completedFired.current = true;
-                            logPlaybackEvent(episodeId, "episode_completed", {
-                                ...eventMeta,
-                                positionSeconds: currentPosition.current,
-                            });
-                            onComplete?.();
-                        }
-                    },
-                );
-            }
-        }, 10_000);
-    };
-
-    // Cleanup interval on unmount
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-        return () => {
-            if (positionUpdateTimer.current) {
-                clearInterval(positionUpdateTimer.current);
-            }
-        };
-    }, []);
 
     return (
         <div className="glass-card overflow-hidden">

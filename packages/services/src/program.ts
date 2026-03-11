@@ -11,8 +11,6 @@ import {
     module,
     episode,
     episodeProgress,
-    moduleProgress,
-    programProgress,
     episodeNote,
     episodeAsset,
     eventLog,

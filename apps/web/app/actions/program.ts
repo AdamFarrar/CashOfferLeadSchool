@@ -17,8 +17,31 @@ import {
     logEvent,
     updateResumePosition as updateResumePositionSvc,
     getProgramProgressForDashboard as getProgressSvc,
+    checkRateLimit,
+    rateLimitKey,
 } from "@cocs/services";
 import { getServerIdentity } from "./identity";
+
+// ── Rate Limit Configs ──
+
+const RATE_LIMITS = {
+    saveNote: { maxRequests: 20, windowMs: 60 * 60 * 1000, name: "save_note" },
+    updatePosition: { maxRequests: 360, windowMs: 60 * 60 * 1000, name: "update_position" },
+    markComplete: { maxRequests: 30, windowMs: 60 * 60 * 1000, name: "mark_complete" },
+} as const;
+
+// ── Validation ──
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MAX_POSITION_SECONDS = 86400; // 24 hours
+
+function isValidUuid(id: string): boolean {
+    return UUID_RE.test(id);
+}
+
+function isValidPosition(seconds: number): boolean {
+    return Number.isFinite(seconds) && seconds >= 0 && seconds <= MAX_POSITION_SECONDS;
+}
 
 export async function getProgram() {
     const identity = await getServerIdentity();
@@ -61,6 +84,10 @@ export async function getEpisode(episodeId: string) {
 export async function markComplete(episodeId: string) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, error: "Authentication required." };
+    if (!isValidUuid(episodeId)) return { success: false, error: "Invalid episode." };
+
+    const rl = checkRateLimit(rateLimitKey("mark_complete", identity.userId), RATE_LIMITS.markComplete);
+    if (!rl.allowed) return { success: false, error: "Too many requests. Please try again later." };
 
     try {
         await markEpisodeCompleteSvc(identity.userId, episodeId);
@@ -83,6 +110,10 @@ export async function markComplete(episodeId: string) {
 export async function saveNote(episodeId: string, content: string) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, error: "Authentication required." };
+    if (!isValidUuid(episodeId)) return { success: false, error: "Invalid episode." };
+
+    const rl = checkRateLimit(rateLimitKey("save_note", identity.userId), RATE_LIMITS.saveNote);
+    if (!rl.allowed) return { success: false, error: "Too many saves. Please try again later." };
 
     if (content.length > 10000) {
         return { success: false, error: "Note is too long (max 10,000 characters)." };
@@ -157,6 +188,11 @@ export async function updatePosition(
 ) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, autoCompleted: false };
+    if (!isValidUuid(episodeId)) return { success: false, autoCompleted: false };
+    if (!isValidPosition(positionSeconds)) return { success: false, autoCompleted: false };
+
+    const rl = checkRateLimit(rateLimitKey("update_position", identity.userId), RATE_LIMITS.updatePosition);
+    if (!rl.allowed) return { success: false, autoCompleted: false };
 
     try {
         const result = await updateResumePositionSvc(
