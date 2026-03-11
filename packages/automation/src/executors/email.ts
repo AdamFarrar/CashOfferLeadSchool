@@ -36,7 +36,7 @@ export const emailExecutor: ChannelExecutor = {
         data.app_name = data.app_name ?? "Cash Offer Lead School";
         data.user_name = data.user_name ?? data.userName ?? "there";
 
-        const rendered = renderEmail(resolution.html, resolution.subject, data);
+        const rendered = await renderEmail(resolution.html, resolution.subject, data);
 
         // 3. Deliver via Resend
         const delivery = await deliverEmail({

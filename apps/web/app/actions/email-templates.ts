@@ -108,7 +108,7 @@ export async function previewTemplateAction(data: {
     testData?: Record<string, string>;
 }) {
     await requireAdmin();
-    const result = renderEmail(data.htmlBody, data.subject, data.testData ?? {
+    const result = await renderEmail(data.htmlBody, data.subject, data.testData ?? {
         user_name: "Test User",
         email: "test@example.com",
         verification_url: "https://example.com/verify",
@@ -158,7 +158,7 @@ export async function sendTestEmailAction(data: {
         };
     }
 
-    const rendered = renderEmail(data.htmlBody, data.subject, {
+    const rendered = await renderEmail(data.htmlBody, data.subject, {
         user_name: "Test User",
         email: data.to,
         app_name: "Cash Offer Lead School",

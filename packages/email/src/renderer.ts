@@ -7,7 +7,6 @@
 
 import { sanitizeHtml } from "./sanitizer";
 import { validatePlaceholders, injectPlaceholders } from "./placeholders";
-import juice from "juice";
 
 export interface RenderResult {
     html: string;
@@ -17,11 +16,11 @@ export interface RenderResult {
 /**
  * Full render pipeline: sanitize → validate → inject → inline CSS.
  */
-export function renderEmail(
+export async function renderEmail(
     templateHtml: string,
     templateSubject: string,
     data: Record<string, string>,
-): RenderResult {
+): Promise<RenderResult> {
     // 1. Sanitize — remove dangerous HTML before touching variables
     const sanitized = sanitizeHtml(templateHtml);
 
@@ -44,14 +43,16 @@ export function renderEmail(
     const cleaned = injected.replace(/\{\{\w+\}\}/g, "");
 
     // 5. Inline CSS — convert <style> blocks to inline styles for email clients
-    //    Wrapped in try/catch: juice reads default-stylesheet.css from disk via
-    //    __dirname, which doesn't exist in Next.js standalone/Docker builds.
-    //    Our fallback templates use inline styles, so skipping juice is safe.
+    //    Dynamic import: juice reads default-stylesheet.css from disk at module
+    //    load time. In Next.js standalone/Docker builds, that file doesn't exist.
+    //    Dynamic import defers the load so we can catch it.
+    //    Fallback templates use inline styles, so skipping juice is safe.
     let inlined: string;
     try {
+        const juice = (await import("juice")).default;
         inlined = juice(cleaned, { extraCss: "" });
     } catch (err) {
-        console.warn("[EMAIL] juice CSS inlining failed — using raw HTML:", err instanceof Error ? err.message : err);
+        console.warn("[EMAIL] juice CSS inlining skipped:", err instanceof Error ? err.message : err);
         inlined = cleaned;
     }
 
