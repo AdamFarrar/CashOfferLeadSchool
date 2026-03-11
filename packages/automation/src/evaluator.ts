@@ -22,6 +22,8 @@ export const MAX_CONDITION_DEPTH = 5;
  * Resolution: org-specific rules + system (null org) rules.
  */
 export async function evaluateRules(event: DomainEvent): Promise<AutomationRule[]> {
+    console.info(`[AUTOMATION:EVAL] Starting | event=${event.eventKey} orgId=${event.organizationId ?? "NULL"}`);
+
     const orgFilter = event.organizationId
         ? or(
             eq(automationRule.organizationId, event.organizationId),
@@ -29,17 +31,24 @@ export async function evaluateRules(event: DomainEvent): Promise<AutomationRule[
         )
         : isNull(automationRule.organizationId);
 
-    const rows = await db
-        .select()
-        .from(automationRule)
-        .where(
-            and(
-                eq(automationRule.eventKey, event.eventKey),
-                eq(automationRule.enabled, true),
-                orgFilter,
-            ),
-        )
-        .orderBy(automationRule.priority);
+    let rows;
+    try {
+        rows = await db
+            .select()
+            .from(automationRule)
+            .where(
+                and(
+                    eq(automationRule.eventKey, event.eventKey),
+                    eq(automationRule.enabled, true),
+                    orgFilter,
+                ),
+            )
+            .orderBy(automationRule.priority);
+        console.info(`[AUTOMATION:EVAL] Found ${rows.length} rules for event=${event.eventKey}`);
+    } catch (err) {
+        console.error(`[AUTOMATION:EVAL] DB query FAILED for event=${event.eventKey}:`, err);
+        return [];
+    }
 
     // Filter by condition match
     return rows.filter(row => {
