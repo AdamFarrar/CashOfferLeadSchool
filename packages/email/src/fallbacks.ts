@@ -49,7 +49,7 @@ const FALLBACKS: Record<string, { subject: string; html: string }> = {
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #1a1a2e;">Welcome, {{user_name}}!</h2>
-                <p>Thank you for completing your qualification. You're now set up and ready to go.</p>
+                <p>Thanks for joining {{app_name}}. Your account is all set.</p>
                 <p>Head to your dashboard to get started:</p>
                 <p style="margin: 24px 0;">
                     <a href="{{app_url}}/dashboard" style="background: #6366f1; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">
