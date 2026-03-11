@@ -84,12 +84,25 @@ export default function DashboardPage() {
     const { data: activeOrg } = useActiveOrganization();
     const organizationId = activeOrg?.id || "";
     const [qualCompleted, setQualCompleted] = useState(false);
+    const [showVerifiedToast, setShowVerifiedToast] = useState(false);
 
     const currentModule = getCurrentModule(CURRENT_WEEK);
     const progressPercent = Math.round((CURRENT_WEEK / TOTAL_WEEKS) * 100);
 
     // Read NEXT_SESSION_DATE from env (passed at build time)
     const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("verified") === "true") {
+                setShowVerifiedToast(true);
+                window.history.replaceState({}, "", "/dashboard");
+                const timer = setTimeout(() => setShowVerifiedToast(false), 5000);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (userId) {
@@ -114,6 +127,27 @@ export default function DashboardPage() {
 
     return (
         <div>
+            {/* Verification success toast */}
+            {showVerifiedToast && (
+                <div
+                    className="glass-card p-4 mb-6 flex items-center gap-3 border border-green-500/30"
+                    style={{ animation: "fadeIn 0.3s ease" }}
+                >
+                    <span className="text-green-400 text-xl">✓</span>
+                    <div className="flex-1">
+                        <div className="font-semibold text-sm text-green-400">Email verified!</div>
+                        <div className="text-xs text-[color:var(--text-secondary)]">
+                            Your account is all set. Welcome aboard!
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowVerifiedToast(false)}
+                        className="text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] text-sm"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
             {/* Welcome header */}
             <div className="mb-8">
                 <h1 className="text-[1.75rem] mb-2">
@@ -144,8 +178,8 @@ export default function DashboardPage() {
             {/* Season Progress */}
             <div className="glass-card p-6 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-semibold">Season Progress</h2>
-                    <span className="text-xs text-[color:var(--text-muted)]">{progressPercent}%</span>
+                    <h2 className="text-sm font-semibold">Program Timeline</h2>
+                    <span className="text-xs text-[color:var(--text-muted)]">Week {CURRENT_WEEK} of {TOTAL_WEEKS}</span>
                 </div>
                 <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden mb-3">
                     <div

@@ -53,7 +53,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
         // Use BetterAuth's internal method to create a verification token+URL
         // This calls our sendVerificationEmail callback which emits the domain event
         await auth.api.sendVerificationEmail({
-            body: { email: normalizedEmail, callbackURL: "/dashboard" },
+            body: { email: normalizedEmail, callbackURL: "/dashboard?verified=true" },
         });
 
         _lastResend.set(normalizedEmail, Date.now());

@@ -31,6 +31,7 @@ export default function RegisterPage() {
                 name,
                 email,
                 password,
+                callbackURL: "/dashboard?verified=true",
             });
 
             if (result.error) {
