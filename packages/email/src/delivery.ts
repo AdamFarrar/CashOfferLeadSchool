@@ -31,7 +31,7 @@ function getResend(): Resend | null {
     return _resend;
 }
 
-const DEFAULT_FROM = "Cash Offer School <noreply@cashofferleadschool.com>";
+const DEFAULT_FROM = "Cash Offer Lead School <noreply@cashofferleadschool.com>";
 
 /**
  * Deliver an email via Resend.
