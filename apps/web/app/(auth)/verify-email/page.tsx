@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { authClient } from "@cocs/auth/client";
+import { resendVerificationEmail } from "@/app/actions/resend-verification";
 import { track } from "@cocs/analytics";
 import { AuthEmailVerificationSent } from "@cocs/analytics/event-contracts";
 
@@ -24,9 +24,7 @@ function VerifyEmailForm() {
         if (!email || loading) return;
         setLoading(true);
         try {
-            await authClient.sendVerificationEmail({
-                email,
-            });
+            await resendVerificationEmail(email);
             setResent(true);
         } catch {
             // Silently fail — don't reveal whether email exists
