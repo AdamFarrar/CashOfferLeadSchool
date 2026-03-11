@@ -1,17 +1,31 @@
 // =============================================================================
-// @cocs/events — Listener Registry
+// @cocs/events — Listener Registry (globalThis Singleton)
 // =============================================================================
-// Manages per-event and wildcard (all-event) listener subscriptions.
-// Listeners are functions that receive a DomainEvent and return a Promise.
+// Uses globalThis to ensure a single registry instance across all Next.js
+// bundle chunks. Without this, instrumentation.ts and API routes get
+// separate module instances, causing listeners to be invisible across chunks.
 // =============================================================================
 
 import type { DomainEventKey, DomainEventListener } from "./types";
 
-// Per-event listeners
-const _listeners = new Map<DomainEventKey, DomainEventListener[]>();
+// Symbol key prevents collision with other libraries
+const REGISTRY_KEY = Symbol.for("@cocs/events/registry");
 
-// Wildcard listeners (fire for every event)
-const _wildcardListeners: DomainEventListener[] = [];
+interface RegistryState {
+    listeners: Map<DomainEventKey, DomainEventListener[]>;
+    wildcardListeners: DomainEventListener[];
+}
+
+function getRegistry(): RegistryState {
+    const g = globalThis as any;
+    if (!g[REGISTRY_KEY]) {
+        g[REGISTRY_KEY] = {
+            listeners: new Map<DomainEventKey, DomainEventListener[]>(),
+            wildcardListeners: [] as DomainEventListener[],
+        };
+    }
+    return g[REGISTRY_KEY];
+}
 
 /**
  * Register a listener for a specific event key.
@@ -20,9 +34,10 @@ export function registerListener(
     eventKey: DomainEventKey,
     listener: DomainEventListener,
 ): void {
-    const existing = _listeners.get(eventKey) ?? [];
+    const registry = getRegistry();
+    const existing = registry.listeners.get(eventKey) ?? [];
     existing.push(listener);
-    _listeners.set(eventKey, existing);
+    registry.listeners.set(eventKey, existing);
 }
 
 /**
@@ -30,7 +45,7 @@ export function registerListener(
  * Used by analytics (must track everything unconditionally).
  */
 export function registerListenerAll(listener: DomainEventListener): void {
-    _wildcardListeners.push(listener);
+    getRegistry().wildcardListeners.push(listener);
 }
 
 /**
@@ -38,14 +53,16 @@ export function registerListenerAll(listener: DomainEventListener): void {
  * Returns per-event listeners + all wildcard listeners.
  */
 export function getListeners(eventKey: DomainEventKey): DomainEventListener[] {
-    const specific = _listeners.get(eventKey) ?? [];
-    return [...specific, ..._wildcardListeners];
+    const registry = getRegistry();
+    const specific = registry.listeners.get(eventKey) ?? [];
+    return [...specific, ...registry.wildcardListeners];
 }
 
 /**
  * Clear all listeners. Used in tests only.
  */
 export function clearAllListeners(): void {
-    _listeners.clear();
-    _wildcardListeners.length = 0;
+    const registry = getRegistry();
+    registry.listeners.clear();
+    registry.wildcardListeners.length = 0;
 }
