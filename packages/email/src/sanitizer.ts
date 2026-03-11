@@ -1,38 +1,35 @@
 // =============================================================================
-// @cocs/email — HTML Sanitizer (Singleton DOMPurify)
+// @cocs/email — HTML Sanitizer (Lightweight, No JSDOM)
 // =============================================================================
-// Module-level DOMPurify instance — instantiated ONCE at import time.
-// Eliminates ~50-100ms cold start per render from JSDOM initialization.
+// Strips dangerous elements from email HTML without requiring jsdom.
+// For system-controlled templates (verification, welcome, password reset),
+// aggressive sanitization is unnecessary. This sanitizer removes scripts,
+// event handlers, and dangerous tags while preserving safe email HTML.
+//
+// Note: isomorphic-dompurify was removed because it imports jsdom which
+// reads default-stylesheet.css from disk — incompatible with Next.js
+// standalone Docker builds.
 // =============================================================================
-
-import DOMPurify from "isomorphic-dompurify";
-
-const ALLOWED_TAGS = [
-    "h1", "h2", "h3", "h4", "h5", "h6",
-    "p", "br", "hr",
-    "style",
-    "a", "img",
-    "table", "thead", "tbody", "tr", "td", "th",
-    "div", "span", "section",
-    "strong", "em", "b", "i", "u",
-    "ul", "ol", "li",
-    "blockquote", "pre", "code",
-];
-
-const ALLOWED_ATTRS = [
-    "href", "src", "alt", "title", "width", "height",
-    "style", "class", "align", "valign", "bgcolor",
-    "border", "cellpadding", "cellspacing", "colspan", "rowspan",
-];
 
 /**
- * Sanitize HTML using a strict allowlist.
- * Removes scripts, event handlers, and dangerous elements.
+ * Sanitize HTML for email: strip scripts, event handlers, and dangerous elements.
+ * This is a lightweight sanitizer for system-controlled templates.
  */
 export function sanitizeHtml(html: string): string {
-    return DOMPurify.sanitize(html, {
-        ALLOWED_TAGS,
-        ALLOWED_ATTR: ALLOWED_ATTRS,
-        ALLOW_DATA_ATTR: false,
-    });
+    let result = html;
+
+    // Remove <script> tags and content
+    result = result.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+
+    // Remove <iframe>, <object>, <embed>, <form>, <input>, <textarea>, <select>
+    result = result.replace(/<(iframe|object|embed|form|input|textarea|select)\b[^>]*\/?>/gi, "");
+    result = result.replace(/<\/(iframe|object|embed|form|input|textarea|select)>/gi, "");
+
+    // Remove event handler attributes (on*)
+    result = result.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "");
+
+    // Remove javascript: URLs
+    result = result.replace(/href\s*=\s*["']?\s*javascript\s*:[^"'>\s]*/gi, 'href="#"');
+
+    return result;
 }

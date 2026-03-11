@@ -12,8 +12,6 @@
     "dependencies": {
         "@cocs/database": "workspace:*",
         "resend": "^4.0.0",
-        "isomorphic-dompurify": "^2.20.0",
-        "juice": "^11.0.0",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {
