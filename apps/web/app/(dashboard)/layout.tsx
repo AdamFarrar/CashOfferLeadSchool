@@ -16,6 +16,7 @@ const NAV_ITEMS = [
 ];
 
 const ADMIN_NAV_ITEMS = [
+    { href: "/admin/program", label: "Program", icon: "🎓" },
     { href: "/admin/email-templates", label: "Email Templates", icon: "📧" },
     { href: "/admin/automation-rules", label: "Automation Rules", icon: "⚡" },
     { href: "/admin/feedback", label: "Feedback", icon: "💬" },
