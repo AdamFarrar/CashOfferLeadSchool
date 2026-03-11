@@ -8,9 +8,7 @@
 import type { DomainEvent } from "@cocs/events";
 import type { EventContract } from "./types";
 import {
-    AuthRegistrationCompleted,
     AuthEmailVerificationCompleted,
-    AuthLoginCompleted,
 } from "./event-contracts";
 
 interface MappedContract {
@@ -24,14 +22,10 @@ interface MappedContract {
  */
 export function resolveContract(event: DomainEvent): MappedContract | null {
     switch (event.eventKey) {
-        case "user_registered":
-            return {
-                contract: AuthRegistrationCompleted,
-                properties: {
-                    method: (event.payload.method as string) ?? "email",
-                    email_hash: (event.payload.emailHash as string) ?? "",
-                },
-            };
+        // NOTE: user_registered is NOT mapped here because register/page.tsx
+        // already fires AuthRegistrationCompleted client-side. Mapping it here
+        // would cause a double-fire. The client-side event is preferred because
+        // it includes session_id and user context.
 
         case "email_verified":
             return {
