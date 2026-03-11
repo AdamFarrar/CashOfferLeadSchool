@@ -1,77 +1,58 @@
 import type { Metadata } from "next";
-import { SectionHeader, FeatureCard } from "@/app/components/ui/Cards";
+import { getDownloadAssets } from "@/app/actions/program";
 
 export const metadata: Metadata = {
     title: "Downloads — Cash Offer Conversion School",
-    description: "Scripts, checklists, and SOPs from your Season 1 program.",
+    description: "Scripts, checklists, and SOPs from your program.",
 };
 
-const DOWNLOAD_CATEGORIES = [
-    {
-        title: "Call Scripts",
-        icon: "📞",
-        items: [
-            "First-contact inbound script",
-            "Follow-up call framework",
-            "Objection handling cheat sheet",
-        ],
-    },
-    {
-        title: "Appointment SOPs",
-        icon: "🏠",
-        items: [
-            "Pre-appointment checklist",
-            "Kitchen table walkthrough guide",
-            "Offer presentation template",
-        ],
-    },
-    {
-        title: "Offer Templates",
-        icon: "💰",
-        items: [
-            "Comp analysis worksheet",
-            "Repair estimate calculator",
-            "Deal structure comparison sheet",
-        ],
-    },
-    {
-        title: "Nurture Sequences",
-        icon: "📧",
-        items: [
-            "7-day drip sequence templates",
-            "Re-engagement email series",
-            "Pipeline tracking spreadsheet",
-        ],
-    },
-];
+export default async function DownloadsPage() {
+    const assets = await getDownloadAssets();
 
-export default function DownloadsPage() {
     return (
         <div>
-            <SectionHeader
-                title="Downloads"
-                subtitle="Scripts, checklists, and SOPs — ready to install in your operation."
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {DOWNLOAD_CATEGORIES.map((cat) => (
-                    <div key={cat.title} className="glass-card p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="icon-box">{cat.icon}</div>
-                            <h2 className="font-semibold text-sm">{cat.title}</h2>
-                        </div>
-                        <ul className="flex flex-col gap-2">
-                            {cat.items.map((item) => (
-                                <li key={item} className="flex items-center gap-3 text-sm text-[color:var(--text-secondary)]">
-                                    <span className="text-[color:var(--text-muted)]">📥</span>
-                                    <span className="flex-1">{item}</span>
-                                    <span className="text-xs text-[color:var(--text-muted)]">Coming soon</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold mb-2">Downloads</h1>
+                <p className="text-[color:var(--text-secondary)] text-sm">
+                    Scripts, checklists, and SOPs — ready to install in your operation.
+                </p>
             </div>
+
+            {assets.length === 0 ? (
+                <div className="glass-card p-12 text-center">
+                    <div className="text-4xl mb-4">📥</div>
+                    <h2 className="text-lg font-semibold mb-2">Downloads Coming Soon</h2>
+                    <p className="text-[color:var(--text-secondary)] text-sm max-w-md mx-auto leading-relaxed">
+                        Downloadable scripts, templates, and checklists will appear here as
+                        episodes are released.
+                    </p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {assets.map((asset) => (
+                        <a
+                            key={asset.id}
+                            href={asset.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="glass-card p-6 no-underline text-inherit hover:border-[var(--brand-orange)]/30 transition-colors"
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="icon-box shrink-0 text-sm">📄</div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-semibold text-sm mb-1">{asset.title}</h3>
+                                    <p className="text-xs text-[color:var(--text-muted)]">
+                                        {asset.episodeTitle} · {asset.moduleTitle}
+                                    </p>
+                                </div>
+                                <span className="badge text-xs shrink-0">
+                                    {asset.fileType ?? "PDF"}
+                                </span>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

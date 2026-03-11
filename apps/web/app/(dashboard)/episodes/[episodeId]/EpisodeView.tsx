@@ -1,0 +1,245 @@
+"use client";
+
+// =============================================================================
+// Episode View — Client Component
+// =============================================================================
+// Renders episode video, description, notes, assets, and progress controls.
+// All data from DB. No hardcoded content.
+// =============================================================================
+
+import { useState, useCallback, useRef } from "react";
+import Link from "next/link";
+import { markComplete, saveNote } from "@/app/actions/program";
+import type { EpisodeDetail } from "@cocs/services";
+
+interface Props {
+    episode: EpisodeDetail;
+}
+
+export function EpisodeView({ episode }: Props) {
+    const [completed, setCompleted] = useState(episode.completed);
+    const [noteContent, setNoteContent] = useState(episode.note ?? "");
+    const [saving, setSaving] = useState(false);
+    const [saveStatus, setSaveStatus] = useState<string | null>(null);
+    const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleMarkComplete = useCallback(async () => {
+        const result = await markComplete(episode.id);
+        if (result.success) {
+            setCompleted(true);
+        }
+    }, [episode.id]);
+
+    const handleNoteChange = useCallback(
+        (value: string) => {
+            setNoteContent(value);
+            setSaveStatus(null);
+
+            // Debounced auto-save (1.5s after last keystroke)
+            if (debounceTimer.current) clearTimeout(debounceTimer.current);
+            debounceTimer.current = setTimeout(async () => {
+                setSaving(true);
+                const result = await saveNote(episode.id, value);
+                setSaving(false);
+                setSaveStatus(result.success ? "Saved" : result.error ?? "Error");
+                if (result.success) {
+                    setTimeout(() => setSaveStatus(null), 2000);
+                }
+            }, 1500);
+        },
+        [episode.id],
+    );
+
+    // Parse video embed URL
+    const embedUrl = getEmbedUrl(episode.videoUrl);
+
+    return (
+        <div>
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-xs text-[color:var(--text-muted)] mb-6">
+                <Link href="/episodes" className="hover:text-[color:var(--text-primary)] transition-colors">
+                    Episodes
+                </Link>
+                <span>→</span>
+                <span>Module {episode.moduleOrderIndex + 1}: {episode.moduleTitle}</span>
+                <span>→</span>
+                <span className="text-[color:var(--text-primary)]">{episode.title}</span>
+            </div>
+
+            {/* Locked state */}
+            {episode.locked && (
+                <div className="glass-card p-12 text-center">
+                    <div className="text-5xl mb-4">🔒</div>
+                    <h1 className="text-xl font-bold mb-2">Episode Locked</h1>
+                    <p className="text-[color:var(--text-secondary)] text-sm">
+                        This episode unlocks in Week {episode.unlockWeek + 1} of your cohort program.
+                    </p>
+                    <Link href="/episodes" className="btn-primary mt-6 inline-block">
+                        ← Back to Episodes
+                    </Link>
+                </div>
+            )}
+
+            {!episode.locked && (
+                <>
+                    {/* Video Player */}
+                    <div className="glass-card overflow-hidden mb-6">
+                        {embedUrl ? (
+                            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                                <iframe
+                                    src={embedUrl}
+                                    className="absolute inset-0 w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    title={episode.title}
+                                />
+                            </div>
+                        ) : (
+                            <div className="aspect-video bg-[var(--surface-raised)] flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-3">🎬</div>
+                                    <p className="text-[color:var(--text-muted)] text-sm">
+                                        Video coming soon
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Episode Info + Controls */}
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        {/* Main Content */}
+                        <div className="flex-1">
+                            {/* Title + Complete */}
+                            <div className="glass-card p-6 mb-6">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h1 className="text-xl font-bold mb-2">{episode.title}</h1>
+                                        <p className="text-xs text-[color:var(--text-muted)]">
+                                            Module {episode.moduleOrderIndex + 1}: {episode.moduleTitle}
+                                            {episode.durationSeconds && (
+                                                <> · {Math.ceil(episode.durationSeconds / 60)} min</>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleMarkComplete}
+                                        disabled={completed}
+                                        className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                            completed
+                                                ? "bg-green-600/20 text-green-400 cursor-default"
+                                                : "btn-primary"
+                                        }`}
+                                    >
+                                        {completed ? "✅ Completed" : "Mark Complete"}
+                                    </button>
+                                </div>
+                                {episode.description && (
+                                    <p className="text-[color:var(--text-secondary)] text-sm mt-4 leading-relaxed">
+                                        {episode.description}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Notes */}
+                            <div className="glass-card p-6 mb-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h2 className="font-semibold text-sm">📝 My Notes</h2>
+                                    <span className="text-xs text-[color:var(--text-muted)]">
+                                        {saving ? "Saving..." : saveStatus ?? "Auto-saves as you type"}
+                                    </span>
+                                </div>
+                                <textarea
+                                    value={noteContent}
+                                    onChange={(e) => handleNoteChange(e.target.value)}
+                                    placeholder="Take notes on this episode..."
+                                    className="w-full min-h-[160px] bg-[var(--surface-raised)] border border-[var(--border-subtle)] rounded-lg p-4 text-sm text-[color:var(--text-primary)] placeholder:text-[color:var(--text-muted)] resize-y focus:outline-none focus:border-[var(--brand-orange)] transition-colors"
+                                />
+                            </div>
+
+                            {/* Nav */}
+                            <div className="flex items-center justify-between">
+                                {episode.prevEpisodeId ? (
+                                    <Link
+                                        href={`/episodes/${episode.prevEpisodeId}`}
+                                        className="btn-ghost text-sm"
+                                    >
+                                        ← Previous
+                                    </Link>
+                                ) : (
+                                    <div />
+                                )}
+                                <Link href="/episodes" className="btn-ghost text-sm">
+                                    All Episodes
+                                </Link>
+                                {episode.nextEpisodeId ? (
+                                    <Link
+                                        href={`/episodes/${episode.nextEpisodeId}`}
+                                        className="btn-primary text-sm"
+                                    >
+                                        Next →
+                                    </Link>
+                                ) : (
+                                    <div />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Sidebar: Assets */}
+                        {episode.assets.length > 0 && (
+                            <div className="lg:w-72 shrink-0">
+                                <div className="glass-card p-6">
+                                    <h2 className="font-semibold text-sm mb-4">📥 Downloads</h2>
+                                    <div className="flex flex-col gap-3">
+                                        {episode.assets.map((asset) => (
+                                            <a
+                                                key={asset.id}
+                                                href={asset.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-3 text-sm text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition-colors"
+                                            >
+                                                <span>📄</span>
+                                                <span className="flex-1">{asset.title}</span>
+                                                <span className="text-xs text-[color:var(--text-muted)]">
+                                                    {asset.fileType ?? "PDF"}
+                                                </span>
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+// ── Video Embed URL Parser ──
+
+function getEmbedUrl(videoUrl: string | null): string | null {
+    if (!videoUrl) return null;
+
+    // YouTube
+    const ytMatch = videoUrl.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    );
+    if (ytMatch) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`;
+    }
+
+    // Vimeo
+    const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    // Already an embed URL
+    if (videoUrl.includes("embed") || videoUrl.includes("player.vimeo.com")) {
+        return videoUrl;
+    }
+
+    return null;
+}
