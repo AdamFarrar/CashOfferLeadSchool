@@ -156,7 +156,11 @@ export const auth = betterAuth({
                         try {
                             await emitDomainEvent({
                                 eventKey: DOMAIN_EVENTS.EMAIL_VERIFIED,
-                                payload: { time_to_verify_s: 0 },
+                                payload: {
+                                    email: user.email,
+                                    user_name: user.name ?? "",
+                                    time_to_verify_s: 0,
+                                },
                                 actor: { type: "user", id: user.id },
                                 subject: { type: "user", id: user.id },
                             });
