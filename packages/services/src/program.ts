@@ -170,18 +170,21 @@ export async function getActiveProgram(userId: string): Promise<ProgramWithModul
             title: mod.title,
             description: mod.description,
             orderIndex: mod.orderIndex,
-            episodes: modEpisodes.map((ep) => ({
-                id: ep.id,
-                title: ep.title,
-                description: ep.description,
-                videoUrl: ep.videoUrl,
-                durationSeconds: ep.durationSeconds,
-                orderIndex: ep.orderIndex,
-                unlockWeek: ep.unlockWeek,
-                moduleId: ep.moduleId,
-                completed: progressMap.get(ep.id) ?? false,
-                locked: !isEpisodeUnlocked(ep.unlockWeek, prog.cohortStartDate),
-            })),
+            episodes: modEpisodes.map((ep) => {
+                const locked = !isEpisodeUnlocked(ep.unlockWeek, prog.cohortStartDate);
+                return {
+                    id: ep.id,
+                    title: ep.title,
+                    description: ep.description,
+                    videoUrl: locked ? null : ep.videoUrl, // Enforce at query layer
+                    durationSeconds: ep.durationSeconds,
+                    orderIndex: ep.orderIndex,
+                    unlockWeek: ep.unlockWeek,
+                    moduleId: ep.moduleId,
+                    completed: progressMap.get(ep.id) ?? false,
+                    locked,
+                };
+            }),
         };
     });
 
@@ -278,7 +281,7 @@ export async function getEpisodeDetail(
         id: ep.id,
         title: ep.title,
         description: ep.description,
-        videoUrl: ep.videoUrl,
+        videoUrl: locked ? null : ep.videoUrl, // Enforce at query layer
         durationSeconds: ep.durationSeconds,
         unlockWeek: ep.unlockWeek,
         moduleId: mod.id,
@@ -286,8 +289,8 @@ export async function getEpisodeDetail(
         moduleOrderIndex: mod.orderIndex,
         completed,
         locked,
-        note,
-        assets: assets.map((a) => ({
+        note: locked ? null : note, // No notes access for locked episodes
+        assets: locked ? [] : assets.map((a) => ({
             id: a.id,
             title: a.title,
             fileUrl: a.fileUrl,

@@ -153,6 +153,8 @@ export const eventLog = pgTable("event_log", {
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
     index("idx_event_log_user").on(t.userId),
+    index("idx_event_log_user_created").on(t.userId, t.createdAt),
     index("idx_event_log_entity").on(t.entityType, t.entityId),
+    index("idx_event_log_type").on(t.eventType),
     index("idx_event_log_type_created").on(t.eventType, t.createdAt),
 ]);

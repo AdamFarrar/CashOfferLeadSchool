@@ -9,7 +9,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import { markComplete, saveNote } from "@/app/actions/program";
+import { markComplete, saveNote, logEpisodeStarted } from "@/app/actions/program";
 import type { EpisodeDetail } from "@cocs/services";
 
 interface Props {
@@ -22,6 +22,7 @@ export function EpisodeView({ episode }: Props) {
     const [saving, setSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<string | null>(null);
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const episodeStartedFired = useRef(false);
 
     const handleMarkComplete = useCallback(async () => {
         const result = await markComplete(episode.id);
@@ -92,6 +93,13 @@ export function EpisodeView({ episode }: Props) {
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
                                     title={episode.title}
+                                    onLoad={() => {
+                                        // Fire episode_started once when iframe loads (playback ready)
+                                        if (!episodeStartedFired.current) {
+                                            episodeStartedFired.current = true;
+                                            logEpisodeStarted(episode.id, { moduleId: episode.moduleId });
+                                        }
+                                    }}
                                 />
                             </div>
                         ) : (

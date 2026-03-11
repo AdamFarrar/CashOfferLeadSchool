@@ -45,19 +45,17 @@ export async function getEpisode(episodeId: string) {
     const episode = await getEpisodeDetail(episodeId, identity.userId);
     if (!episode) return null;
 
-    // Don't return locked episodes
-    if (episode.locked) {
-        return { ...episode, videoUrl: null, note: null, assets: [] };
-    }
+    // Lock enforcement is at the service query layer — videoUrl, note, assets
+    // are already null/empty for locked episodes.
 
-    // Log event
+    // Log view event (even for locked episodes — useful for engagement analytics)
     await logEvent(
         identity.userId,
         identity.organizationId,
         "episode_viewed",
         "episode",
         episodeId,
-        { moduleId: episode.moduleId, title: episode.title },
+        { moduleId: episode.moduleId, title: episode.title, locked: episode.locked },
     );
 
     return episode;
@@ -127,4 +125,24 @@ export async function getDownloadAssets() {
     if (!identity) return [];
 
     return getAllAssets();
+}
+
+export async function logEpisodeStarted(episodeId: string, metadata?: { moduleId?: string; programId?: string }) {
+    const identity = await getServerIdentity();
+    if (!identity) return { success: false };
+
+    await logEvent(
+        identity.userId,
+        identity.organizationId,
+        "episode_started",
+        "episode",
+        episodeId,
+        {
+            episode_id: episodeId,
+            module_id: metadata?.moduleId ?? null,
+            program_id: metadata?.programId ?? null,
+        },
+    );
+
+    return { success: true };
 }
