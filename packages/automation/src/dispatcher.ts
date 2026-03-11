@@ -61,14 +61,10 @@ async function executeAction(
     event: DomainEvent,
     context: ExecutorContext,
 ): Promise<void> {
-    console.info(`[AUTOMATION:EXEC] Starting | channel=${action.channel} type=${action.actionType} rule="${action.ruleName}"`);
 
     // 1. Insert planned action — idempotency guard
     const inserted = await insertActionLog(action, context, "planned");
     if (!inserted) {
-        console.info(
-            `[AUTOMATION:EXEC] Skipped duplicate | rule="${action.ruleName}" event=${context.eventId}`
-        );
         return;
     }
 
@@ -80,27 +76,23 @@ async function executeAction(
             return;
         }
 
-        console.info(`[AUTOMATION:EXEC] Resolving executor for channel=${action.channel}`);
         const executor: ChannelExecutor = typeof entry === "function" && !("execute" in entry)
             ? await (entry as () => Promise<ChannelExecutor>)()
             : entry as ChannelExecutor;
-
-        console.info(`[AUTOMATION:EXEC] Executing | channel=${action.channel} recipient=${event.payload.email ?? "unknown"}`);
 
         // 3. Execute
         const result = await executor.execute(action, event.payload, context);
 
         // 4. Update status
         if (result.success) {
-            console.info(`[AUTOMATION:EXEC] SUCCESS | channel=${action.channel} messageId=${result.messageId ?? "none"}`);
             await updateActionStatus(context.eventId, action.ruleId, "completed", undefined, result.messageId);
         } else {
-            console.error(`[AUTOMATION:EXEC] FAILED | channel=${action.channel} error=${result.error}`);
+            console.error(`[AUTOMATION] Action failed | channel=${action.channel} error=${result.error}`);
             await updateActionStatus(context.eventId, action.ruleId, "failed", result.error);
         }
     } catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err);
-        console.error(`[AUTOMATION:EXEC] EXCEPTION | channel=${action.channel} rule="${action.ruleName}" error=`, err);
+        console.error(`[AUTOMATION] Action exception | channel=${action.channel}:`, errorMsg);
         try {
             await updateActionStatus(context.eventId, action.ruleId, "failed", errorMsg);
         } catch (updateErr) {

@@ -68,7 +68,6 @@ export const auth = betterAuth({
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
         sendVerificationEmail: async ({ user, url }) => {
-            console.info(`[AUTH:VERIFY] sendVerificationEmail called for ${user.email}`);
             try {
                 await emitDomainEvent({
                     eventKey: DOMAIN_EVENTS.VERIFICATION_EMAIL_REQUESTED,
@@ -81,9 +80,8 @@ export const auth = betterAuth({
                     subject: { type: "user", id: user.id },
                     // No organizationId — org may not exist yet at registration time
                 });
-                console.info(`[AUTH:VERIFY] Domain event emitted successfully for ${user.email}`);
             } catch (error) {
-                console.error("[AUTH:VERIFY] Failed to emit verification event:", {
+                console.error("[AUTH] Failed to emit verification event:", {
                     to: user.email,
                     error: error instanceof Error ? error.message : error,
                 });
@@ -105,7 +103,6 @@ export const auth = betterAuth({
         user: {
             create: {
                 after: async (user) => {
-                    console.info(`[AUTH:HOOK] user.create.after fired for ${user.email} (id=${user.id})`);
                     try {
                         await emitDomainEvent({
                             eventKey: DOMAIN_EVENTS.USER_REGISTERED,
