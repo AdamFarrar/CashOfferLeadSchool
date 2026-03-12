@@ -6,3 +6,4 @@ export * from "./feedback";
 export * from "./email";
 export * from "./automation";
 export * from "./program";
+export * from "./discussion";

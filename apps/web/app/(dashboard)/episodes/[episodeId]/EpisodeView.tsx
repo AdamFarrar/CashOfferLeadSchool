@@ -1,24 +1,36 @@
 "use client";
 
 // =============================================================================
-// Episode View — Cinematic 3-Zone Layout (Phase 3.5)
+// Episode View — Cinematic 4-Zone Layout (Phase 4)
 // =============================================================================
 // Zone 1: Full-width video stage + editorial metadata + action strip
 // Zone 2: Two-column learning workspace (transcript + notes)
 // Zone 3: Episode navigation cards (prev/next)
+// Zone 4: Episode discussion (content-anchored threads)
 //
 // No glass-card wrappers. No LMS panels. Streaming-platform feel.
+// Discussion placement: BELOW learning workspace (learning-first).
 // =============================================================================
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { markComplete, saveNote } from "@/app/actions/program";
+import { getEpisodeThreadsAction } from "@/app/actions/discussion";
 import { EpisodePlayer } from "@/app/components/program/EpisodePlayer";
-import type { EpisodeDetail } from "@cocs/services";
+import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
+import type { EpisodeDetail, ThreadSummary } from "@cocs/services";
 
 interface Props {
     episode: EpisodeDetail;
 }
+
+// Episode-specific discussion prompts
+const DISCUSSION_PROMPTS = [
+    "What part of this episode changed how you think about your operation?",
+    "What would you test in your business after this lesson?",
+    "What's one thing from this episode you can implement today?",
+    "How does this connect to something you've already tried?",
+];
 
 export function EpisodeView({ episode }: Props) {
     const [completed, setCompleted] = useState(episode.completed);
@@ -26,6 +38,24 @@ export function EpisodeView({ episode }: Props) {
     const [saving, setSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<string | null>(null);
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Zone 4: Discussion state
+    const [threads, setThreads] = useState<ThreadSummary[]>([]);
+    const [threadTotal, setThreadTotal] = useState(0);
+    const [discussionLoaded, setDiscussionLoaded] = useState(false);
+    const [, startTransition] = useTransition();
+
+    // Load episode discussion on mount
+    useEffect(() => {
+        startTransition(async () => {
+            const result = await getEpisodeThreadsAction(episode.id, 1);
+            if (result.success) {
+                setThreads(result.threads ?? []);
+                setThreadTotal(result.total ?? 0);
+            }
+            setDiscussionLoaded(true);
+        });
+    }, [episode.id]);
 
     const handleMarkComplete = useCallback(async () => {
         const result = await markComplete(episode.id);
@@ -56,6 +86,10 @@ export function EpisodeView({ episode }: Props) {
         },
         [episode.id],
     );
+
+    // Pick a deterministic prompt based on episode ID
+    const promptIndex = episode.id.charCodeAt(0) % DISCUSSION_PROMPTS.length;
+    const discussionPrompt = DISCUSSION_PROMPTS[promptIndex];
 
     // ── Locked State ──
     if (episode.locked) {
@@ -221,6 +255,20 @@ export function EpisodeView({ episode }: Props) {
                     <div />
                 )}
             </nav>
+
+            {/* ── ZONE 4: Episode Discussion ── */}
+            {discussionLoaded && (
+                <div style={{ marginTop: "3rem" }}>
+                    <DiscussionThreadList
+                        threads={threads}
+                        total={threadTotal}
+                        programId={episode.programId}
+                        moduleId={episode.moduleId}
+                        episodeId={episode.id}
+                        discussionPrompt={discussionPrompt}
+                    />
+                </div>
+            )}
         </div>
     );
 }
