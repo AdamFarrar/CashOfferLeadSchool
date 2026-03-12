@@ -17,6 +17,7 @@
         "@cocs/auth": "workspace:*",
         "@cocs/database": "workspace:*",
         "@cocs/services": "workspace:*",
+        "@cocs/ai": "workspace:*",
         "@cocs/analytics": "workspace:*",
         "@cocs/experiments": "workspace:*",
         "@cocs/ui": "workspace:*",

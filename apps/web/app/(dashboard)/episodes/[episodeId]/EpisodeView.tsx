@@ -16,8 +16,12 @@ import { useState, useCallback, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { markComplete, saveNote } from "@/app/actions/program";
 import { getEpisodeThreadsAction } from "@/app/actions/discussion";
+import { getEpisodeInsightsAction } from "@/app/actions/ai";
 import { EpisodePlayer } from "@/app/components/program/EpisodePlayer";
 import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
+import { EpisodeTakeaways } from "@/app/components/program/EpisodeTakeaways";
+import { EpisodeChat } from "@/app/components/program/EpisodeChat";
+import { EpisodeReflection } from "@/app/components/program/EpisodeReflection";
 import type { EpisodeDetail, ThreadSummary } from "@cocs/services";
 
 interface Props {
@@ -54,6 +58,21 @@ export function EpisodeView({ episode }: Props) {
                 setThreadTotal(result.total ?? 0);
             }
             setDiscussionLoaded(true);
+        });
+    }, [episode.id]);
+
+    // Zone 1.5 + 5: AI Insights
+    const [aiTakeaways, setAiTakeaways] = useState<string[] | null>(null);
+    const [aiReflection, setAiReflection] = useState<string[] | null>(null);
+
+    useEffect(() => {
+        getEpisodeInsightsAction(episode.id).then((result) => {
+            if (result.success && result.data) {
+                const takeawaysData = result.data.takeaways as { takeaways?: string[] } | null;
+                const reflectionData = result.data.reflection as { prompts?: string[] } | null;
+                if (takeawaysData?.takeaways) setAiTakeaways(takeawaysData.takeaways);
+                if (reflectionData?.prompts) setAiReflection(reflectionData.prompts);
+            }
         });
     }, [episode.id]);
 
@@ -170,6 +189,9 @@ export function EpisodeView({ episode }: Props) {
                 </div>
             </div>
 
+            {/* ── ZONE 1.5: AI Key Takeaways ── */}
+            <EpisodeTakeaways takeaways={aiTakeaways} />
+
             {/* ── ZONE 2: Learning Workspace ── */}
             <div className={`workspace ${!episode.transcript ? "single-column" : ""}`}
                  style={!episode.transcript ? { gridTemplateColumns: "1fr" } : undefined}>
@@ -206,6 +228,9 @@ export function EpisodeView({ episode }: Props) {
                     />
                 </div>
             </div>
+
+            {/* ── AI Reflection Prompts (below workspace) ── */}
+            <EpisodeReflection prompts={aiReflection} />
 
             {/* ── Downloads (if assets) ── */}
             {episode.assets.length > 0 && (
@@ -269,6 +294,9 @@ export function EpisodeView({ episode }: Props) {
                     />
                 </div>
             )}
+
+            {/* ── AI Chat FAB ── */}
+            <EpisodeChat episodeId={episode.id} hasTranscript={!!episode.transcript} />
         </div>
     );
 }
