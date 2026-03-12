@@ -3,13 +3,19 @@
 // =============================================================================
 // Lazy-initialized singleton. Never instantiated until first call.
 // Uses gpt-4o-mini for cost efficiency on summaries/takeaways.
+//
+// NOTE: openai is loaded via require() to avoid TypeScript module resolution
+// failures in Docker builds where packages/ai is not a recognized workspace
+// project. The module IS installed via apps/web deps + serverExternalPackages.
 // =============================================================================
 
-import OpenAI from "openai";
+/* eslint-disable @typescript-eslint/no-require-imports */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const OpenAI = require("openai");
 
-let _client: OpenAI | null = null;
+let _client: InstanceType<typeof OpenAI> | null = null;
 
-export function getAIClient(): OpenAI {
+export function getAIClient(): InstanceType<typeof OpenAI> {
     if (!_client) {
         const apiKey = process.env.OPENAI_API_KEY;
         if (!apiKey) {
