@@ -17,3 +17,4 @@ export * from "./automation-rules";
 export * from "./rate-limiter";
 export * from "./program";
 export * from "./discussion";
+export * from "./logger";

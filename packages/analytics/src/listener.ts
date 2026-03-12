@@ -49,5 +49,7 @@ export function registerAnalyticsListener(): void {
         }
     });
 
-    console.info("[ANALYTICS] Registered wildcard listener on domain event bus");
+    if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+        console.info("[ANALYTICS] Registered wildcard listener on domain event bus");
+    }
 }

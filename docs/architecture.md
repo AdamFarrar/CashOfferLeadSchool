@@ -259,3 +259,48 @@ When the discussion system is implemented, @CLAUD-TISTIC must verify:
 - Moderation scope remains bounded to thread level
 - Analytics events reference canonical content identifiers
 - No thread can be created without at least `program_id`
+
+---
+
+## Security Hardening Rules (Post-Phase 4 OWASP Audit)
+
+### Rule: Event Log PII Safety (Step 6)
+
+event_log payloads must NEVER contain PII.
+
+**Allowed:** `program_id`, `module_id`, `episode_id`, `thread_id`, `post_id`
+**Forbidden:** `email`, `name`, `post_body`
+
+### Rule: AI Data Access (Step 7)
+
+AI systems must NEVER query raw discussion tables (`content_thread`, `content_post`, `content_reaction`).
+
+AI pipelines must use sanitized analytical views. Example view: `ai_discussion_summary_view`
+
+**Allowed fields:** `thread_id`, `episode_id`, `reaction_counts`, `engagement_metrics`
+**Forbidden:** Raw discussion text without explicit filtering.
+
+### Rule: Canonical Content Graph (Step 8)
+
+Every learning artifact must reference canonical identifiers:
+- `program_id` (required)
+- `module_id` (when applicable)
+- `episode_id` (when applicable)
+
+Applies to: transcripts, discussion posts, notes, operator commentary, AI insights, learning highlights.
+
+### Rule: AI Insight Layer (Step 9)
+
+AI insights are stored in separate tables and NEVER modify learning data:
+- `ai_insight` — the insight content
+- `ai_insight_source` — what content generated the insight
+- `ai_insight_reference` — canonical content identifiers
+
+Insights reference program/module/episode IDs but write to their own namespace.
+
+### Rule: Discussion Scale Protection (Steps 10-11)
+
+- Thread ordering: `pinned DESC → helpful_reactions DESC → post_count DESC → created_at DESC`
+- Thread stats cached in `thread_stats` table (not aggregated live)
+- Stats updated asynchronously on post/reaction events
+- Thread creation limited to 3 per episode per user per day

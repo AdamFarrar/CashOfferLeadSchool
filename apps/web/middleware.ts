@@ -36,12 +36,31 @@ function isPublicRoute(pathname: string): boolean {
     );
 }
 
+// ── Content Security Policy ──
+const CSP_DIRECTIVES = [
+    "default-src 'self'",
+    "script-src 'self' https://us.i.posthog.com https://challenges.cloudflare.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src https://fonts.gstatic.com",
+    "img-src 'self' data: https:",
+    "connect-src 'self' https://us.i.posthog.com",
+    "frame-src https://challenges.cloudflare.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+].join("; ");
+
+function addSecurityHeaders(response: NextResponse): NextResponse {
+    response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
+    return response;
+}
+
 export default function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Allow public routes
     if (isPublicRoute(pathname)) {
-        return NextResponse.next();
+        return addSecurityHeaders(NextResponse.next());
     }
 
     // Allow static files and Next.js internals
@@ -50,7 +69,7 @@ export default function middleware(request: NextRequest) {
         pathname.startsWith("/favicon") ||
         pathname.includes(".")
     ) {
-        return NextResponse.next();
+        return addSecurityHeaders(NextResponse.next());
     }
 
     // Check for BetterAuth session cookie (presence only — see docs above)
@@ -61,10 +80,11 @@ export default function middleware(request: NextRequest) {
     if (!sessionCookie?.value) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("callbackUrl", pathname);
-        return NextResponse.redirect(loginUrl);
+        const redirect = NextResponse.redirect(loginUrl);
+        return addSecurityHeaders(redirect);
     }
 
-    return NextResponse.next();
+    return addSecurityHeaders(NextResponse.next());
 }
 
 export const config = {

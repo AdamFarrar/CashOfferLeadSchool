@@ -12,10 +12,12 @@ export const noopExecutor: ChannelExecutor = {
         _eventPayload: Record<string, unknown>,
         context: ExecutorContext,
     ): Promise<ExecutorResult> {
-        console.info(
-            `[AUTOMATION] Noop executor | channel=${action.channel} ` +
-            `event=${context.eventKey} id=${context.eventId}`
-        );
+        if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+            console.info(
+                `[AUTOMATION] Noop executor | channel=${action.channel} ` +
+                `event=${context.eventKey} id=${context.eventId}`
+            );
+        }
         return { success: true };
     },
 };

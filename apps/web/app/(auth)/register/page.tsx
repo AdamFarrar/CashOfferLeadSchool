@@ -1,11 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signUp } from "@cocs/auth/client";
 import { track } from "@cocs/analytics";
 import { AuthRegistrationStarted, AuthRegistrationCompleted } from "@cocs/analytics/event-contracts";
+import { registerAction } from "@/app/actions/register";
+
+declare global {
+    interface Window {
+        turnstile?: {
+            render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
+            reset: (widgetId: string) => void;
+        };
+    }
+}
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -14,9 +23,39 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const turnstileRef = useRef<HTMLDivElement>(null);
+    const widgetIdRef = useRef<string | null>(null);
 
     useEffect(() => {
         track(AuthRegistrationStarted, { method: "email" });
+    }, []);
+
+    // Load Turnstile script
+    useEffect(() => {
+        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        if (!siteKey) return;
+
+        if (document.getElementById("turnstile-script")) return;
+
+        const script = document.createElement("script");
+        script.id = "turnstile-script";
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
+        script.async = true;
+        script.defer = true;
+
+        (window as unknown as Record<string, unknown>).onTurnstileLoad = () => {
+            if (turnstileRef.current && window.turnstile) {
+                widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+                    sitekey: siteKey,
+                    callback: (token: string) => setTurnstileToken(token),
+                    "expired-callback": () => setTurnstileToken(""),
+                    theme: "dark",
+                });
+            }
+        };
+
+        document.head.appendChild(script);
     }, []);
 
     const passwordStrength = getPasswordStrength(password);
@@ -27,16 +66,21 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const result = await signUp.email({
+            const result = await registerAction({
                 name,
                 email,
                 password,
-                callbackURL: "/dashboard?verified=true",
+                turnstileToken,
             });
 
-            if (result.error) {
-                setError(result.error.message || "Registration failed. Please try again.");
+            if (!result.success) {
+                setError(result.message);
                 setLoading(false);
+                // Reset Turnstile widget
+                if (widgetIdRef.current && window.turnstile) {
+                    window.turnstile.reset(widgetIdRef.current);
+                    setTurnstileToken("");
+                }
                 return;
             }
 
@@ -47,7 +91,6 @@ export default function RegisterPage() {
 
             track(AuthRegistrationCompleted, { method: "email", email_hash: emailHash });
 
-            // Store email in sessionStorage instead of URL to avoid PII in browser history/logs
             sessionStorage.setItem("verify_email_address", email);
             router.push("/verify-email");
         } catch {
@@ -149,6 +192,9 @@ export default function RegisterPage() {
                         </div>
                     )}
                 </div>
+
+                {/* Turnstile CAPTCHA widget */}
+                <div ref={turnstileRef} />
 
                 {error && (
                     <div className="px-4 py-3 rounded-[var(--radius-md)] bg-red-500/10 border border-red-500/20 text-red-500 text-sm">

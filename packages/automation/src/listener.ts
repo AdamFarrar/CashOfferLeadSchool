@@ -22,10 +22,12 @@ export function registerAutomationListener(): void {
     for (const eventKey of AUTOMATION_EVENTS) {
         registerListener(eventKey, handleAutomationEvent);
     }
-    console.info(
-        `[AUTOMATION] Registered listener for ${AUTOMATION_EVENTS.length} events: ` +
-        AUTOMATION_EVENTS.join(", ")
-    );
+    if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+        console.info(
+            `[AUTOMATION] Registered listener for ${AUTOMATION_EVENTS.length} events: ` +
+            AUTOMATION_EVENTS.join(", ")
+        );
+    }
 }
 
 async function handleAutomationEvent(event: DomainEvent): Promise<void> {
@@ -63,10 +65,12 @@ async function handleAutomationEvent(event: DomainEvent): Promise<void> {
         // 5. Dispatch — execute via channel executors
         await dispatchActions(actions, event);
 
-        console.info(
-            `[AUTOMATION] Completed | event=${event.eventKey} id=${event.eventId} ` +
-            `rules=${matchedRules.length} actions=${actions.length}`
-        );
+        if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+            console.info(
+                `[AUTOMATION] Completed | event=${event.eventKey} id=${event.eventId} ` +
+                `rules=${matchedRules.length} actions=${actions.length}`
+            );
+        }
     } catch (err) {
         console.error(
             `[AUTOMATION] Orchestrator error | event=${event.eventKey} id=${event.eventId}`,

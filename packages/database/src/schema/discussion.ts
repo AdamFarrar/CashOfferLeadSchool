@@ -68,3 +68,13 @@ export const contentReaction = pgTable("content_reaction", {
 }, (t) => [
     uniqueIndex("idx_content_reaction_unique").on(t.postId, t.userId, t.reactionType),
 ]);
+
+// ── Thread Stats (Cached Counts — Step 11 Scale Protection) ──
+
+export const threadStats = pgTable("thread_stats", {
+    threadId: uuid("thread_id").primaryKey().references(() => contentThread.id, { onDelete: "cascade" }),
+    postCount: integer("post_count").notNull().default(0),
+    helpfulCount: integer("helpful_count").notNull().default(0),
+    participantCount: integer("participant_count").notNull().default(0),
+    lastActivityAt: timestamp("last_activity_at", { withTimezone: true }).notNull().defaultNow(),
+});

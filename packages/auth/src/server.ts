@@ -41,6 +41,11 @@ export const auth = betterAuth({
         database: {
             generateId: () => crypto.randomUUID(),
         },
+        cookieOptions: {
+            secure: true,
+            httpOnly: true,
+            sameSite: "lax" as const,
+        },
     },
 
     emailAndPassword: {

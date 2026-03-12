@@ -35,10 +35,12 @@ export async function emitDomainEvent(options: EmitOptions): Promise<void> {
         return;
     }
 
-    console.info(
-        `[EVENTS] emitted | event=${event.eventKey} id=${event.eventId} ` +
-        `correlation=${event.correlationId} listeners=${listeners.length}`
-    );
+    if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+        console.info(
+            `[EVENTS] emitted | event=${event.eventKey} id=${event.eventId} ` +
+            `correlation=${event.correlationId} listeners=${listeners.length}`
+        );
+    }
 
     const results = await Promise.allSettled(
         listeners.map(fn =>

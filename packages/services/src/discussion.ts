@@ -1,5 +1,5 @@
 // =============================================================================
-// Discussion Service — Phase 4
+// Discussion Service — Phase 4 + Security Hardening
 // =============================================================================
 // Content-anchored discussion system. Every thread requires program_id.
 // Read-path rules:
@@ -7,6 +7,11 @@
 //   - Locked threads visible but reject new posts/replies
 //   - Soft-deleted posts shown as [deleted] placeholders
 //   - All list queries paginated by default
+//
+// Security hardening additions:
+//   - 3 threads per episode per user per day
+//   - Thread ordering by engagement (pinned → helpful → posts → recent)
+//   - Thread stats caching (no live COUNT on thread list)
 // =============================================================================
 
 import { db } from "@cocs/database/client";
@@ -14,10 +19,11 @@ import {
     contentThread,
     contentPost,
     contentReaction,
+    threadStats,
     program,
     user,
 } from "@cocs/database/schema";
-import { eq, and, asc, desc, sql, inArray, count } from "drizzle-orm";
+import { eq, and, asc, desc, sql, inArray, count, gte } from "drizzle-orm";
 
 // ── Constants ──
 
@@ -26,6 +32,7 @@ export const DISCUSSION_LIMITS = {
     MAX_THREAD_TITLE: 255,
     THREADS_PER_PAGE: 20,
     POSTS_PER_PAGE: 50,
+    MAX_THREADS_PER_EPISODE_PER_USER_PER_DAY: 3,
     VALID_REACTIONS: ["like", "helpful", "fire"] as const,
 };
 
@@ -45,6 +52,7 @@ export interface ThreadSummary {
     isPinned: boolean;
     createdAt: Date;
     postCount: number;
+    helpfulCount: number;
     latestPostAt: Date | null;
 }
 
@@ -81,6 +89,45 @@ export interface PostWithReactions {
     userReactions: string[]; // reaction types the viewer has applied
 }
 
+// ── Stats Helpers ──
+
+async function initThreadStats(threadId: string): Promise<void> {
+    await db.insert(threadStats).values({
+        threadId,
+        postCount: 1, // first post created with thread
+        helpfulCount: 0,
+        participantCount: 1,
+        lastActivityAt: new Date(),
+    });
+}
+
+async function incrementPostCount(threadId: string, userId: string): Promise<void> {
+    // Check if user is a new participant
+    const existing = await db
+        .select({ id: contentPost.id })
+        .from(contentPost)
+        .where(and(eq(contentPost.threadId, threadId), eq(contentPost.userId, userId)))
+        .limit(1);
+
+    const isNewParticipant = existing.length === 0;
+
+    await db
+        .update(threadStats)
+        .set({
+            postCount: sql`${threadStats.postCount} + 1`,
+            lastActivityAt: new Date(),
+            ...(isNewParticipant ? { participantCount: sql`${threadStats.participantCount} + 1` } : {}),
+        })
+        .where(eq(threadStats.threadId, threadId));
+}
+
+async function updateHelpfulCount(threadId: string, delta: number): Promise<void> {
+    await db
+        .update(threadStats)
+        .set({ helpfulCount: sql`GREATEST(0, ${threadStats.helpfulCount} + ${delta})` })
+        .where(eq(threadStats.threadId, threadId));
+}
+
 // ── Create Thread ──
 
 export async function createThread(
@@ -98,6 +145,24 @@ export async function createThread(
         .where(eq(program.id, programId))
         .limit(1);
     if (programs.length === 0) throw new Error("Program not found.");
+
+    // Step 5: Enforce 3 threads per episode per user per day
+    if (episodeId) {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const [recentCount] = await db
+            .select({ total: count(contentThread.id) })
+            .from(contentThread)
+            .where(
+                and(
+                    eq(contentThread.episodeId, episodeId),
+                    eq(contentThread.createdBy, userId),
+                    gte(contentThread.createdAt, oneDayAgo),
+                ),
+            );
+        if (Number(recentCount.total) >= DISCUSSION_LIMITS.MAX_THREADS_PER_EPISODE_PER_USER_PER_DAY) {
+            throw new Error("You can create a maximum of 3 threads per episode per day.");
+        }
+    }
 
     // Create thread
     const [thread] = await db
@@ -121,6 +186,9 @@ export async function createThread(
         })
         .returning({ id: contentPost.id });
 
+    // Init stats row
+    await initThreadStats(thread.id);
+
     return { threadId: thread.id, postId: post.id };
 }
 
@@ -139,6 +207,7 @@ export async function getThreadsForEpisode(
         conditions.push(eq(contentThread.isHidden, false));
     }
 
+    // Step 10: Engagement-based ordering via thread_stats
     const threads = await db
         .select({
             id: contentThread.id,
@@ -151,29 +220,22 @@ export async function getThreadsForEpisode(
             isLocked: contentThread.isLocked,
             isPinned: contentThread.isPinned,
             createdAt: contentThread.createdAt,
+            postCount: threadStats.postCount,
+            helpfulCount: threadStats.helpfulCount,
+            lastActivityAt: threadStats.lastActivityAt,
         })
         .from(contentThread)
         .leftJoin(user, eq(contentThread.createdBy, user.id))
+        .leftJoin(threadStats, eq(contentThread.id, threadStats.threadId))
         .where(and(...conditions))
-        .orderBy(desc(contentThread.isPinned), desc(contentThread.createdAt))
+        .orderBy(
+            desc(contentThread.isPinned),
+            desc(sql`COALESCE(${threadStats.helpfulCount}, 0)`),
+            desc(sql`COALESCE(${threadStats.postCount}, 0)`),
+            desc(contentThread.createdAt),
+        )
         .limit(limit)
         .offset(offset);
-
-    // Get post counts + latest post date
-    const threadIds = threads.map((t) => t.id);
-    const postStats = threadIds.length > 0
-        ? await db
-            .select({
-                threadId: contentPost.threadId,
-                postCount: count(contentPost.id),
-                latestPostAt: sql<Date>`MAX(${contentPost.createdAt})`,
-            })
-            .from(contentPost)
-            .where(inArray(contentPost.threadId, threadIds))
-            .groupBy(contentPost.threadId)
-        : [];
-
-    const statsMap = new Map(postStats.map((s) => [s.threadId, s]));
 
     // Total count
     const [totalResult] = await db
@@ -184,8 +246,9 @@ export async function getThreadsForEpisode(
     return {
         threads: threads.map((t) => ({
             ...t,
-            postCount: Number(statsMap.get(t.id)?.postCount ?? 0),
-            latestPostAt: statsMap.get(t.id)?.latestPostAt ?? null,
+            postCount: Number(t.postCount ?? 0),
+            helpfulCount: Number(t.helpfulCount ?? 0),
+            latestPostAt: t.lastActivityAt ?? null,
         })),
         total: Number(totalResult.total),
     };
@@ -218,28 +281,22 @@ export async function getThreadsForProgram(
             isLocked: contentThread.isLocked,
             isPinned: contentThread.isPinned,
             createdAt: contentThread.createdAt,
+            postCount: threadStats.postCount,
+            helpfulCount: threadStats.helpfulCount,
+            lastActivityAt: threadStats.lastActivityAt,
         })
         .from(contentThread)
         .leftJoin(user, eq(contentThread.createdBy, user.id))
+        .leftJoin(threadStats, eq(contentThread.id, threadStats.threadId))
         .where(and(...conditions))
-        .orderBy(desc(contentThread.isPinned), desc(contentThread.createdAt))
+        .orderBy(
+            desc(contentThread.isPinned),
+            desc(sql`COALESCE(${threadStats.helpfulCount}, 0)`),
+            desc(sql`COALESCE(${threadStats.postCount}, 0)`),
+            desc(contentThread.createdAt),
+        )
         .limit(limit)
         .offset(offset);
-
-    const threadIds = threads.map((t) => t.id);
-    const postStats = threadIds.length > 0
-        ? await db
-            .select({
-                threadId: contentPost.threadId,
-                postCount: count(contentPost.id),
-                latestPostAt: sql<Date>`MAX(${contentPost.createdAt})`,
-            })
-            .from(contentPost)
-            .where(inArray(contentPost.threadId, threadIds))
-            .groupBy(contentPost.threadId)
-        : [];
-
-    const statsMap = new Map(postStats.map((s) => [s.threadId, s]));
 
     const [totalResult] = await db
         .select({ total: count(contentThread.id) })
@@ -249,8 +306,9 @@ export async function getThreadsForProgram(
     return {
         threads: threads.map((t) => ({
             ...t,
-            postCount: Number(statsMap.get(t.id)?.postCount ?? 0),
-            latestPostAt: statsMap.get(t.id)?.latestPostAt ?? null,
+            postCount: Number(t.postCount ?? 0),
+            helpfulCount: Number(t.helpfulCount ?? 0),
+            latestPostAt: t.lastActivityAt ?? null,
         })),
         total: Number(totalResult.total),
     };
@@ -264,7 +322,6 @@ export async function getThreadDetail(
     page: number = 1,
     isAdmin: boolean = false,
 ): Promise<ThreadDetailResult | null> {
-    // Get thread
     const threads = await db
         .select({
             id: contentThread.id,
@@ -293,7 +350,6 @@ export async function getThreadDetail(
     const limit = DISCUSSION_LIMITS.POSTS_PER_PAGE;
     const offset = (page - 1) * limit;
 
-    // Get posts with authors
     const posts = await db
         .select({
             id: contentPost.id,
@@ -314,13 +370,11 @@ export async function getThreadDetail(
         .limit(limit)
         .offset(offset);
 
-    // Total post count
     const [totalResult] = await db
         .select({ total: count(contentPost.id) })
         .from(contentPost)
         .where(eq(contentPost.threadId, threadId));
 
-    // Get reactions for all posts
     const postIds = posts.map((p) => p.id);
     const reactions = postIds.length > 0
         ? await db
@@ -333,7 +387,6 @@ export async function getThreadDetail(
             .where(inArray(contentReaction.postId, postIds))
         : [];
 
-    // Build reaction map
     const reactionMap = new Map<string, { counts: Map<string, number>; userReactions: string[] }>();
     for (const r of reactions) {
         if (!reactionMap.has(r.postId)) {
@@ -350,7 +403,6 @@ export async function getThreadDetail(
         const rData = reactionMap.get(p.id);
         return {
             ...p,
-            // Soft-deleted posts show as placeholders
             body: p.isDeleted ? "[This post has been deleted]" : p.body,
             reactions: rData
                 ? Array.from(rData.counts.entries()).map(([type, cnt]) => ({ type, count: cnt }))
@@ -375,7 +427,6 @@ export async function createPost(
     parentPostId?: string | null,
     postPositionSeconds?: number | null,
 ): Promise<{ postId: string }> {
-    // Verify thread exists and is not locked
     const threads = await db
         .select({ id: contentThread.id, isLocked: contentThread.isLocked })
         .from(contentThread)
@@ -396,6 +447,9 @@ export async function createPost(
         })
         .returning({ id: contentPost.id });
 
+    // Update stats
+    await incrementPostCount(threadId, userId);
+
     return { postId: post.id };
 }
 
@@ -406,7 +460,6 @@ export async function editPost(
     postId: string,
     body: string,
 ): Promise<void> {
-    // Verify ownership
     const posts = await db
         .select({ id: contentPost.id, userId: contentPost.userId, isDeleted: contentPost.isDeleted })
         .from(contentPost)
@@ -456,7 +509,6 @@ export async function toggleReaction(
         throw new Error("Invalid reaction type.");
     }
 
-    // Check if reaction exists
     const existing = await db
         .select({ id: contentReaction.id })
         .from(contentReaction)
@@ -469,17 +521,31 @@ export async function toggleReaction(
         )
         .limit(1);
 
+    // Find thread for stats update
+    const postRows = await db
+        .select({ threadId: contentPost.threadId })
+        .from(contentPost)
+        .where(eq(contentPost.id, postId))
+        .limit(1);
+    const postThreadId = postRows.length > 0 ? postRows[0].threadId : null;
+
     if (existing.length > 0) {
-        // Remove
         await db
             .delete(contentReaction)
             .where(eq(contentReaction.id, existing[0].id));
+        // Decrement helpful count if applicable
+        if (reactionType === "helpful" && postThreadId) {
+            await updateHelpfulCount(postThreadId, -1);
+        }
         return { added: false };
     } else {
-        // Add
         await db
             .insert(contentReaction)
             .values({ postId, userId, reactionType });
+        // Increment helpful count if applicable
+        if (reactionType === "helpful" && postThreadId) {
+            await updateHelpfulCount(postThreadId, 1);
+        }
         return { added: true };
     }
 }

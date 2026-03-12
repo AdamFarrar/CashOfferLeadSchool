@@ -38,9 +38,11 @@ export async function register() {
         if (stakeholderUserIds.length > 0) registerStakeholderUserIds(stakeholderUserIds);
 
         const taggedCount = internalEmails.length + internalUserIds.length + stakeholderUserIds.length;
-        console.info(
-            `[BOOTSTRAP] Automation + analytics listeners registered. ` +
-            `Internal tagging: ${internalEmails.length} emails, ${internalUserIds.length} user IDs, ${stakeholderUserIds.length} stakeholders.`
-        );
+        if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+            console.info(
+                `[BOOTSTRAP] Automation + analytics listeners registered. ` +
+                `Internal tagging: ${internalEmails.length} emails, ${internalUserIds.length} user IDs, ${stakeholderUserIds.length} stakeholders.`
+            );
+        }
     }
 }
