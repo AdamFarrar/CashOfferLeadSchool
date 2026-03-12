@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
         "@cocs/email",
         "@cocs/automation",
         "@cocs/events",
+        "@cocs/ai",
     ],
     poweredByHeader: false,
     compress: true,
