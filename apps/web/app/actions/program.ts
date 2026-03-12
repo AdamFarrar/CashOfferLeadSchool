@@ -28,6 +28,7 @@ const RATE_LIMITS = {
     saveNote: { maxRequests: 20, windowMs: 60 * 60 * 1000, name: "save_note" },
     updatePosition: { maxRequests: 360, windowMs: 60 * 60 * 1000, name: "update_position" },
     markComplete: { maxRequests: 30, windowMs: 60 * 60 * 1000, name: "mark_complete" },
+    playbackEvent: { maxRequests: 360, windowMs: 60 * 60 * 1000, name: "playback_event" },
 } as const;
 
 // ── Validation ──
@@ -125,7 +126,7 @@ export async function saveNote(episodeId: string, content: string) {
         await logEvent(
             identity.userId,
             identity.organizationId,
-            content.length > 0 ? "note_updated" : "note_created",
+            "note_saved",
             "episode_note",
             episodeId,
             { length: content.length },
@@ -149,7 +150,7 @@ export async function getDownloadAssets() {
     const identity = await getServerIdentity();
     if (!identity) return [];
 
-    return getAllAssets();
+    return getAllAssets(identity.userId);
 }
 
 // ── Phase 3: Playback Events ──
@@ -161,6 +162,10 @@ export async function logPlaybackEvent(
 ) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false };
+    if (!isValidUuid(episodeId)) return { success: false };
+
+    const rl = checkRateLimit(rateLimitKey("playback_event", identity.userId), RATE_LIMITS.playbackEvent);
+    if (!rl.allowed) return { success: false };
 
     await logEvent(
         identity.userId,

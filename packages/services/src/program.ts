@@ -267,16 +267,22 @@ export async function getEpisodeDetail(
         .from(episodeAsset)
         .where(eq(episodeAsset.episodeId, episodeId));
 
-    // Get prev/next episodes in module order
-    const allModuleEpisodes = await db
-        .select()
+    // Get prev/next episodes across ALL modules (global program ordering)
+    const allProgramEpisodes = await db
+        .select({
+            id: episode.id,
+            moduleId: episode.moduleId,
+            orderIndex: episode.orderIndex,
+            moduleOrderIndex: module.orderIndex,
+        })
         .from(episode)
-        .where(eq(episode.moduleId, ep.moduleId))
-        .orderBy(asc(episode.orderIndex));
+        .innerJoin(module, eq(episode.moduleId, module.id))
+        .where(eq(module.programId, mod.programId))
+        .orderBy(asc(module.orderIndex), asc(episode.orderIndex));
 
-    const currentIdx = allModuleEpisodes.findIndex((e) => e.id === episodeId);
-    const prevEpisodeId = currentIdx > 0 ? allModuleEpisodes[currentIdx - 1].id : null;
-    const nextEpisodeId = currentIdx < allModuleEpisodes.length - 1 ? allModuleEpisodes[currentIdx + 1].id : null;
+    const currentIdx = allProgramEpisodes.findIndex((e) => e.id === episodeId);
+    const prevEpisodeId = currentIdx > 0 ? allProgramEpisodes[currentIdx - 1].id : null;
+    const nextEpisodeId = currentIdx < allProgramEpisodes.length - 1 ? allProgramEpisodes[currentIdx + 1].id : null;
 
     return {
         id: ep.id,
@@ -369,9 +375,18 @@ export async function getUserNotes(
     return notes;
 }
 
-export async function getAllAssets(): Promise<
+export async function getAllAssets(userId: string): Promise<
     { id: string; title: string; fileUrl: string; fileType: string | null; episodeTitle: string; moduleTitle: string }[]
 > {
+    // Get active program for cohort date
+    const programs = await db
+        .select()
+        .from(program)
+        .where(eq(program.status, "active"))
+        .limit(1);
+
+    const cohortStartDate = programs[0]?.cohortStartDate ?? null;
+
     const assets = await db
         .select({
             id: episodeAsset.id,
@@ -380,13 +395,17 @@ export async function getAllAssets(): Promise<
             fileType: episodeAsset.fileType,
             episodeTitle: episode.title,
             moduleTitle: module.title,
+            unlockWeek: episode.unlockWeek,
         })
         .from(episodeAsset)
         .innerJoin(episode, eq(episodeAsset.episodeId, episode.id))
         .innerJoin(module, eq(episode.moduleId, module.id))
         .orderBy(asc(module.orderIndex), asc(episode.orderIndex));
 
-    return assets;
+    // Filter to only unlocked episodes
+    return assets
+        .filter((a) => isEpisodeUnlocked(a.unlockWeek, cohortStartDate))
+        .map(({ unlockWeek, ...rest }) => rest);
 }
 
 // ── Resume Position ──

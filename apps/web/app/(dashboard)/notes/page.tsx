@@ -12,48 +12,94 @@ export default async function NotesPage() {
 
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-2">My Notes</h1>
-                <p className="text-[color:var(--text-secondary)] text-sm">
+            <div style={{ marginBottom: "2rem" }}>
+                <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                    My Notes
+                </h1>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                     Your personal notes from episodes — private to you.
                 </p>
             </div>
 
             {notes.length === 0 ? (
-                <div className="glass-card p-12 text-center">
-                    <div className="text-4xl mb-4">📝</div>
-                    <h2 className="text-lg font-semibold mb-2">No Notes Yet</h2>
-                    <p className="text-[color:var(--text-secondary)] text-sm max-w-md mx-auto leading-relaxed mb-6">
+                <div style={{
+                    textAlign: "center",
+                    padding: "3rem 2rem",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-md)",
+                }}>
+                    <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📝</div>
+                    <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                        No Notes Yet
+                    </h2>
+                    <p style={{
+                        fontSize: "0.85rem",
+                        color: "var(--text-secondary)",
+                        maxWidth: "28rem",
+                        margin: "0 auto 1.5rem",
+                        lineHeight: 1.6,
+                    }}>
                         Start taking notes while watching episodes. Your notes will appear here,
                         organized by episode.
                     </p>
-                    <Link href="/episodes" className="btn-primary inline-block">
+                    <Link
+                        href="/episodes"
+                        style={{
+                            display: "inline-block",
+                            padding: "0.5rem 1.5rem",
+                            background: "var(--brand-orange)",
+                            color: "#fff",
+                            borderRadius: "var(--radius-md)",
+                            textDecoration: "none",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                        }}
+                    >
                         Browse Episodes
                     </Link>
                 </div>
             ) : (
-                <div className="flex flex-col gap-4">
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {notes.map((note) => (
                         <Link
                             key={note.episodeId}
                             href={`/episodes/${note.episodeId}`}
-                            className="glass-card p-6 no-underline text-inherit hover:border-[var(--brand-orange)]/30 transition-colors"
+                            style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: "1rem",
+                                padding: "1rem 1.25rem",
+                                border: "1px solid var(--border-subtle)",
+                                borderRadius: "var(--radius-md)",
+                                textDecoration: "none",
+                                color: "inherit",
+                                transition: "border-color 0.2s ease",
+                            }}
                         >
-                            <div className="flex items-start gap-4">
-                                <div className="icon-box shrink-0 text-sm">📝</div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-sm mb-1">{note.episodeTitle}</h3>
-                                    <p className="text-xs text-[color:var(--text-muted)] mb-2">
-                                        {note.moduleTitle}
-                                    </p>
-                                    <p className="text-sm text-[color:var(--text-secondary)] line-clamp-3">
-                                        {note.content}
-                                    </p>
+                            <span style={{ fontSize: "1rem", flexShrink: 0, marginTop: "0.1rem" }}>📝</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 600, fontSize: "0.85rem", marginBottom: "0.2rem" }}>
+                                    {note.episodeTitle}
                                 </div>
-                                <span className="text-xs text-[color:var(--text-muted)] shrink-0">
-                                    {new Date(note.updatedAt).toLocaleDateString()}
-                                </span>
+                                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+                                    {note.moduleTitle}
+                                </div>
+                                <p style={{
+                                    fontSize: "0.8rem",
+                                    color: "var(--text-secondary)",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                    margin: 0,
+                                    lineHeight: 1.5,
+                                }}>
+                                    {note.content}
+                                </p>
                             </div>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", flexShrink: 0 }}>
+                                {new Date(note.updatedAt).toLocaleDateString()}
+                            </span>
                         </Link>
                     ))}
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Episode Library — Client Component
+// Episode Library — Client Component (Phase 3.5 editorial style)
 // =============================================================================
 // Renders modules and episodes from structured program data.
 // No hardcoded content. All data comes from the database.
@@ -24,20 +24,31 @@ export function EpisodeLibrary({ program }: Props) {
     return (
         <div>
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-2">Episodes</h1>
-                <p className="text-[color:var(--text-secondary)] text-sm">
+            <div style={{ marginBottom: "2rem" }}>
+                <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                    Episodes
+                </h1>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                     {program.title} — {totalEpisodes} episodes across {program.modules.length} modules
                 </p>
                 {totalEpisodes > 0 && (
-                    <div className="mt-3 flex items-center gap-3">
-                        <div className="flex-1 h-2 bg-[var(--surface-raised)] rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-[var(--brand-orange)] rounded-full transition-all duration-500"
-                                style={{ width: `${(completedEpisodes / totalEpisodes) * 100}%` }}
-                            />
+                    <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div style={{
+                            flex: 1,
+                            height: "6px",
+                            background: "var(--surface-raised)",
+                            borderRadius: "3px",
+                            overflow: "hidden",
+                        }}>
+                            <div style={{
+                                height: "100%",
+                                width: `${(completedEpisodes / totalEpisodes) * 100}%`,
+                                background: "var(--brand-orange)",
+                                borderRadius: "3px",
+                                transition: "width 0.5s ease",
+                            }} />
                         </div>
-                        <span className="text-xs text-[color:var(--text-muted)] shrink-0">
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", flexShrink: 0 }}>
                             {completedEpisodes}/{totalEpisodes} complete
                         </span>
                     </div>
@@ -46,21 +57,26 @@ export function EpisodeLibrary({ program }: Props) {
 
             {/* Modules */}
             {program.modules.map((mod) => (
-                <div key={mod.id} className="mb-10">
+                <div key={mod.id} style={{ marginBottom: "2.5rem" }}>
                     {/* Module Header */}
-                    <div className="flex items-center gap-3 mb-4">
-                        <span className="text-[color:var(--brand-orange)] font-bold text-sm">
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        marginBottom: "1rem",
+                    }}>
+                        <span style={{ color: "var(--brand-orange)", fontWeight: 700, fontSize: "0.8rem" }}>
                             MODULE {mod.orderIndex + 1}
                         </span>
-                        <span className="text-[color:var(--text-muted)] text-sm">—</span>
-                        <span className="font-semibold text-sm">{mod.title}</span>
-                        <span className="text-xs text-[color:var(--text-muted)] ml-auto">
+                        <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>—</span>
+                        <span style={{ fontWeight: 600, fontSize: "0.85rem" }}>{mod.title}</span>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginLeft: "auto" }}>
                             {mod.episodes.filter((e) => e.completed).length}/{mod.episodes.length} done
                         </span>
                     </div>
 
                     {/* Episodes */}
-                    <div className="flex flex-col gap-3">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         {mod.episodes.map((ep, idx) => {
                             const globalEpNumber =
                                 program.modules
@@ -89,54 +105,64 @@ function EpisodeRow({
     episode: ProgramWithModules["modules"][0]["episodes"][0];
     episodeNumber: number;
 }) {
+    const rowStyle: React.CSSProperties = {
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        padding: "0.75rem 1rem",
+        borderRadius: "var(--radius-md)",
+        border: "1px solid var(--border-subtle)",
+        textDecoration: "none",
+        color: "inherit",
+        transition: "border-color 0.2s ease",
+    };
+
     if (episode.locked) {
         return (
-            <div className="glass-card p-6 opacity-60">
-                <div className="flex items-start gap-4">
-                    <div className="icon-box shrink-0 text-sm">🔒</div>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="badge text-xs shrink-0">Ep {episodeNumber}</span>
-                            <h3 className="font-semibold text-sm truncate">{episode.title}</h3>
-                        </div>
-                        <p className="text-xs text-[color:var(--text-muted)]">
-                            Unlocks in Week {episode.unlockWeek + 1}
-                        </p>
-                    </div>
-                </div>
+            <div style={{ ...rowStyle, opacity: 0.5 }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>🔒</span>
+                <span style={{ fontSize: "0.7rem", color: "var(--brand-orange)", fontWeight: 600, flexShrink: 0 }}>
+                    Ep {episodeNumber}
+                </span>
+                <span style={{ flex: 1, fontSize: "0.85rem", fontWeight: 500 }}>
+                    {episode.title}
+                </span>
+                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                    Week {episode.unlockWeek + 1}
+                </span>
             </div>
         );
     }
 
     return (
-        <Link
-            href={`/episodes/${episode.id}`}
-            className="glass-card p-6 no-underline text-inherit hover:border-[var(--brand-orange)]/30 transition-colors"
-        >
-            <div className="flex items-start gap-4">
-                <div className="icon-box shrink-0 text-sm">
-                    {episode.completed ? "✅" : "🎬"}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="badge text-xs shrink-0">Ep {episodeNumber}</span>
-                        <h3 className="font-semibold text-sm truncate">{episode.title}</h3>
-                    </div>
-                    {episode.description && (
-                        <p className="text-xs text-[color:var(--text-muted)] line-clamp-2">
-                            {episode.description}
-                        </p>
-                    )}
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                    {episode.durationSeconds && (
-                        <span className="text-xs text-[color:var(--text-muted)]">
-                            {Math.ceil(episode.durationSeconds / 60)} min
-                        </span>
-                    )}
-                    <span className="text-[color:var(--text-muted)]">→</span>
-                </div>
-            </div>
+        <Link href={`/episodes/${episode.id}`} style={rowStyle}>
+            <span style={{ fontSize: "0.75rem" }}>
+                {episode.completed ? "✅" : "🎬"}
+            </span>
+            <span style={{ fontSize: "0.7rem", color: "var(--brand-orange)", fontWeight: 600, flexShrink: 0 }}>
+                Ep {episodeNumber}
+            </span>
+            <span style={{ flex: 1, fontSize: "0.85rem", fontWeight: 500 }}>
+                {episode.title}
+            </span>
+            {episode.description && (
+                <span style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-muted)",
+                    maxWidth: "20rem",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                }}>
+                    {episode.description}
+                </span>
+            )}
+            {episode.durationSeconds && (
+                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", flexShrink: 0 }}>
+                    {Math.ceil(episode.durationSeconds / 60)} min
+                </span>
+            )}
+            <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>→</span>
         </Link>
     );
 }

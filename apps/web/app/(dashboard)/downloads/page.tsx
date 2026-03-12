@@ -11,44 +11,80 @@ export default async function DownloadsPage() {
 
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-2">Downloads</h1>
-                <p className="text-[color:var(--text-secondary)] text-sm">
+            <div style={{ marginBottom: "2rem" }}>
+                <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                    Downloads
+                </h1>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                     Scripts, checklists, and SOPs — ready to install in your operation.
                 </p>
             </div>
 
             {assets.length === 0 ? (
-                <div className="glass-card p-12 text-center">
-                    <div className="text-4xl mb-4">📥</div>
-                    <h2 className="text-lg font-semibold mb-2">Downloads Coming Soon</h2>
-                    <p className="text-[color:var(--text-secondary)] text-sm max-w-md mx-auto leading-relaxed">
+                <div style={{
+                    textAlign: "center",
+                    padding: "3rem 2rem",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-md)",
+                }}>
+                    <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📥</div>
+                    <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                        Downloads Coming Soon
+                    </h2>
+                    <p style={{
+                        fontSize: "0.85rem",
+                        color: "var(--text-secondary)",
+                        maxWidth: "28rem",
+                        margin: "0 auto",
+                        lineHeight: 1.6,
+                    }}>
                         Downloadable scripts, templates, and checklists will appear here as
                         episodes are released.
                     </p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gap: "1rem",
+                }}>
                     {assets.map((asset) => (
                         <a
                             key={asset.id}
                             href={asset.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="glass-card p-6 no-underline text-inherit hover:border-[var(--brand-orange)]/30 transition-colors"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "1rem",
+                                padding: "1rem 1.25rem",
+                                border: "1px solid var(--border-subtle)",
+                                borderRadius: "var(--radius-md)",
+                                textDecoration: "none",
+                                color: "inherit",
+                                transition: "border-color 0.2s ease",
+                            }}
                         >
-                            <div className="flex items-start gap-4">
-                                <div className="icon-box shrink-0 text-sm">📄</div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-sm mb-1">{asset.title}</h3>
-                                    <p className="text-xs text-[color:var(--text-muted)]">
-                                        {asset.episodeTitle} · {asset.moduleTitle}
-                                    </p>
+                            <span style={{ fontSize: "1.25rem", flexShrink: 0 }}>📄</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 600, fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                                    {asset.title}
                                 </div>
-                                <span className="badge text-xs shrink-0">
-                                    {asset.fileType ?? "PDF"}
-                                </span>
+                                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                                    {asset.episodeTitle} · {asset.moduleTitle}
+                                </div>
                             </div>
+                            <span style={{
+                                fontSize: "0.65rem",
+                                fontWeight: 600,
+                                color: "var(--brand-orange)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.05em",
+                                flexShrink: 0,
+                            }}>
+                                {asset.fileType ?? "PDF"}
+                            </span>
                         </a>
                     ))}
                 </div>

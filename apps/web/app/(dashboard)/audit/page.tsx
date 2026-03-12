@@ -14,19 +14,55 @@ export default function AuditPage() {
                 subtitle="A personalized review of your pipeline, close rate, and conversion systems."
             />
 
-            <div className="glass-card p-6 text-center">
-                <div className="text-4xl mb-4">📋</div>
-                <h2 className="text-lg font-semibold mb-2">Audit Scheduling Coming Soon</h2>
-                <p className="text-[color:var(--text-secondary)] text-sm max-w-md mx-auto leading-relaxed mb-6">
+            <div style={{
+                textAlign: "center",
+                padding: "2rem",
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "var(--radius-md)",
+            }}>
+                <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📋</div>
+                <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                    Audit Scheduling Coming Soon
+                </h2>
+                <p style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    maxWidth: "28rem",
+                    margin: "0 auto 1.5rem",
+                    lineHeight: 1.6,
+                }}>
                     Conversion audits will be available during Season 1. You&apos;ll get a
                     one-on-one review of your current operation — lead sources, call scripts,
                     appointment flow, and close rates — with actionable recommendations.
                 </p>
-                <div className="glass-card p-6 max-w-sm mx-auto text-left">
-                    <h3 className="text-xs font-semibold text-[color:var(--text-muted)] uppercase tracking-wide mb-3">
+                <div style={{
+                    padding: "1.25rem",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-md)",
+                    maxWidth: "20rem",
+                    margin: "0 auto",
+                    textAlign: "left",
+                }}>
+                    <h3 style={{
+                        fontSize: "0.7rem",
+                        fontWeight: 600,
+                        color: "var(--text-muted)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        marginBottom: "0.75rem",
+                    }}>
                         What&apos;s Covered
                     </h3>
-                    <ul className="flex flex-col gap-2 text-sm text-[color:var(--text-secondary)]">
+                    <ul style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                        fontSize: "0.85rem",
+                        color: "var(--text-secondary)",
+                        listStyle: "none",
+                        padding: 0,
+                        margin: 0,
+                    }}>
                         <li>✓ Pipeline analysis</li>
                         <li>✓ Speed-to-lead assessment</li>
                         <li>✓ Call script review</li>

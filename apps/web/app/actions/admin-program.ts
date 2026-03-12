@@ -74,11 +74,13 @@ interface UpdateEpisodeInput {
     transcript?: string;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function updateEpisodeAction(input: UpdateEpisodeInput) {
     const identity = await requireAdmin();
 
-    if (!input.episodeId) {
-        return { success: false, error: "Episode ID is required." };
+    if (!input.episodeId || !UUID_RE.test(input.episodeId)) {
+        return { success: false, error: "Valid episode ID is required." };
     }
 
     // Validate title length

@@ -1,34 +1,11 @@
 // =============================================================================
 // Shared UI Components — Design System Enforced Cards
 // =============================================================================
-// These components eliminate repeated glass-card patterns and enforce
+// These components eliminate repeated patterns and enforce
 // consistent padding, spacing, and typography hierarchy.
 // =============================================================================
 
 import Link from "next/link";
-
-// ── ProgramCard ──
-// Used for dashboard quick actions and program navigation
-interface ProgramCardProps {
-    href: string;
-    icon: string;
-    title: string;
-    subtitle: string;
-    className?: string;
-}
-
-export function ProgramCard({ href, icon, title, subtitle, className = "" }: ProgramCardProps) {
-    return (
-        <Link
-            href={href}
-            className={`glass-card p-6 no-underline text-inherit text-center hover:border-[var(--brand-orange)]/30 transition-colors ${className}`}
-        >
-            <div className="text-2xl mb-3">{icon}</div>
-            <div className="font-semibold text-sm">{title}</div>
-            <div className="text-xs text-[color:var(--text-muted)] mt-1">{subtitle}</div>
-        </Link>
-    );
-}
 
 // ── FeatureCard ──
 // Used for landing page feature/deliverable sections
@@ -52,57 +29,6 @@ export function FeatureCard({ icon, title, description, centered = false, classN
             <p className="text-[color:var(--text-secondary)] text-sm leading-relaxed">
                 {description}
             </p>
-        </div>
-    );
-}
-
-// ── EpisodeCard ──
-// Used for episode listings in the episode library
-interface EpisodeCardProps {
-    episodeNumber: number;
-    title: string;
-    guest: string;
-    actions?: boolean;
-}
-
-export function EpisodeCard({ episodeNumber, title, guest, actions = true }: EpisodeCardProps) {
-    return (
-        <div className="glass-card p-6">
-            <div className="flex items-start gap-4">
-                <div className="icon-box shrink-0 text-sm">🎬</div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="badge text-xs shrink-0">Ep {episodeNumber}</span>
-                        <h3 className="font-semibold text-sm truncate">{title}</h3>
-                    </div>
-                    <p className="text-xs text-[color:var(--text-muted)]">{guest}</p>
-                </div>
-                {actions && (
-                    <div className="flex items-center gap-2 shrink-0">
-                        <button
-                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                            disabled
-                            title="Coming soon"
-                        >
-                            📥 Download
-                        </button>
-                        <button
-                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                            disabled
-                            title="Coming soon"
-                        >
-                            ▶ Replay
-                        </button>
-                        <button
-                            className="btn-ghost text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"
-                            disabled
-                            title="Coming soon"
-                        >
-                            📝 Notes
-                        </button>
-                    </div>
-                )}
-            </div>
         </div>
     );
 }
@@ -156,12 +82,24 @@ interface ComingSoonCardProps {
 
 export function ComingSoonCard({ icon, title, description }: ComingSoonCardProps) {
     return (
-        <div className="glass-card p-6 text-center">
-            <div className="text-4xl mb-4">{icon}</div>
-            <h2 className="text-lg font-semibold mb-2">{title}</h2>
-            <p className="text-[color:var(--text-secondary)] text-sm max-w-md mx-auto leading-relaxed">
+        <div style={{
+            textAlign: "center",
+            padding: "3rem 2rem",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: "var(--radius-md)",
+        }}>
+            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>{icon}</div>
+            <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.5rem" }}>{title}</h2>
+            <p style={{
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                maxWidth: "28rem",
+                margin: "0 auto",
+                lineHeight: 1.6,
+            }}>
                 {description}
             </p>
         </div>
     );
 }
+
