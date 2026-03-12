@@ -27,7 +27,8 @@
         "@sentry/nextjs": "^8.0.0",
         "drizzle-orm": "^0.41.0",
         "grapesjs": "^0.21.0",
-        "grapesjs-preset-newsletter": "^1.0.0"
+        "grapesjs-preset-newsletter": "^1.0.0",
+        "openai": "^4.73.0"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",

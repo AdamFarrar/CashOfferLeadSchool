@@ -4,7 +4,7 @@ import path from "path";
 const nextConfig: NextConfig = {
     output: "standalone",
     outputFileTracingRoot: path.join(__dirname, "../../"),
-    serverExternalPackages: [],
+    serverExternalPackages: ["openai"],
     transpilePackages: [
         "@cocs/auth",
         "@cocs/database",
