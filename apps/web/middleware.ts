@@ -39,7 +39,7 @@ function isPublicRoute(pathname: string): boolean {
 // ── Content Security Policy ──
 const CSP_DIRECTIVES = [
     "default-src 'self'",
-    "script-src 'self' https://us.i.posthog.com https://challenges.cloudflare.com",
+    "script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://challenges.cloudflare.com https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: https:",
