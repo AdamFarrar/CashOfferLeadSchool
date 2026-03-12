@@ -86,7 +86,9 @@ export async function submitQualification(data: SubmitQualificationInput) {
             responses: data.responses,
         });
     } catch (err) {
-        console.error("Qualification submission error:", err);
+        if (process.env.NODE_ENV !== "production") {
+            console.error("Qualification submission error:", err);
+        }
         return { success: false, error: "Failed to save qualification. Please try again." };
     }
 }

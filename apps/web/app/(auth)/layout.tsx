@@ -34,7 +34,7 @@ export default function AuthLayout({
                 Cash Offer Conversion School
             </Link>
 
-            <div className="glass-card w-full max-w-[26rem] p-10 relative">
+            <div className="glass-card static w-full max-w-[26rem] p-10 relative">
                 {children}
             </div>
 

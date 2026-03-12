@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { auth } from "@cocs/auth/server";
+import { headers } from "next/headers";
 import { checkRateLimit, rateLimitKey } from "@cocs/services";
 import type { RateLimitConfig } from "@cocs/services";
 
@@ -41,17 +42,19 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
     }
 }
 
-// ── Register Action ──
-
 export async function registerAction(input: {
     name: string;
     email: string;
     password: string;
     turnstileToken: string;
-    clientIp?: string;
 }): Promise<{ success: boolean; message: string }> {
-    // Extract IP
-    const ip = input.clientIp || "unknown";
+    // Extract real client IP from headers
+    const headersList = await headers();
+    const ip =
+        headersList.get("cf-connecting-ip") ??
+        headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        headersList.get("x-real-ip") ??
+        "unknown";
 
     // 1. Verify Turnstile
     if (!input.turnstileToken) {

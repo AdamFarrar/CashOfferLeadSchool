@@ -29,7 +29,7 @@ function LoginForm() {
             });
 
             if (result.error) {
-                setError(result.error.message || "Invalid email or password.");
+                setError("Invalid email or password.");
                 setLoading(false);
                 return;
             }

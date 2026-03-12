@@ -4,6 +4,7 @@ import Image from "next/image";
 import { TrackedCta } from "./components/TrackedCta";
 import { FaqAccordion } from "./components/FaqAccordion";
 import { Badge } from "@cocs/ui";
+import { LandingNav } from "./components/LandingNav";
 
 // ── Static image imports (bundled into _next/static/media/) ──
 import heroOperator from "../public/images/hero-operator.png";
@@ -97,19 +98,7 @@ function SectionHeader({ badge, heading, sub }: { badge: string; heading: string
 export default function LandingPage() {
     return (
         <>
-            {/* ── NAV (sticky) ── */}
-            <nav className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[rgba(5,5,5,0.7)] backdrop-blur-xl">
-                <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2.5 font-bold text-lg" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-sm">🏠</span>
-                        COCS
-                    </Link>
-                    <div className="flex items-center gap-3">
-                        <Link href="/login" className="btn-ghost py-2 px-5 text-sm">Log In</Link>
-                        <Link href="/register" className="btn-primary py-2 px-5 text-sm">Save My Seat</Link>
-                    </div>
-                </div>
-            </nav>
+            <LandingNav />
 
             <main>
                 {/* ═══ 1. CINEMATIC HERO ═══ */}
@@ -143,11 +132,11 @@ export default function LandingPage() {
                             and operator habits that turn cash offer leads into signed contracts.
                         </p>
 
-                        <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-4 mt-8">
-                            <TrackedCta href="/register" className="btn-primary text-lg px-8 py-3.5 rounded-xl" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
+                        <div className="animate-fade-in-up animate-delay-300 flex flex-wrap justify-center gap-3 sm:gap-4 mt-8">
+                            <TrackedCta href="/register" className="btn-primary text-base sm:text-lg px-5 sm:px-8 py-3 sm:py-3.5 rounded-xl" ctaId="hero_save_seat" ctaText="Save My Seat for Season 1" section="hero">
                                 Save My Seat for Season 1
                             </TrackedCta>
-                            <a href="#system" className="btn-ghost text-lg px-8 py-3.5 rounded-xl">
+                            <a href="#system" className="btn-ghost text-base sm:text-lg px-5 sm:px-8 py-3 sm:py-3.5 rounded-xl">
                                 See the System
                             </a>
                         </div>

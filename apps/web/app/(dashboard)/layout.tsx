@@ -66,7 +66,7 @@ export default function DashboardLayout({
             )}
 
             {/* Sidebar */}
-            <aside className="sidebar sidebar-desktop z-50 px-4">
+            <aside className={`sidebar sidebar-desktop z-50 px-4 ${sidebarOpen ? "sidebar-open" : ""}`}>
                 {/* Logo */}
                 <Link
                     href="/dashboard"
@@ -150,6 +150,7 @@ export default function DashboardLayout({
                     <button
                         onClick={() => setSidebarOpen(true)}
                         className="bg-transparent border-none text-[color:var(--text-primary)] text-xl cursor-pointer"
+                        aria-label="Open menu"
                     >
                         ☰
                     </button>
@@ -157,23 +158,9 @@ export default function DashboardLayout({
                     <div className="w-5" />
                 </header>
 
-                <main className="p-8">{children}</main>
+                <main className="p-4 md:p-8">{children}</main>
             </div>
 
-            {/* Responsive styles */}
-            <style>{`
-        @media (max-width: 768px) {
-          .sidebar-desktop {
-            transform: ${sidebarOpen ? "translateX(0)" : "translateX(-100%)"} !important;
-          }
-          .main-content {
-            margin-left: 0 !important;
-          }
-          .mobile-header {
-            display: flex !important;
-          }
-        }
-      `}</style>
         </div>
     );
 }
