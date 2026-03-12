@@ -15,6 +15,7 @@ COPY packages/ui/package.json ./packages/ui/package.json
 COPY packages/email/package.json ./packages/email/package.json
 COPY packages/automation/package.json ./packages/automation/package.json
 COPY packages/events/package.json ./packages/events/package.json
+COPY packages/ai/package.json ./packages/ai/package.json
 
 RUN pnpm install --frozen-lockfile
 
