@@ -1,17 +1,18 @@
 "use client";
 
 // =============================================================================
-// EpisodePlayer — Platform Video Component
+// EpisodePlayer — Platform Video Component (Phase 3.5)
 // =============================================================================
 // Single reusable video player for all episode playback.
 // Emits rate-limited analytics events. Manages resume state.
-// No page-specific players — this is the canonical video component.
+// Includes binge-watch overlay: auto-advance to next episode on completion.
 //
 // ARCHITECTURE: hooks MUST be called before any conditional returns
 // (React rules-of-hooks). All branching is done in JSX, not via early returns.
 // =============================================================================
 
 import { useRef, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { logPlaybackEvent, updatePosition } from "@/app/actions/program";
 
 interface EpisodePlayerProps {
@@ -23,9 +24,13 @@ interface EpisodePlayerProps {
     lastPositionSeconds: number;
     locked: boolean;
     onComplete?: () => void;
+    nextEpisodeId?: string | null;
+    nextEpisodeTitle?: string | null;
 }
 
 type PlaybackState = "idle" | "playing" | "paused";
+
+const COUNTDOWN_SECONDS = 10;
 
 export function EpisodePlayer({
     episodeId,
@@ -36,7 +41,10 @@ export function EpisodePlayer({
     lastPositionSeconds,
     locked,
     onComplete,
+    nextEpisodeId,
+    nextEpisodeTitle,
 }: EpisodePlayerProps) {
+    const router = useRouter();
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const playbackState = useRef<PlaybackState>("idle");
     const startedFired = useRef(false);
@@ -45,29 +53,74 @@ export function EpisodePlayer({
     const currentPosition = useRef(lastPositionSeconds);
     const [isReady, setIsReady] = useState(false);
 
-    // Cleanup interval on unmount — MUST be before any conditional returns
+    // Binge-watch overlay state
+    const [showNextOverlay, setShowNextOverlay] = useState(false);
+    const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
+    const countdownTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    // Cleanup intervals on unmount
     useEffect(() => {
         return () => {
             if (positionUpdateTimer.current) {
                 clearInterval(positionUpdateTimer.current);
                 positionUpdateTimer.current = null;
             }
+            if (countdownTimer.current) {
+                clearInterval(countdownTimer.current);
+                countdownTimer.current = null;
+            }
         };
     }, []);
 
-    // Reset refs when episodeId changes (e.g. navigating between episodes)
+    // Reset refs when episodeId changes
     useEffect(() => {
         startedFired.current = false;
         completedFired.current = false;
         playbackState.current = "idle";
         currentPosition.current = lastPositionSeconds;
         setIsReady(false);
+        setShowNextOverlay(false);
+        setCountdown(COUNTDOWN_SECONDS);
 
         if (positionUpdateTimer.current) {
             clearInterval(positionUpdateTimer.current);
             positionUpdateTimer.current = null;
         }
+        if (countdownTimer.current) {
+            clearInterval(countdownTimer.current);
+            countdownTimer.current = null;
+        }
     }, [episodeId, lastPositionSeconds]);
+
+    const startCountdown = useCallback(() => {
+        if (!nextEpisodeId) return;
+
+        setShowNextOverlay(true);
+        setCountdown(COUNTDOWN_SECONDS);
+
+        countdownTimer.current = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    if (countdownTimer.current) {
+                        clearInterval(countdownTimer.current);
+                        countdownTimer.current = null;
+                    }
+                    router.push(`/episodes/${nextEpisodeId}`);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    }, [nextEpisodeId, router]);
+
+    const cancelCountdown = useCallback(() => {
+        setShowNextOverlay(false);
+        setCountdown(COUNTDOWN_SECONDS);
+        if (countdownTimer.current) {
+            clearInterval(countdownTimer.current);
+            countdownTimer.current = null;
+        }
+    }, []);
 
     const startPositionTracking = useCallback(() => {
         if (positionUpdateTimer.current) return;
@@ -77,7 +130,6 @@ export function EpisodePlayer({
 
             currentPosition.current += 10;
 
-            // Write to progress table (NOT event_log — rate limited)
             updatePosition(episodeId, currentPosition.current, durationSeconds).then(
                 (result) => {
                     if (result.autoCompleted && !completedFired.current) {
@@ -88,11 +140,12 @@ export function EpisodePlayer({
                             positionSeconds: currentPosition.current,
                         });
                         onComplete?.();
+                        startCountdown();
                     }
                 },
             );
         }, 10_000);
-    }, [episodeId, moduleId, programId, durationSeconds, onComplete]);
+    }, [episodeId, moduleId, programId, durationSeconds, onComplete, startCountdown]);
 
     const handleIframeLoad = useCallback(() => {
         setIsReady(true);
@@ -112,14 +165,12 @@ export function EpisodePlayer({
     // ── Locked State ──
     if (locked) {
         return (
-            <div className="glass-card overflow-hidden">
-                <div className="aspect-video bg-[var(--surface-raised)] flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="text-5xl mb-3">🔒</div>
-                        <p className="text-[color:var(--text-muted)] text-sm font-medium">
-                            Episode Locked
-                        </p>
-                    </div>
+            <div style={{ aspectRatio: "16/9", background: "#111", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "4rem", marginBottom: "0.75rem" }}>🔒</div>
+                    <p style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--text-muted)" }}>
+                        Episode Locked
+                    </p>
                 </div>
             </div>
         );
@@ -128,40 +179,85 @@ export function EpisodePlayer({
     // ── No Video ──
     if (!videoUrl) {
         return (
-            <div className="glass-card overflow-hidden">
-                <div className="aspect-video bg-[var(--surface-raised)] flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="text-4xl mb-3">🎬</div>
-                        <p className="text-[color:var(--text-muted)] text-sm">
-                            Video coming soon
-                        </p>
-                    </div>
+            <div style={{ aspectRatio: "16/9", background: "#111", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>🎬</div>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                        Video coming soon
+                    </p>
                 </div>
             </div>
         );
     }
 
     const embedUrl = getEmbedUrl(videoUrl, lastPositionSeconds);
+    const circumference = 2 * Math.PI * 22;
+    const strokeOffset = circumference - (countdown / COUNTDOWN_SECONDS) * circumference;
 
     return (
-        <div className="glass-card overflow-hidden">
-            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                <iframe
-                    ref={iframeRef}
-                    src={embedUrl ?? undefined}
-                    className="absolute inset-0 w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Episode Player"
-                    onLoad={handleIframeLoad}
-                />
-            </div>
+        <div style={{ position: "relative" }}>
+            <iframe
+                ref={iframeRef}
+                src={embedUrl ?? undefined}
+                style={{ display: "block", width: "100%", aspectRatio: "16/9", border: "none" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Episode Player"
+                onLoad={handleIframeLoad}
+            />
+
+            {/* Resume indicator */}
             {lastPositionSeconds > 0 && !isReady && (
-                <div className="px-4 py-2 bg-[var(--surface-raised)] text-xs text-[color:var(--text-muted)] flex items-center gap-2">
+                <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: "0.5rem 1rem",
+                    background: "rgba(0,0,0,0.8)",
+                    fontSize: "0.75rem",
+                    color: "var(--text-muted)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                }}>
                     <span>▶</span>
-                    <span>
-                        Resuming from {formatTime(lastPositionSeconds)}
+                    <span>Resuming from {formatTime(lastPositionSeconds)}</span>
+                </div>
+            )}
+
+            {/* ── Binge-Watch Overlay ── */}
+            {showNextOverlay && nextEpisodeId && (
+                <div className="next-overlay">
+                    <span className="next-overlay-label">Up Next</span>
+                    <span className="next-overlay-title">
+                        {nextEpisodeTitle || "Next Episode"}
                     </span>
+
+                    <div className="next-overlay-countdown">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle
+                                cx="24" cy="24" r="22"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={strokeOffset}
+                                style={{ transition: "stroke-dashoffset 1s linear" }}
+                            />
+                        </svg>
+                        <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)", position: "relative", zIndex: 1 }}>
+                            {countdown}
+                        </span>
+                    </div>
+
+                    <button
+                        className="next-overlay-cta"
+                        onClick={() => router.push(`/episodes/${nextEpisodeId}`)}
+                    >
+                        Continue Watching →
+                    </button>
+
+                    <button className="next-overlay-cancel" onClick={cancelCountdown}>
+                        Cancel
+                    </button>
                 </div>
             )}
         </div>
@@ -171,7 +267,6 @@ export function EpisodePlayer({
 // ── Helpers ──
 
 function getEmbedUrl(videoUrl: string, startSeconds: number): string | null {
-    // YouTube
     const ytMatch = videoUrl.match(
         /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     );
@@ -180,14 +275,12 @@ function getEmbedUrl(videoUrl: string, startSeconds: number): string | null {
         return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&enablejsapi=1${start}`;
     }
 
-    // Vimeo
     const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
     if (vimeoMatch) {
         const hash = startSeconds > 0 ? `#t=${Math.floor(startSeconds)}s` : "";
         return `https://player.vimeo.com/video/${vimeoMatch[1]}${hash}`;
     }
 
-    // Already an embed URL
     if (videoUrl.includes("embed") || videoUrl.includes("player.vimeo.com")) {
         return videoUrl;
     }

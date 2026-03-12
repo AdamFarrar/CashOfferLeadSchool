@@ -1,10 +1,22 @@
 "use client";
 
+// =============================================================================
+// Program Console Dashboard (Phase 3.5)
+// =============================================================================
+// Streaming-platform homepage feel. Not a SaaS dashboard.
+//
+// Section 1: Hero — Resume/Next Episode (large, cinematic)
+// Section 2: This Week — Current module progress + episode list
+// Section 3: Program Resources (editorial, not widgets)
+//
+// Preserved: analytics tracking, qualification prompt, feedback widget,
+//            session countdown, verification toast.
+// =============================================================================
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, useActiveOrganization } from "@cocs/auth/client";
 import { FeedbackWidget } from "@/app/components/FeedbackWidget";
-import { ProgramCard } from "@/app/components/ui/Cards";
 import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
@@ -45,17 +57,36 @@ function SessionCountdown({ targetDate }: { targetDate: string | null }) {
         return () => clearInterval(interval);
     }, [targetDate]);
 
-    if (!targetDate) {
-        return (
-            <div className="text-[color:var(--text-muted)] text-sm">
-                Session date not yet scheduled
-            </div>
-        );
-    }
+    if (!targetDate) return null;
 
     return (
-        <div className={`text-xl font-bold ${isLive ? "text-green-400" : "text-[color:var(--brand-orange)]"}`}>
-            {timeLeft}
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            padding: "1rem 1.25rem",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: "var(--radius-md)",
+            marginTop: "1.5rem",
+        }}>
+            <span style={{ fontSize: "1.25rem" }}>📡</span>
+            <div>
+                <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)" }}>
+                    Next Live Session
+                </div>
+                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: isLive ? "var(--accent-green)" : "var(--brand-orange)" }}>
+                    {timeLeft}
+                </div>
+            </div>
+            <span style={{ marginLeft: "auto", fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                {new Date(targetDate).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                })}
+            </span>
         </div>
     );
 }
@@ -72,6 +103,7 @@ export default function DashboardPage() {
 
     const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
 
+    // Verification toast
     useEffect(() => {
         if (typeof window !== "undefined") {
             const params = new URLSearchParams(window.location.search);
@@ -84,11 +116,11 @@ export default function DashboardPage() {
         }
     }, []);
 
+    // Analytics + data loading (UNCHANGED)
     useEffect(() => {
         if (userId) {
             identify(userId, { organizationId: organizationId || undefined });
 
-            // Fetch program progress from server
             getDashboardProgress().then((data) => {
                 if (data) setProgress(data);
             });
@@ -111,219 +143,207 @@ export default function DashboardPage() {
         }
     }, [userId, organizationId]);
 
-    // Derive current module from progress data
+    // Derive current module
     const currentModuleData = progress?.modules.find((m) => {
         return m.completedEpisodes < m.totalEpisodes;
     }) || progress?.modules[0];
 
+    // Resume or next episode info
+    const heroEpisode = progress?.resumeEpisode || progress?.nextEpisode;
+    const isResume = !!progress?.resumeEpisode;
+
     return (
         <div>
-            {/* Verification success toast */}
+            {/* Verification toast */}
             {showVerifiedToast && (
                 <div
-                    className="glass-card p-4 mb-6 flex items-center gap-3 border border-green-500/30"
-                    style={{ animation: "fadeIn 0.3s ease" }}
+                    style={{
+                        padding: "0.75rem 1rem",
+                        marginBottom: "1.5rem",
+                        border: "1px solid rgba(34, 197, 94, 0.3)",
+                        borderRadius: "var(--radius-sm)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        animation: "fadeIn 0.3s ease",
+                    }}
                 >
-                    <span className="text-green-400 text-xl">✓</span>
-                    <div className="flex-1">
-                        <div className="font-semibold text-sm text-green-400">Email verified!</div>
-                        <div className="text-xs text-[color:var(--text-secondary)]">
+                    <span style={{ color: "var(--accent-green)", fontSize: "1.1rem" }}>✓</span>
+                    <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: "0.8rem", color: "var(--accent-green)" }}>Email verified!</div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                             Your account is all set. Welcome aboard!
                         </div>
                     </div>
                     <button
                         onClick={() => setShowVerifiedToast(false)}
-                        className="text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] text-sm"
+                        style={{ color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
                     >
                         ✕
                     </button>
                 </div>
             )}
 
-            {/* Welcome header */}
-            <div className="mb-8">
-                <h1 className="text-[1.75rem] mb-2">
-                    Welcome back, {firstName} 👋
-                </h1>
-                <p className="text-[color:var(--text-secondary)] text-sm">
-                    {progress
-                        ? `${progress.programTitle} • Week ${progress.currentWeek + 1} of ${progress.totalEpisodes}`
-                        : "Loading program data..."}
-                </p>
-            </div>
-
             {/* Qualification prompt */}
             {!qualCompleted && (
                 <Link
                     href="/qualify"
-                    className="glass-card p-5 no-underline text-inherit flex items-center gap-4 mb-6 border border-[var(--brand-orange)]/30"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        padding: "0.75rem 1rem",
+                        marginBottom: "1.5rem",
+                        border: "1px solid rgba(227, 38, 82, 0.2)",
+                        borderRadius: "var(--radius-sm)",
+                        textDecoration: "none",
+                        color: "inherit",
+                    }}
                 >
-                    <div className="icon-box shrink-0">📋</div>
-                    <div className="flex-1">
-                        <div className="font-semibold text-sm">Help Us Tailor This</div>
-                        <div className="text-xs text-[color:var(--text-secondary)]">
+                    <span style={{ fontSize: "1.25rem" }}>📋</span>
+                    <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: "0.8rem" }}>Help Us Tailor This</div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                             Complete a few quick questions so we can personalize your experience.
                         </div>
                     </div>
-                    <span className="text-[color:var(--brand-orange)] text-sm font-semibold">Start →</span>
+                    <span style={{ color: "var(--brand-orange)", fontSize: "0.8rem", fontWeight: 600 }}>Start →</span>
                 </Link>
             )}
 
-            {/* Program Progress — DB-driven */}
-            <div className="glass-card p-6 mb-6">
-                <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-semibold">Program Progress</h2>
-                    <span className="text-xs text-[color:var(--text-muted)]">
-                        {progress
-                            ? `${progress.completedEpisodes}/${progress.totalEpisodes} episodes`
-                            : "—"}
-                    </span>
+            {/* ── SECTION 1: Program Hero (Continue / Resume) ── */}
+            <div className="program-hero">
+                <div className="program-hero-label">
+                    {isResume ? "Continue Watching" : "Your Program"}
                 </div>
-                <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden mb-3">
+
+                {heroEpisode ? (
+                    <>
+                        <div className="program-hero-title">{heroEpisode.title}</div>
+                        <div className="program-hero-subtitle">
+                        {isResume
+                            ? `Resume from ${formatTime((progress?.resumeEpisode as { lastPositionSeconds: number })?.lastPositionSeconds ?? 0)}`
+                            : (progress?.nextEpisode as { moduleTitle?: string })?.moduleTitle ?? ""}
+                    </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="program-hero-title">
+                            Welcome back, {firstName} 👋
+                        </div>
+                        <div className="program-hero-subtitle">
+                            {progress
+                                ? "All available episodes completed!"
+                                : "Loading program data..."}
+                        </div>
+                    </>
+                )}
+
+                {/* Progress bar */}
+                <div className="program-hero-progress">
                     <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                            width: `${progress?.progressPercent ?? 0}%`,
-                            background: "linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark))",
-                        }}
+                        className="program-hero-progress-fill"
+                        style={{ width: `${progress?.progressPercent ?? 0}%` }}
                     />
                 </div>
-                {currentModuleData && (
-                    <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-                        <span className="text-[color:var(--brand-orange)] font-semibold">
-                            Module {currentModuleData.orderIndex + 1}
-                        </span>
-                        <span>—</span>
-                        <span>{currentModuleData.title}</span>
-                        <span className="ml-auto text-[color:var(--text-muted)]">
-                            {currentModuleData.completedEpisodes}/{currentModuleData.totalEpisodes} done
-                        </span>
-                    </div>
+
+                {heroEpisode ? (
+                    <Link
+                        href={`/episodes/${heroEpisode.id}`}
+                        className="program-hero-cta"
+                    >
+                        {isResume ? "▶ Resume" : "▶ Start Episode"}
+                    </Link>
+                ) : (
+                    <Link href="/episodes" className="program-hero-cta">
+                        Browse Episodes
+                    </Link>
+                )}
+
+                {progress && (
+                    <span style={{
+                        display: "inline-block",
+                        marginLeft: "1rem",
+                        fontSize: "0.75rem",
+                        color: "var(--text-muted)",
+                    }}>
+                        {progress.completedEpisodes}/{progress.totalEpisodes} episodes complete
+                    </span>
                 )}
             </div>
 
-            {/* Module Breakdown */}
-            {progress && progress.modules.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                    {progress.modules.map((mod) => {
-                        const pct = mod.totalEpisodes > 0
-                            ? Math.round((mod.completedEpisodes / mod.totalEpisodes) * 100)
-                            : 0;
-                        return (
-                            <div key={mod.id} className="glass-card p-4">
-                                <div className="text-xs text-[color:var(--brand-orange)] font-semibold mb-1">
-                                    Module {mod.orderIndex + 1}
-                                </div>
-                                <div className="text-xs font-medium mb-2 truncate">{mod.title}</div>
-                                <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full rounded-full transition-all duration-300"
-                                        style={{
-                                            width: `${pct}%`,
-                                            background: pct === 100
-                                                ? "var(--success-green, #22c55e)"
-                                                : "var(--brand-orange)",
-                                        }}
-                                    />
-                                </div>
-                                <div className="text-[10px] text-[color:var(--text-muted)] mt-1">
-                                    {mod.completedEpisodes}/{mod.totalEpisodes}
-                                </div>
-                            </div>
-                        );
-                    })}
+            {/* Live session */}
+            <SessionCountdown targetDate={nextSessionDate} />
+
+            {/* ── SECTION 2: This Week in the Program ── */}
+            {currentModuleData && (
+                <div className="module-progress">
+                    <div className="module-progress-header">
+                        <div className="module-progress-title">
+                            This Week — Module {currentModuleData.orderIndex + 1}: {currentModuleData.title}
+                        </div>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                            {currentModuleData.completedEpisodes}/{currentModuleData.totalEpisodes} done
+                        </span>
+                    </div>
+
+                    {/* Module progress bars */}
+                    <div className="module-episode-list">
+                        {progress?.modules.map((mod) => {
+                            const pct = mod.totalEpisodes > 0
+                                ? Math.round((mod.completedEpisodes / mod.totalEpisodes) * 100)
+                                : 0;
+                            const isCurrent = mod.id === currentModuleData.id;
+
+                            return (
+                                <Link
+                                    key={mod.id}
+                                    href="/episodes"
+                                    className={`module-episode-item ${isCurrent ? "active" : ""}`}
+                                >
+                                    <span className={`status-dot ${pct === 100 ? "done" : isCurrent ? "current" : "pending"}`} />
+                                    <span style={{ flex: 1 }}>
+                                        Module {mod.orderIndex + 1}: {mod.title}
+                                    </span>
+                                    <span style={{ fontSize: "0.65rem", color: pct === 100 ? "var(--accent-green)" : "var(--text-muted)" }}>
+                                        {pct === 100 ? "✓ Complete" : `${mod.completedEpisodes}/${mod.totalEpisodes}`}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
 
-            {/* Two-column: Next/Resume Episode + Next Session */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {/* Next / Resume Episode */}
-                <div className="glass-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="icon-box">🎬</div>
-                        <h2 className="text-sm font-semibold">
-                            {progress?.resumeEpisode ? "Resume Watching" : "Next Episode"}
-                        </h2>
-                    </div>
-                    {progress?.resumeEpisode ? (
-                        <Link
-                            href={`/episodes/${progress.resumeEpisode.id}`}
-                            className="no-underline text-inherit"
-                        >
-                            <div className="text-sm font-semibold mb-1">
-                                {progress.resumeEpisode.title}
-                            </div>
-                            <div className="text-xs text-[color:var(--text-muted)]">
-                                Resume from {formatTime(progress.resumeEpisode.lastPositionSeconds)}
-                            </div>
-                        </Link>
-                    ) : progress?.nextEpisode ? (
-                        <Link
-                            href={`/episodes/${progress.nextEpisode.id}`}
-                            className="no-underline text-inherit"
-                        >
-                            <div className="text-sm font-semibold mb-1">
-                                {progress.nextEpisode.title}
-                            </div>
-                            <div className="text-xs text-[color:var(--text-secondary)]">
-                                {progress.nextEpisode.moduleTitle}
-                            </div>
-                        </Link>
-                    ) : (
-                        <div className="text-xs text-[color:var(--text-muted)]">
-                            All available episodes completed!
-                        </div>
-                    )}
-                </div>
-
-                {/* Next Live Session */}
-                <div className="glass-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="icon-box">📡</div>
-                        <h2 className="text-sm font-semibold">Next Live Session</h2>
-                    </div>
-                    <SessionCountdown targetDate={nextSessionDate} />
-                    {nextSessionDate && (
-                        <p className="text-xs text-[color:var(--text-muted)] mt-2">
-                            {new Date(nextSessionDate).toLocaleDateString("en-US", {
-                                weekday: "long",
-                                month: "long",
-                                day: "numeric",
-                                hour: "numeric",
-                                minute: "2-digit",
-                            })}
-                        </p>
-                    )}
-                </div>
+            {/* ── SECTION 3: Program Resources ── */}
+            <div className="program-resources">
+                <Link href="/episodes" className="resource-link">
+                    <span className="resource-icon">📺</span>
+                    Episodes
+                </Link>
+                <Link href="/downloads" className="resource-link">
+                    <span className="resource-icon">📥</span>
+                    Downloads
+                </Link>
+                <Link href="/discussion" className="resource-link">
+                    <span className="resource-icon">💬</span>
+                    Discussion
+                </Link>
+                <Link href="/notes" className="resource-link">
+                    <span className="resource-icon">📝</span>
+                    My Notes
+                </Link>
+                <Link href="/audit" className="resource-link">
+                    <span className="resource-icon">📋</span>
+                    Book Audit
+                </Link>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <ProgramCard
-                    href="/episodes"
-                    icon="📺"
-                    title="Episodes"
-                    subtitle="Browse all episodes"
-                />
-                <ProgramCard
-                    href="/downloads"
-                    icon="📥"
-                    title="Download Assets"
-                    subtitle="Scripts & SOPs"
-                />
-                <ProgramCard
-                    href="/audit"
-                    icon="📋"
-                    title="Book Audit"
-                    subtitle="Pipeline review"
-                />
-            </div>
-
-            {/* Feedback widget */}
+            {/* Feedback widget (PRESERVED) */}
             {userId && (
-                <FeedbackWidget
-                    stakeholderGroup="pilot_user"
-                />
+                <div style={{ marginTop: "2rem" }}>
+                    <FeedbackWidget stakeholderGroup="pilot_user" />
+                </div>
             )}
         </div>
     );
