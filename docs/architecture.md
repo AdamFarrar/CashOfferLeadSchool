@@ -182,3 +182,80 @@ Set in `next.config.ts`:
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - `poweredByHeader: false`
+
+---
+
+## Content-Anchored Discussion System (Phase 4+ Constraint)
+
+> **This section defines a binding architecture rule. It must be enforced before any discussion or community feature is implemented.**
+
+### Rule
+
+All discussion threads must be anchored to program content. No global forums. No free-floating comments.
+
+Allowed content anchors:
+
+```
+program_id  → program-level discussion
+module_id   → module-level discussion
+episode_id  → episode-level discussion
+```
+
+Every thread must reference at least one content anchor. Threads without a content anchor must be rejected at the service layer.
+
+### Thread Data Model
+
+When discussions are implemented, the following structure must be used:
+
+```
+content_thread
+    id              UUID PK
+    program_id      UUID FK → program.id (required)
+    module_id       UUID FK → module.id (nullable)
+    episode_id      UUID FK → episode.id (nullable)
+    created_by      UUID FK → user.id
+    created_at      TIMESTAMPTZ
+
+content_post
+    id              UUID PK
+    thread_id       UUID FK → content_thread.id
+    user_id         UUID FK → user.id
+    body            TEXT
+    created_at      TIMESTAMPTZ
+    edited_at       TIMESTAMPTZ
+
+content_reaction
+    id              UUID PK
+    post_id         UUID FK → content_post.id
+    user_id         UUID FK → user.id
+    reaction_type   TEXT
+```
+
+### Discussion System Rules
+
+1. No global forum — every thread must be tied to content
+2. No free-floating comments
+3. Moderation must occur at the thread level
+4. Threads must support analytics via `event_log` using canonical identifiers `(program_id, module_id, episode_id, user_id)`
+5. All discussion events must be append-only in `event_log`
+
+### Rationale
+
+Generic discussion forums lead to orphaned conversations, moderation chaos, impossible analytics, impossible AI summarization, and low engagement quality.
+
+Content-anchored discussions enable:
+- Episode-specific discussions
+- Module-level insights
+- Instructor responses tied to lessons
+- AI summarization of learning conversations
+- Engagement analytics per episode/module
+
+### CLAUD-TISTIC Validation (Phase 4 Gate)
+
+When the discussion system is implemented, @CLAUD-TISTIC must verify:
+
+- Every thread has a content anchor (program_id required, module_id/episode_id optional)
+- No global thread creation route exists
+- Moderation scope remains bounded to thread level
+- Analytics events reference canonical content identifiers
+- No thread can be created without at least `program_id`
