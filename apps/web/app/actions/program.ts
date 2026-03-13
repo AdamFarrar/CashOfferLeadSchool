@@ -150,17 +150,25 @@ export async function saveNote(episodeId: string, content: string) {
 }
 
 export async function getNotes() {
-    const identity = await getServerIdentity();
-    if (!identity) return [];
-
-    return getUserNotesSvc(identity.userId);
+    try {
+        const identity = await getServerIdentity();
+        if (!identity) return [];
+        return await getUserNotesSvc(identity.userId);
+    } catch (err) {
+        console.error("[PROGRAM] getNotes error:", err);
+        return [];
+    }
 }
 
 export async function getDownloadAssets() {
-    const identity = await getServerIdentity();
-    if (!identity) return [];
-
-    return getAllAssets(identity.userId);
+    try {
+        const identity = await getServerIdentity();
+        if (!identity) return [];
+        return await getAllAssets(identity.userId);
+    } catch (err) {
+        console.error("[PROGRAM] getDownloadAssets error:", err);
+        return [];
+    }
 }
 
 // ── Phase 3: Playback Events ──
