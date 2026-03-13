@@ -7,6 +7,7 @@ import { signIn } from "@cocs/auth/client";
 import { track, identify } from "@cocs/analytics";
 import { AuthLoginCompleted } from "@cocs/analytics/event-contracts";
 import { loginAction } from "@/app/actions/login";
+import { TURNSTILE_SITE_KEY } from "@/app/lib/turnstile";
 
 declare global {
     interface Window {
@@ -32,7 +33,7 @@ function LoginForm() {
 
     // Load Turnstile script
     useEffect(() => {
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        const siteKey = TURNSTILE_SITE_KEY;
         if (!siteKey) return;
 
         if (document.getElementById("turnstile-script")) {

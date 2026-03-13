@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { track } from "@cocs/analytics";
 import { AuthRegistrationStarted, AuthRegistrationCompleted } from "@cocs/analytics/event-contracts";
 import { registerAction } from "@/app/actions/register";
+import { TURNSTILE_SITE_KEY } from "@/app/lib/turnstile";
 
 declare global {
     interface Window {
@@ -33,7 +34,7 @@ export default function RegisterPage() {
 
     // Load Turnstile script
     useEffect(() => {
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        const siteKey = TURNSTILE_SITE_KEY;
         if (!siteKey) return;
 
         if (document.getElementById("turnstile-script")) return;
