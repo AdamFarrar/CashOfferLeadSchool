@@ -31,6 +31,16 @@ COPY . .
 # Full install with all source present — ensures workspace symlinks resolve
 RUN pnpm install --frozen-lockfile
 
+# Declare build args so Dokploy can inject NEXT_PUBLIC_ vars at build time
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
+# Expose them as ENV for the Next.js build process
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build --filter=@cocs/web
 
