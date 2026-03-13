@@ -73,13 +73,24 @@ export const auth = betterAuth({
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
         sendVerificationEmail: async ({ user, url }) => {
+            // Rewrite callback to go to /dashboard after verification
+            // BetterAuth defaults to "/" — we want /dashboard
+            let verificationUrl = url;
+            try {
+                const parsed = new URL(url);
+                parsed.searchParams.set("callbackURL", "/dashboard");
+                verificationUrl = parsed.toString();
+            } catch {
+                // If URL parsing fails, use as-is
+            }
+
             try {
                 await emitDomainEvent({
                     eventKey: DOMAIN_EVENTS.VERIFICATION_EMAIL_REQUESTED,
                     payload: {
                         email: user.email,
                         user_name: user.name ?? "",
-                        verification_url: url,
+                        verification_url: verificationUrl,
                     },
                     actor: { type: "system", id: "betterauth" },
                     subject: { type: "user", id: user.id },
