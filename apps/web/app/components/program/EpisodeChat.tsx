@@ -9,6 +9,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { askEpisodeAction } from "@/app/actions/ai";
+import { FeaturePreview } from "@/app/components/ui/FeaturePreview";
 
 interface ChatMessage {
     role: "user" | "assistant";
@@ -31,7 +32,16 @@ export function EpisodeChat({ episodeId, hasTranscript }: EpisodeChatProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    if (!hasTranscript) return null;
+    if (!hasTranscript) {
+        return (
+            <FeaturePreview
+                icon="🤖"
+                title="AI Episode Chat"
+                description="AI-powered Q&A about this episode will be available once the transcript is ready."
+                badge="AI"
+            />
+        );
+    }
 
     async function handleSend() {
         if (!input.trim() || loading) return;
@@ -218,6 +228,7 @@ export function EpisodeChat({ episodeId, hasTranscript }: EpisodeChatProps) {
                         <button
                             type="submit"
                             disabled={loading || !input.trim()}
+                            aria-label="Send message"
                             style={{
                                 background: "var(--brand-orange)",
                                 color: "#fff",

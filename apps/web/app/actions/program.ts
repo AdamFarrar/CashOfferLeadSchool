@@ -21,6 +21,7 @@ import {
     rateLimitKey,
 } from "@cocs/services";
 import { getServerIdentity } from "./identity";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 
 // ── Rate Limit Configs ──
 
@@ -100,6 +101,15 @@ export async function markComplete(episodeId: string) {
             "episode",
             episodeId,
         );
+
+        // Emit domain event for automation (milestone emails, etc.)
+        emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.EPISODE_COMPLETED,
+            actor: { type: "user", id: identity.userId },
+            subject: { type: "episode", id: episodeId },
+            organizationId: identity.organizationId,
+            payload: { episodeId },
+        }).catch(() => {}); // Fire-and-forget
 
         return { success: true };
     } catch (err) {

@@ -11,32 +11,33 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "next": "^15.1.0",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "@cocs/auth": "workspace:*",
-        "@cocs/database": "workspace:*",
-        "@cocs/services": "workspace:*",
         "@cocs/ai": "workspace:*",
         "@cocs/analytics": "workspace:*",
-        "@cocs/experiments": "workspace:*",
-        "@cocs/ui": "workspace:*",
-        "@cocs/events": "workspace:*",
-        "@cocs/email": "workspace:*",
+        "@cocs/auth": "workspace:*",
         "@cocs/automation": "workspace:*",
+        "@cocs/database": "workspace:*",
+        "@cocs/email": "workspace:*",
+        "@cocs/events": "workspace:*",
+        "@cocs/experiments": "workspace:*",
+        "@cocs/services": "workspace:*",
+        "@cocs/ui": "workspace:*",
         "@sentry/nextjs": "^8.0.0",
         "drizzle-orm": "^0.41.0",
         "grapesjs": "^0.21.0",
         "grapesjs-preset-newsletter": "^1.0.0",
-        "openai": "^4.73.0"
+        "next": "^15.1.0",
+        "openai": "^4.73.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "stripe": "^20.4.1"
     },
     "devDependencies": {
+        "@tailwindcss/postcss": "^4.0.0",
         "@types/node": "^22.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "typescript": "^5.7.0",
+        "postcss": "^8.5.0",
         "tailwindcss": "^4.0.0",
-        "@tailwindcss/postcss": "^4.0.0",
-        "postcss": "^8.5.0"
+        "typescript": "^5.7.0"
     }
 }

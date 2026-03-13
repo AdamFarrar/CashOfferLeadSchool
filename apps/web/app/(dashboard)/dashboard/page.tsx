@@ -21,6 +21,9 @@ import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
 import { getDashboardProgress } from "@/app/actions/program";
+import { getDashboardIntelligenceAction } from "@/app/actions/ai";
+import { CompletionGuidance } from "@/app/components/program/CompletionGuidance";
+import { CohortSignals } from "@/app/components/program/CohortSignals";
 import type { DashboardProgress } from "@cocs/services";
 
 function SessionCountdown({ targetDate }: { targetDate: string | null }) {
@@ -101,6 +104,12 @@ export default function DashboardPage() {
     const [showVerifiedToast, setShowVerifiedToast] = useState(false);
     const [progress, setProgress] = useState<DashboardProgress | null>(null);
 
+    // Phase 6: Intelligence layer
+    type GuidanceMsg = { type: string; title: string; body: string; priority: number };
+    type CohortSignalData = { signalType: string; title: string; description: string; episodeId?: string; episodeTitle?: string };
+    const [guidanceMessages, setGuidanceMessages] = useState<GuidanceMsg[]>([]);
+    const [cohortSignals, setCohortSignals] = useState<CohortSignalData[] | null>(null);
+
     const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
 
     // Verification toast
@@ -123,6 +132,19 @@ export default function DashboardPage() {
 
             getDashboardProgress().then((data) => {
                 if (data) setProgress(data);
+            });
+
+            // Phase 6: Load intelligence data
+            getDashboardIntelligenceAction().then((result) => {
+                if (result.success && result.data) {
+                    if (result.data.guidance) {
+                        setGuidanceMessages(result.data.guidance as GuidanceMsg[]);
+                    }
+                    const signals = result.data.cohortSignals as { signals?: CohortSignalData[] } | null;
+                    if (signals?.signals) {
+                        setCohortSignals(signals.signals);
+                    }
+                }
             });
 
             getQualificationStatus().then((status) => {
@@ -229,15 +251,19 @@ export default function DashboardPage() {
                 ) : (
                     <>
                         <div className="program-hero-title">
-                            Welcome back, {firstName} 👋
+                            Welcome, {firstName} 👋
                         </div>
                         <div className="program-hero-subtitle">
                             {progress
-                                ? "All available episodes completed!"
-                                : "Loading program data..."}
+                                ? (progress.completedEpisodes > 0
+                                    ? "All available episodes completed — stay tuned for new content!"
+                                    : "Your program is ready — start your first episode below.")
+                                : "Loading your program..."}
                         </div>
                     </>
                 )}
+
+
 
                 {/* Progress bar */}
                 <div className="program-hero-progress">
@@ -271,6 +297,70 @@ export default function DashboardPage() {
                     </span>
                 )}
             </div>
+
+            {/* Completion Celebration — only when 100% */}
+            {progress && progress.progressPercent === 100 && !heroEpisode && (
+                <div style={{
+                    margin: "1.5rem 0",
+                    padding: "1.5rem",
+                    border: "1px solid rgba(34, 197, 94, 0.3)",
+                    borderRadius: "var(--radius-md)",
+                    background: "rgba(34, 197, 94, 0.04)",
+                }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                        <span style={{ fontSize: "1.5rem" }}>🎉</span>
+                        <div>
+                            <div style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--accent-green)" }}>
+                                Program Complete!
+                            </div>
+                            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                                You&apos;ve completed all {progress.totalEpisodes} episodes — outstanding commitment.
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                        <Link href="/audit" style={{
+                            padding: "0.35rem 0.9rem",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            borderRadius: "var(--radius-sm)",
+                            background: "var(--brand-orange)",
+                            color: "#fff",
+                            textDecoration: "none",
+                        }}>
+                            📋 Book Your Audit
+                        </Link>
+                        <Link href="/discussion" style={{
+                            padding: "0.35rem 0.9rem",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            borderRadius: "var(--radius-sm)",
+                            border: "1px solid var(--border-subtle)",
+                            color: "var(--text-primary)",
+                            textDecoration: "none",
+                        }}>
+                            💬 Join Discussion
+                        </Link>
+                        <Link href="/downloads" style={{
+                            padding: "0.35rem 0.9rem",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            borderRadius: "var(--radius-sm)",
+                            border: "1px solid var(--border-subtle)",
+                            color: "var(--text-primary)",
+                            textDecoration: "none",
+                        }}>
+                            📥 Get Downloads
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {/* Phase 6: Completion Guidance */}
+            <CompletionGuidance
+                messages={guidanceMessages as Parameters<typeof CompletionGuidance>[0]["messages"]}
+                nextEpisodeId={progress?.nextEpisode?.id}
+            />
 
             {/* Live session */}
             <SessionCountdown targetDate={nextSessionDate} />
@@ -314,6 +404,9 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
+
+            {/* Phase 6: Cohort Signals */}
+            <CohortSignals signals={cohortSignals as Parameters<typeof CohortSignals>[0]["signals"]} />
 
             {/* ── SECTION 3: Program Resources ── */}
             <div className="program-resources">

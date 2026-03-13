@@ -16,12 +16,14 @@ import { useState, useCallback, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { markComplete, saveNote } from "@/app/actions/program";
 import { getEpisodeThreadsAction } from "@/app/actions/discussion";
-import { getEpisodeInsightsAction } from "@/app/actions/ai";
+import { getEpisodeInsightsAction, getEpisodeIntelligenceAction } from "@/app/actions/ai";
 import { EpisodePlayer } from "@/app/components/program/EpisodePlayer";
 import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
 import { EpisodeTakeaways } from "@/app/components/program/EpisodeTakeaways";
 import { EpisodeChat } from "@/app/components/program/EpisodeChat";
 import { EpisodeReflection } from "@/app/components/program/EpisodeReflection";
+import { BestMoments } from "@/app/components/program/BestMoments";
+import { OperatorHighlights } from "@/app/components/program/OperatorHighlights";
 import type { EpisodeDetail, ThreadSummary } from "@cocs/services";
 
 interface Props {
@@ -52,10 +54,14 @@ export function EpisodeView({ episode }: Props) {
     // Load episode discussion on mount
     useEffect(() => {
         startTransition(async () => {
-            const result = await getEpisodeThreadsAction(episode.id, 1);
-            if (result.success) {
-                setThreads(result.threads ?? []);
-                setThreadTotal(result.total ?? 0);
+            try {
+                const result = await getEpisodeThreadsAction(episode.id, 1);
+                if (result.success) {
+                    setThreads(result.threads ?? []);
+                    setThreadTotal(result.total ?? 0);
+                }
+            } catch (e) {
+                console.error("[EpisodeView] Failed to load discussion:", e);
             }
             setDiscussionLoaded(true);
         });
@@ -65,6 +71,13 @@ export function EpisodeView({ episode }: Props) {
     const [aiTakeaways, setAiTakeaways] = useState<string[] | null>(null);
     const [aiReflection, setAiReflection] = useState<string[] | null>(null);
 
+    // Phase 6: Best Moments + Operator Highlights
+    type BestMomentData = { title: string; timestampSeconds: number | null; source: "transcript" | "discussion"; description: string };
+    type HighlightData = { title: string; body: string; timestampSeconds: number | null; referencePostId: string | null };
+    const [bestMoments, setBestMoments] = useState<BestMomentData[] | null>(null);
+    const [highlights, setHighlights] = useState<HighlightData[]>([]);
+    const playerRef = useRef<{ seekTo?: (seconds: number) => void }>(null);
+
     useEffect(() => {
         getEpisodeInsightsAction(episode.id).then((result) => {
             if (result.success && result.data) {
@@ -72,6 +85,15 @@ export function EpisodeView({ episode }: Props) {
                 const reflectionData = result.data.reflection as { prompts?: string[] } | null;
                 if (takeawaysData?.takeaways) setAiTakeaways(takeawaysData.takeaways);
                 if (reflectionData?.prompts) setAiReflection(reflectionData.prompts);
+            }
+        });
+
+        // Phase 6: Load intelligence data
+        getEpisodeIntelligenceAction(episode.id).then((result) => {
+            if (result.success && result.data) {
+                const momentsData = result.data.bestMoments as { moments?: BestMomentData[] } | null;
+                if (momentsData?.moments) setBestMoments(momentsData.moments);
+                if (result.data.highlights) setHighlights(result.data.highlights as HighlightData[]);
             }
         });
     }, [episode.id]);
@@ -115,9 +137,26 @@ export function EpisodeView({ episode }: Props) {
         return (
             <div style={{ textAlign: "center", padding: "5rem 2rem" }}>
                 <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🔒</div>
-                <h1 className="episode-title">Episode Locked</h1>
-                <p className="episode-subtitle" style={{ textTransform: "none", marginBottom: "2rem" }}>
+                <h1 className="episode-title">{episode.title}</h1>
+                <p style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-muted)",
+                    marginBottom: "0.5rem",
+                }}>
+                    {episode.moduleTitle}
+                </p>
+                <p className="episode-subtitle" style={{ textTransform: "none", marginBottom: "1rem" }}>
                     This episode unlocks in Week {episode.unlockWeek + 1} of your cohort program.
+                </p>
+                <p style={{
+                    fontSize: "0.8rem",
+                    color: "var(--text-secondary)",
+                    maxWidth: "28rem",
+                    margin: "0 auto 2rem",
+                    lineHeight: 1.6,
+                }}>
+                    Complete the earlier episodes first — each one builds on the last.
+                    You&apos;ll be notified when this episode is ready.
                 </p>
                 <Link href="/episodes" className="program-hero-cta">
                     ← Back to Episodes
@@ -130,18 +169,47 @@ export function EpisodeView({ episode }: Props) {
         <div>
             {/* ── ZONE 1: Cinematic Video Stage ── */}
             <div className="video-stage">
-                <EpisodePlayer
-                    episodeId={episode.id}
-                    moduleId={episode.moduleId}
-                    programId={episode.programId}
-                    videoUrl={episode.videoUrl}
-                    durationSeconds={episode.durationSeconds}
-                    lastPositionSeconds={episode.lastPositionSeconds}
-                    locked={episode.locked}
-                    onComplete={handleAutoComplete}
-                    nextEpisodeId={episode.nextEpisodeId}
-                    nextEpisodeTitle={null}
-                />
+                {episode.videoUrl ? (
+                    <EpisodePlayer
+                        episodeId={episode.id}
+                        moduleId={episode.moduleId}
+                        programId={episode.programId}
+                        videoUrl={episode.videoUrl}
+                        durationSeconds={episode.durationSeconds}
+                        lastPositionSeconds={episode.lastPositionSeconds}
+                        locked={episode.locked}
+                        onComplete={handleAutoComplete}
+                        nextEpisodeId={episode.nextEpisodeId}
+                        nextEpisodeTitle={null}
+                    />
+                ) : (
+                    <div style={{
+                        aspectRatio: "16 / 9",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "var(--bg-secondary)",
+                        borderRadius: "var(--radius-md)",
+                        border: "1px solid var(--border-subtle)",
+                    }}>
+                        <span style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>🎬</span>
+                        <div style={{ fontWeight: 700, fontSize: "0.95rem", marginBottom: "0.35rem" }}>
+                            Episode Video Preparing
+                        </div>
+                        <p style={{
+                            fontSize: "0.8rem",
+                            color: "var(--text-muted)",
+                            maxWidth: "24rem",
+                            textAlign: "center",
+                            lineHeight: 1.5,
+                            margin: 0,
+                        }}>
+                            This episode&apos;s video is being finalized.
+                            You can still read the transcript and notes below.
+                        </p>
+                    </div>
+                )}
 
                 <div className="video-stage-meta">
                     <h1 className="episode-title">{episode.title}</h1>
@@ -169,6 +237,7 @@ export function EpisodeView({ episode }: Props) {
                             onClick={handleMarkComplete}
                             disabled={completed}
                             className={`episode-action-btn ${completed ? "completed" : ""}`}
+                            aria-label={completed ? "Episode completed" : "Mark this episode as complete"}
                         >
                             {completed ? "✅ Completed" : "☐ Mark Complete"}
                         </button>
@@ -191,6 +260,18 @@ export function EpisodeView({ episode }: Props) {
 
             {/* ── ZONE 1.5: AI Key Takeaways ── */}
             <EpisodeTakeaways takeaways={aiTakeaways} />
+
+            {/* ── ZONE 1.7: Operator Highlights (Phase 6) ── */}
+            <OperatorHighlights
+                highlights={highlights}
+                onSeek={(s) => playerRef.current?.seekTo?.(s)}
+            />
+
+            {/* ── ZONE 1.9: Best Moments Timeline (Phase 6) ── */}
+            <BestMoments
+                moments={bestMoments}
+                onSeek={(s) => playerRef.current?.seekTo?.(s)}
+            />
 
             {/* ── ZONE 2: Learning Workspace ── */}
             <div className={`workspace ${!episode.transcript ? "single-column" : ""}`}
@@ -259,7 +340,7 @@ export function EpisodeView({ episode }: Props) {
             {/* ── ZONE 3: Episode Navigation ── */}
             <nav className="episode-nav">
                 {episode.prevEpisodeId ? (
-                    <Link href={`/episodes/${episode.prevEpisodeId}`} className="episode-nav-card">
+                    <Link href={`/episodes/${episode.prevEpisodeId}`} className="episode-nav-card" aria-label="Go to previous episode">
                         <span className="nav-label">← Previous</span>
                         <span className="nav-title">Previous Episode</span>
                     </Link>
@@ -272,7 +353,7 @@ export function EpisodeView({ episode }: Props) {
                 </Link>
 
                 {episode.nextEpisodeId ? (
-                    <Link href={`/episodes/${episode.nextEpisodeId}`} className="episode-nav-card next">
+                    <Link href={`/episodes/${episode.nextEpisodeId}`} className="episode-nav-card next" aria-label="Go to next episode">
                         <span className="nav-label">Next →</span>
                         <span className="nav-title">Next Episode</span>
                     </Link>

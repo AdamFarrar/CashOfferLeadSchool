@@ -25,7 +25,16 @@ export default async function DiscussionPage() {
         );
     }
 
-    const result = await getProgramThreadsAction(program.id, 1);
+    // Graceful error handling — never crash the page
+    let threads: any[] = [];
+    let total = 0;
+    try {
+        const result = await getProgramThreadsAction(program.id, 1);
+        threads = result.threads ?? [];
+        total = result.total ?? 0;
+    } catch (e) {
+        console.error("[DiscussionPage] Failed to load threads:", e);
+    }
 
     return (
         <div>
@@ -39,8 +48,8 @@ export default async function DiscussionPage() {
             </div>
 
             <DiscussionThreadList
-                threads={result.threads ?? []}
-                total={result.total ?? 0}
+                threads={threads}
+                total={total}
                 programId={program.id}
                 discussionPrompt="What has changed the way you run your operation since joining the program?"
             />

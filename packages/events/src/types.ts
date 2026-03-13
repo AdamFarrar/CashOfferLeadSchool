@@ -14,6 +14,10 @@ export const DOMAIN_EVENTS = {
     FEEDBACK_SUBMITTED: "feedback_submitted",
     TEMPLATE_PUBLISHED: "template_published",
     AUTOMATION_RULE_CHANGED: "automation_rule_changed",
+    ENROLLMENT_COMPLETED: "enrollment_completed",
+    EPISODE_COMPLETED: "episode_completed",
+    NOTE_CREATED: "note_created",
+    BOOKING_SUBMITTED: "booking_submitted",
 } as const;
 
 export type DomainEventKey = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS];

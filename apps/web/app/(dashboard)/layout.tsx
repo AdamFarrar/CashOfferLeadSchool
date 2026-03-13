@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { authClient, signOut, useSession } from "@cocs/auth/client";
 import { resetIdentity } from "@cocs/analytics";
+import { ADMIN_NAV_ITEMS } from "@/app/lib/admin-nav";
+import { getEnrollmentStatusAction } from "@/app/actions/stripe";
 
 const NAV_ITEMS = [
     { href: "/dashboard", label: "Home", icon: "🏠" },
@@ -15,12 +17,6 @@ const NAV_ITEMS = [
     { href: "/audit", label: "Book Audit", icon: "📋" },
 ];
 
-const ADMIN_NAV_ITEMS = [
-    { href: "/admin/program", label: "Program", icon: "🎓" },
-    { href: "/admin/email-templates", label: "Email Templates", icon: "📧" },
-    { href: "/admin/automation-rules", label: "Automation Rules", icon: "⚡" },
-    { href: "/admin/feedback", label: "Feedback", icon: "💬" },
-];
 
 export default function DashboardLayout({
     children,
@@ -31,6 +27,7 @@ export default function DashboardLayout({
     const { data: session } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userRole, setUserRole] = useState("");
+    const [enrollmentChecked, setEnrollmentChecked] = useState(false);
 
     // Auto-set active org if user has one but hasn't selected it
     useEffect(() => {
@@ -54,6 +51,41 @@ export default function DashboardLayout({
     }, [session?.session?.activeOrganizationId]);
 
     const isAdmin = ["owner", "admin"].includes(userRole);
+
+    // Enrollment gate — redirect non-enrolled non-admin users to /pricing
+    useEffect(() => {
+        if (!session?.user?.id || !userRole) return;
+        if (isAdmin) {
+            setEnrollmentChecked(true);
+            return;
+        }
+        getEnrollmentStatusAction().then((result) => {
+            if (!result.enrolled) {
+                window.location.href = "/pricing";
+            } else {
+                setEnrollmentChecked(true);
+            }
+        }).catch(() => {
+            setEnrollmentChecked(true); // Fail open to avoid blocking
+        });
+    }, [session?.user?.id, userRole, isAdmin]);
+
+    // Show loading until enrollment is verified
+    if (session?.user?.id && !enrollmentChecked) {
+        return (
+            <div style={{
+                minHeight: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#050505",
+                color: "rgba(255,255,255,0.4)",
+                fontSize: "0.9rem",
+            }}>
+                Loading...
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-layout">

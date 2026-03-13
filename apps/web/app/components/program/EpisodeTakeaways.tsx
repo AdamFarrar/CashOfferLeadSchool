@@ -7,12 +7,24 @@
 // Read-only for users. Loaded from cached ai_insight.
 // =============================================================================
 
+import { FeaturePreview } from "@/app/components/ui/FeaturePreview";
+
 interface EpisodeTakeawaysProps {
     takeaways: string[] | null;
 }
 
 export function EpisodeTakeaways({ takeaways }: EpisodeTakeawaysProps) {
-    if (!takeaways || takeaways.length === 0) return null;
+    if (!takeaways || takeaways.length === 0) {
+        return (
+            <FeaturePreview
+                icon="🎯"
+                title="Key Takeaways"
+                description="AI-generated key takeaways will appear here once insights are prepared for this episode."
+                badge="AI"
+            />
+        );
+    }
+
 
     return (
         <div className="episode-takeaways">

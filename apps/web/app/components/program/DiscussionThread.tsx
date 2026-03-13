@@ -106,6 +106,7 @@ export function DiscussionThreadList({
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className="discussion-cta"
+                    aria-label={showForm ? "Cancel starting a thread" : "Start a new discussion thread"}
                 >
                     {showForm ? "Cancel" : "+ Start a Thread"}
                 </button>
@@ -119,7 +120,7 @@ export function DiscussionThreadList({
                     {discussionPrompt && (
                         <p className="discussion-prompt-text">{discussionPrompt}</p>
                     )}
-                    <button onClick={() => setShowForm(true)} className="discussion-cta" style={{ marginTop: "1rem" }}>
+                    <button onClick={() => setShowForm(true)} className="discussion-cta" style={{ marginTop: "1rem" }} aria-label="Be the first to post in this discussion">
                         Be the First to Post
                     </button>
                 </div>
@@ -149,7 +150,7 @@ export function DiscussionThreadList({
                         <button onClick={() => setShowForm(false)} className="discussion-btn-ghost">
                             Cancel
                         </button>
-                        <button onClick={handleSubmit} disabled={isPending} className="discussion-btn-primary">
+                        <button onClick={handleSubmit} disabled={isPending} className="discussion-btn-primary" aria-label="Submit your discussion post">
                             {isPending ? "Posting..." : "Post Thread"}
                         </button>
                     </div>
@@ -184,7 +185,7 @@ export function DiscussionThreadList({
 
             {/* Load More */}
             {hasMore && (
-                <button onClick={loadMore} disabled={isPending} className="discussion-load-more">
+                <button onClick={loadMore} disabled={isPending} className="discussion-load-more" aria-label="Load more discussion threads">
                     {isPending ? "Loading..." : "Load More Threads"}
                 </button>
             )}

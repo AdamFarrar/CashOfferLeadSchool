@@ -40,7 +40,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
 
         if (!found) {
             // Don't reveal whether user exists — always return success
-            console.info(`[RESEND] No user found for ${normalizedEmail} — returning silent success`);
+            console.info("[RESEND] No user found — returning silent success");
             return { success: true };
         }
 
@@ -57,7 +57,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
         });
 
         _lastResend.set(normalizedEmail, Date.now());
-        console.info(`[RESEND] Verification email triggered for ${normalizedEmail}`);
+        console.info("[RESEND] Verification email triggered");
         return { success: true };
     } catch (err) {
         console.error("[RESEND] Failed:", err instanceof Error ? err.message : err);

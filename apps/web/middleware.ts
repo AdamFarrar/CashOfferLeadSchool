@@ -26,8 +26,11 @@ const PUBLIC_ROUTES = [
     "/verify-email",
     "/forgot-password",
     "/reset-password",
+    "/pricing",
+    "/checkout",
     "/api/auth",
     "/api/health",
+    "/api/stripe",
 ];
 
 function isPublicRoute(pathname: string): boolean {
@@ -39,12 +42,12 @@ function isPublicRoute(pathname: string): boolean {
 // ── Content Security Policy ──
 const CSP_DIRECTIVES = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+    "script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://js.stripe.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: https:",
-    "connect-src 'self' https://us.i.posthog.com",
-    "frame-src https://challenges.cloudflare.com",
+    "connect-src 'self' https://us.i.posthog.com https://api.stripe.com",
+    "frame-src https://challenges.cloudflare.com https://checkout.stripe.com https://js.stripe.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

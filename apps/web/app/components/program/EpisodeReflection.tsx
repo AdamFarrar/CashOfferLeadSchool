@@ -8,12 +8,26 @@
 // User responses stored in existing episode_note (no new tables).
 // =============================================================================
 
+import { FeaturePreview } from "@/app/components/ui/FeaturePreview";
+
 interface EpisodeReflectionProps {
     prompts: string[] | null;
 }
 
 export function EpisodeReflection({ prompts }: EpisodeReflectionProps) {
-    if (!prompts || prompts.length === 0) return null;
+    if (!prompts || prompts.length === 0) {
+        return (
+            <div style={{ marginTop: "2rem" }}>
+                <FeaturePreview
+                    icon="💡"
+                    title="Reflect & Apply"
+                    description="AI-generated reflection prompts will appear here to help you apply what you've learned."
+                    badge="AI"
+                />
+            </div>
+        );
+    }
+
 
     return (
         <div style={{ marginTop: "2rem" }}>

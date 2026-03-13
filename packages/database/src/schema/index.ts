@@ -8,4 +8,6 @@ export * from "./automation";
 export * from "./program";
 export * from "./discussion";
 export * from "./ai";
+export * from "./booking";
+export * from "./enrollment";
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AnalyticsProvider } from "./components/AnalyticsProvider";
+import "./lib/automation-init";
 
 export const metadata: Metadata = {
     title: "Cash Offer Conversion School",

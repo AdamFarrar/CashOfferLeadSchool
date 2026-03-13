@@ -19,4 +19,6 @@ export * from "./program";
 export * from "./discussion";
 export * from "./logger";
 export * from "./ai-service";
+export * from "./booking";
+export * from "./enrollment";
 

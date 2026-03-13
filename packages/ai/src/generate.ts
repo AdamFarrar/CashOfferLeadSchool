@@ -166,3 +166,165 @@ export async function generateReflectionPrompts(
         tokenCount: response.usage?.total_tokens ?? 0,
     };
 }
+
+// ── Best Moments Detection (Phase 6 Feature 3) ──
+
+export interface BestMoment {
+    title: string;
+    timestampSeconds: number | null;
+    source: "transcript" | "discussion";
+    description: string;
+}
+
+export interface BestMomentResult {
+    moments: BestMoment[];
+    model: string;
+    tokenCount: number;
+}
+
+export async function generateBestMoments(
+    episodeTitle: string,
+    transcript: string,
+    discussionPosts: Array<{ threadTitle: string; body: string; helpfulCount: number }>,
+): Promise<BestMomentResult> {
+    const client = getAIClient();
+
+    const trimmed = transcript.slice(0, LIMITS.MAX_TRANSCRIPT_CHARS);
+    const posts = discussionPosts.slice(0, 50);
+    const postsText = posts
+        .map((p) => `[${p.threadTitle}] (${p.helpfulCount} helpful) ${p.body.slice(0, 300)}`)
+        .join("\n");
+
+    const response = await client.chat.completions.create({
+        model: MODELS.SUMMARY,
+        temperature: 0.3,
+        max_tokens: 800,
+        messages: [
+            {
+                role: "system",
+                content: `You are a learning analyst for the Cash Offer Conversion School. Identify the 3-5 most valuable learning moments in an episode based on the transcript and student discussion. Each moment should be a specific, actionable insight — not a vague topic.
+
+Return a JSON array of objects, each with:
+- "title": short moment title (max 80 chars)
+- "timestampSeconds": approximate seconds into the episode (null if unknown)
+- "source": "transcript" or "discussion"
+- "description": one sentence explaining why this moment is valuable (max 150 chars)
+
+Prioritize moments that students discussed or found most helpful. No markdown, just JSON.`,
+            },
+            {
+                role: "user",
+                content: `Episode: "${episodeTitle}"\n\nTranscript:\n${trimmed}\n\nStudent Discussion:\n${postsText || "(No discussion yet)"}`,
+            },
+        ],
+    });
+
+    const content = response.choices[0]?.message?.content ?? "[]";
+    let moments: BestMoment[];
+    try {
+        moments = JSON.parse(content);
+        if (!Array.isArray(moments)) moments = [];
+    } catch {
+        moments = [];
+    }
+
+    // Validate and sanitize
+    moments = moments.slice(0, 5).map((m) => ({
+        title: String(m.title ?? "").slice(0, 80),
+        timestampSeconds: typeof m.timestampSeconds === "number" && m.timestampSeconds >= 0
+            ? Math.round(m.timestampSeconds)
+            : null,
+        source: m.source === "discussion" ? "discussion" : "transcript",
+        description: String(m.description ?? "").slice(0, 150),
+    }));
+
+    return {
+        moments,
+        model: MODELS.SUMMARY,
+        tokenCount: response.usage?.total_tokens ?? 0,
+    };
+}
+
+// ── Cohort Signals (Phase 6 Feature 4) ──
+
+export interface CohortSignal {
+    signalType: "most_discussed" | "common_pattern" | "top_takeaway";
+    title: string;
+    description: string;
+    episodeId?: string;
+    episodeTitle?: string;
+}
+
+export interface CohortSignalResult {
+    signals: CohortSignal[];
+    model: string;
+    tokenCount: number;
+}
+
+export async function generateCohortSignals(
+    episodeStats: Array<{
+        episodeId: string;
+        episodeTitle: string;
+        threadCount: number;
+        postCount: number;
+        helpfulCount: number;
+    }>,
+): Promise<CohortSignalResult> {
+    const client = getAIClient();
+
+    const statsText = episodeStats
+        .slice(0, 20)
+        .map((s) => `"${s.episodeTitle}" — ${s.threadCount} threads, ${s.postCount} posts, ${s.helpfulCount} helpful reactions`)
+        .join("\n");
+
+    const response = await client.chat.completions.create({
+        model: MODELS.SUMMARY,
+        temperature: 0.4,
+        max_tokens: 600,
+        messages: [
+            {
+                role: "system",
+                content: `You are a learning analyst for the Cash Offer Conversion School. Based on recent cohort activity data, generate 2-3 actionable signals for the program operator.
+
+Return a JSON array of objects, each with:
+- "signalType": one of "most_discussed", "common_pattern", "top_takeaway"
+- "title": short signal title (max 60 chars)
+- "description": one sentence explanation (max 120 chars)
+
+Focus on patterns that would help operators guide learners. No markdown, just JSON.`,
+            },
+            {
+                role: "user",
+                content: `Recent Cohort Activity (last 7 days):\n${statsText || "(No activity)"}`,
+            },
+        ],
+    });
+
+    const content = response.choices[0]?.message?.content ?? "[]";
+    let signals: CohortSignal[];
+    try {
+        signals = JSON.parse(content);
+        if (!Array.isArray(signals)) signals = [];
+    } catch {
+        signals = [];
+    }
+
+    // Tag most_discussed with the actual episode data
+    const topEpisode = episodeStats[0];
+    signals = signals.slice(0, 3).map((s) => ({
+        signalType: (["most_discussed", "common_pattern", "top_takeaway"].includes(s.signalType)
+            ? s.signalType
+            : "common_pattern") as CohortSignal["signalType"],
+        title: String(s.title ?? "").slice(0, 60),
+        description: String(s.description ?? "").slice(0, 120),
+        episodeId: s.signalType === "most_discussed" && topEpisode ? topEpisode.episodeId : undefined,
+        episodeTitle: s.signalType === "most_discussed" && topEpisode ? topEpisode.episodeTitle : undefined,
+    }));
+
+    return {
+        signals,
+        model: MODELS.SUMMARY,
+        tokenCount: response.usage?.total_tokens ?? 0,
+    };
+}
+

@@ -1,0 +1,9 @@
+{
+  "name": "@pr-pm/cursor-rule-test-skill",
+  "version": "1.0.0",
+  "type": "cursor",
+  "format": "cursor-mdc",
+  "files": [
+    ".cursor/rules/test-skill.mdc"
+  ]
+}

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@cocs/auth/client";
 import { track, identify } from "@cocs/analytics";
 import { AuthLoginCompleted } from "@cocs/analytics/event-contracts";
+import { loginAction } from "@/app/actions/login";
 
 function LoginForm() {
     const router = useRouter();
@@ -23,6 +24,15 @@ function LoginForm() {
         setLoading(true);
 
         try {
+            // Server-side rate limit check first
+            const serverCheck = await loginAction({ email, password });
+            if (!serverCheck.success) {
+                setError(serverCheck.error ?? "Invalid email or password.");
+                setLoading(false);
+                return;
+            }
+
+            // Establish client session via BetterAuth
             const result = await signIn.email({
                 email,
                 password,

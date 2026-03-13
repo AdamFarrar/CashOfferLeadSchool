@@ -15,7 +15,7 @@ import {
     episodeAsset,
     eventLog,
 } from "@cocs/database/schema";
-import { eq, and, asc, inArray } from "drizzle-orm";
+import { eq, and, asc, inArray, sql } from "drizzle-orm";
 
 // ── Types ──
 
@@ -460,6 +460,9 @@ export interface DashboardProgress {
     }[];
     nextEpisode: { id: string; title: string; moduleTitle: string } | null;
     resumeEpisode: { id: string; title: string; lastPositionSeconds: number } | null;
+    // Phase 6: completion guidance fields
+    hasNotes: boolean;
+    lastActivityDaysAgo: number | null;
 }
 
 export async function getProgramProgressForDashboard(
@@ -565,6 +568,26 @@ export async function getProgramProgressForDashboard(
         }
     }
 
+    // Phase 6: check if user has written notes
+    const noteCount = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(episodeNote)
+        .where(
+            and(
+                eq(episodeNote.userId, userId),
+                inArray(episodeNote.episodeId, episodeIds.length > 0 ? episodeIds : ["__none__"]),
+            ),
+        );
+    const hasNotes = (noteCount[0]?.count ?? 0) > 0;
+
+    // Phase 6: calculate last activity days ago
+    const lastWatched = progress
+        .map((p) => p.lastWatchedAt?.getTime() ?? 0)
+        .sort((a, b) => b - a)[0];
+    const lastActivityDaysAgo = lastWatched
+        ? Math.floor((now.getTime() - lastWatched) / (24 * 60 * 60 * 1000))
+        : null;
+
     return {
         programTitle: prog.title,
         programId: prog.id,
@@ -576,5 +599,7 @@ export async function getProgramProgressForDashboard(
         modules: moduleStats,
         nextEpisode,
         resumeEpisode,
+        hasNotes,
+        lastActivityDaysAgo,
     };
 }
