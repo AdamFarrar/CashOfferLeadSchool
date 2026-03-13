@@ -67,4 +67,10 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
         label: "Feedback",
         description: "Review user-submitted feedback and NPS responses.",
     },
+    {
+        href: "/admin/settings",
+        icon: "⚙️",
+        label: "Settings",
+        description: "Manage platform-wide configuration — Turnstile keys, feature flags, and more.",
+    },
 ];
