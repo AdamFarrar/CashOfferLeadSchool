@@ -61,7 +61,33 @@ function SessionCountdown({ targetDate }: { targetDate: string | null }) {
         return () => clearInterval(interval);
     }, [targetDate]);
 
-    if (!targetDate) return null;
+    if (!targetDate) {
+        return (
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                padding: "1rem 1.25rem",
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "var(--radius-md)",
+                marginTop: "1.5rem",
+                opacity: 0.6,
+            }}>
+                <span style={{ fontSize: "1.25rem" }}>📡</span>
+                <div>
+                    <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)" }}>
+                        Live Sessions
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                        Live coaching sessions are scheduled during the active season. Stay tuned.
+                    </div>
+                </div>
+                <Link href="/sessions" style={{ marginLeft: "auto", fontSize: "0.7rem", color: "var(--brand-orange)", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                    View Sessions →
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div style={{

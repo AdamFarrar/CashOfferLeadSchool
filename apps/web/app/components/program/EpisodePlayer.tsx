@@ -179,11 +179,32 @@ export function EpisodePlayer({
     // ── No Video ──
     if (!videoUrl) {
         return (
-            <div style={{ aspectRatio: "16/9", background: "#111", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>🎬</div>
-                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                        Video coming soon
+            <div style={{
+                aspectRatio: "16/9",
+                background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--border-subtle)",
+            }}>
+                <div style={{ textAlign: "center", maxWidth: "20rem", padding: "2rem" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: 0.7 }}>🎬</div>
+                    <p style={{
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                        marginBottom: "0.5rem",
+                    }}>
+                        Episode Being Prepared
+                    </p>
+                    <p style={{
+                        fontSize: "0.8rem",
+                        color: "var(--text-muted)",
+                        lineHeight: 1.6,
+                        margin: 0,
+                    }}>
+                        This episode&apos;s video is being finalized and will appear here once it&apos;s ready. Check back soon.
                     </p>
                 </div>
             </div>
