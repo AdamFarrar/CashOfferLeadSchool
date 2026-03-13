@@ -26,6 +26,7 @@ import { CompletionGuidance } from "@/app/components/program/CompletionGuidance"
 import { CohortSignals } from "@/app/components/program/CohortSignals";
 import type { DashboardProgress } from "@cocs/services";
 import { getNextSessionAction } from "@/app/actions/live-sessions";
+import { LoadingSkeleton } from "@/app/components/ui/LoadingSkeleton";
 
 function SessionCountdown({ targetDate }: { targetDate: string | null }) {
     const [timeLeft, setTimeLeft] = useState("");
@@ -294,8 +295,9 @@ export default function DashboardPage() {
                                 ? (progress.completedEpisodes > 0
                                     ? "All available episodes completed — stay tuned for new content!"
                                     : "Your program is ready — start your first episode below.")
-                                : "Loading your program..."}
+                                : ""}
                         </div>
+                        {!progress && <LoadingSkeleton variant="hero" />}
                     </>
                 )}
 

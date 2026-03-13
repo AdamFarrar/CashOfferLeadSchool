@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ADMIN_NAV_ITEMS } from "@/app/lib/admin-nav";
+import { AdminSetupChecklist } from "@/app/components/admin/AdminSetupChecklist";
 
 
 export default function AdminPage() {
@@ -13,6 +14,8 @@ export default function AdminPage() {
                     Platform management and configuration.
                 </p>
             </div>
+
+            <AdminSetupChecklist />
 
             <div
                 style={{
