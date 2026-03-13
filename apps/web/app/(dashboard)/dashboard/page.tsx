@@ -9,14 +9,14 @@
 // Section 2: This Week — Current module progress + episode list
 // Section 3: Program Resources (editorial, not widgets)
 //
-// Preserved: analytics tracking, qualification prompt, feedback widget,
-//            session countdown, verification toast.
+// Preserved: analytics tracking, qualification modal, session countdown,
+//            verification toast.
 // =============================================================================
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, useActiveOrganization } from "@cocs/auth/client";
-import { FeedbackWidget } from "@/app/components/FeedbackWidget";
+import { QualificationModal } from "@/app/components/modals/QualificationModal";
 import { track, identify } from "@cocs/analytics";
 import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
@@ -116,6 +116,7 @@ function SessionCountdown({ targetDate }: { targetDate: string | null }) {
                     day: "numeric",
                     hour: "numeric",
                     minute: "2-digit",
+                    timeZoneName: "short",
                 })}
             </span>
         </div>
@@ -243,31 +244,12 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* Qualification prompt */}
+            {/* Qualification modal — blocks dashboard until completed */}
             {!qualCompleted && (
-                <Link
-                    href="/qualify"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        padding: "0.75rem 1rem",
-                        marginBottom: "1.5rem",
-                        border: "1px solid rgba(227, 38, 82, 0.2)",
-                        borderRadius: "var(--radius-sm)",
-                        textDecoration: "none",
-                        color: "inherit",
-                    }}
-                >
-                    <span style={{ fontSize: "1.25rem" }}>📋</span>
-                    <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, fontSize: "0.8rem" }}>Help Us Tailor This</div>
-                        <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
-                            Complete a few quick questions so we can personalize your experience.
-                        </div>
-                    </div>
-                    <span style={{ color: "var(--brand-orange)", fontSize: "0.8rem", fontWeight: 600 }}>Start →</span>
-                </Link>
+                <QualificationModal
+                    nextSessionDate={nextSessionDate}
+                    onComplete={() => setQualCompleted(true)}
+                />
             )}
 
             {/* ── SECTION 1: Program Hero (Continue / Resume) ── */}
@@ -464,18 +446,7 @@ export default function DashboardPage() {
                     <span className="resource-icon">📝</span>
                     My Notes
                 </Link>
-                <Link href="/audit" className="resource-link">
-                    <span className="resource-icon">📋</span>
-                    Book Audit
-                </Link>
             </div>
-
-            {/* Feedback widget (PRESERVED) */}
-            {userId && (
-                <div style={{ marginTop: "2rem" }}>
-                    <FeedbackWidget stakeholderGroup="pilot_user" />
-                </div>
-            )}
         </div>
     );
 }

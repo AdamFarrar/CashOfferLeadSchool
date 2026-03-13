@@ -7,6 +7,7 @@ import { authClient, signOut, useSession } from "@cocs/auth/client";
 import { resetIdentity } from "@cocs/analytics";
 import { ADMIN_NAV_ITEMS } from "@/app/lib/admin-nav";
 import { getEnrollmentStatusAction } from "@/app/actions/stripe";
+import { FeedbackModal } from "@/app/components/modals/FeedbackModal";
 
 const NAV_ITEMS = [
     { href: "/dashboard", label: "Home", icon: "🏠" },
@@ -15,7 +16,6 @@ const NAV_ITEMS = [
     { href: "/downloads", label: "Downloads", icon: "📥" },
     { href: "/discussion", label: "Discussion", icon: "💬" },
     { href: "/notes", label: "My Notes", icon: "📝" },
-    { href: "/audit", label: "Book Audit", icon: "📋" },
 ];
 
 
@@ -29,6 +29,7 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userRole, setUserRole] = useState("");
     const [enrollmentChecked, setEnrollmentChecked] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     // Auto-set active org if user has one but hasn't selected it
     useEffect(() => {
@@ -150,6 +151,16 @@ export default function DashboardLayout({
                             })}
                         </>
                     )}
+
+                    {/* Feedback trigger — persistent nav */}
+                    <button
+                        onClick={() => { setSidebarOpen(false); setFeedbackOpen(true); }}
+                        className="sidebar-link"
+                        style={{ background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left", marginTop: "0.25rem" }}
+                    >
+                        <span className="text-base">📣</span>
+                        Feedback
+                    </button>
                 </nav>
 
                 {/* User */}
@@ -192,8 +203,15 @@ export default function DashboardLayout({
                 </header>
 
                 <main className="p-4 md:p-8">{children}</main>
-            </div>
+        </div>
 
+            {/* Feedback modal — available from any dashboard page */}
+            {feedbackOpen && (
+                <FeedbackModal
+                    stakeholderGroup="pilot_user"
+                    onClose={() => setFeedbackOpen(false)}
+                />
+            )}
         </div>
     );
 }
