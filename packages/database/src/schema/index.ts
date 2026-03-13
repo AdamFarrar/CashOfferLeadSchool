@@ -10,4 +10,5 @@ export * from "./discussion";
 export * from "./ai";
 export * from "./booking";
 export * from "./enrollment";
+export * from "./live-session";
 

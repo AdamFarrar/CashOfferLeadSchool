@@ -21,4 +21,5 @@ export * from "./logger";
 export * from "./ai-service";
 export * from "./booking";
 export * from "./enrollment";
+export * from "./live-session";
 

@@ -32,6 +32,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
         description: "Manage user enrollments, payments, and manual access.",
     },
     {
+        href: "/admin/sessions",
+        icon: "📹",
+        label: "Sessions",
+        description: "Schedule and manage live coaching sessions.",
+    },
+    {
         href: "/admin/downloads",
         icon: "📥",
         label: "Downloads",

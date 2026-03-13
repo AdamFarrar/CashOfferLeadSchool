@@ -11,6 +11,7 @@ import { getEnrollmentStatusAction } from "@/app/actions/stripe";
 const NAV_ITEMS = [
     { href: "/dashboard", label: "Home", icon: "🏠" },
     { href: "/episodes", label: "Episodes", icon: "🎬" },
+    { href: "/sessions", label: "Sessions", icon: "📹" },
     { href: "/downloads", label: "Downloads", icon: "📥" },
     { href: "/discussion", label: "Discussion", icon: "💬" },
     { href: "/notes", label: "My Notes", icon: "📝" },

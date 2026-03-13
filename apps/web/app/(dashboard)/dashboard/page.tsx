@@ -25,6 +25,7 @@ import { getDashboardIntelligenceAction } from "@/app/actions/ai";
 import { CompletionGuidance } from "@/app/components/program/CompletionGuidance";
 import { CohortSignals } from "@/app/components/program/CohortSignals";
 import type { DashboardProgress } from "@cocs/services";
+import { getNextSessionAction } from "@/app/actions/live-sessions";
 
 function SessionCountdown({ targetDate }: { targetDate: string | null }) {
     const [timeLeft, setTimeLeft] = useState("");
@@ -110,7 +111,16 @@ export default function DashboardPage() {
     const [guidanceMessages, setGuidanceMessages] = useState<GuidanceMsg[]>([]);
     const [cohortSignals, setCohortSignals] = useState<CohortSignalData[] | null>(null);
 
-    const nextSessionDate = process.env.NEXT_PUBLIC_NEXT_SESSION_DATE || null;
+    const [nextSessionDate, setNextSessionDate] = useState<string | null>(null);
+
+    // Load next session from DB
+    useEffect(() => {
+        getNextSessionAction().then((result) => {
+            if (result.session?.scheduledAt) {
+                setNextSessionDate(new Date(result.session.scheduledAt).toISOString());
+            }
+        }).catch(() => {});
+    }, []);
 
     // Verification toast
     useEffect(() => {
