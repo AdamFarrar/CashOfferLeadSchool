@@ -1,12 +1,21 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@cocs/auth/client";
 import { track, identify } from "@cocs/analytics";
 import { AuthLoginCompleted } from "@cocs/analytics/event-contracts";
 import { loginAction } from "@/app/actions/login";
+
+declare global {
+    interface Window {
+        turnstile?: {
+            render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
+            reset: (widgetId: string) => void;
+        };
+    }
+}
 
 function LoginForm() {
     const router = useRouter();
@@ -17,6 +26,47 @@ function LoginForm() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const turnstileRef = useRef<HTMLDivElement>(null);
+    const widgetIdRef = useRef<string | null>(null);
+
+    // Load Turnstile script
+    useEffect(() => {
+        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        if (!siteKey) return;
+
+        if (document.getElementById("turnstile-script")) {
+            // Script already loaded (e.g. from register page), just render
+            if (turnstileRef.current && window.turnstile && !widgetIdRef.current) {
+                widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+                    sitekey: siteKey,
+                    callback: (token: string) => setTurnstileToken(token),
+                    "expired-callback": () => setTurnstileToken(""),
+                    theme: "dark",
+                });
+            }
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.id = "turnstile-script";
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
+        script.async = true;
+        script.defer = true;
+
+        (window as unknown as Record<string, unknown>).onTurnstileLoad = () => {
+            if (turnstileRef.current && window.turnstile) {
+                widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+                    sitekey: siteKey,
+                    callback: (token: string) => setTurnstileToken(token),
+                    "expired-callback": () => setTurnstileToken(""),
+                    theme: "dark",
+                });
+            }
+        };
+
+        document.head.appendChild(script);
+    }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -24,11 +74,16 @@ function LoginForm() {
         setLoading(true);
 
         try {
-            // Server-side rate limit check first
-            const serverCheck = await loginAction({ email, password });
+            // Server-side rate limit + Turnstile verification
+            const serverCheck = await loginAction({ email, password, turnstileToken });
             if (!serverCheck.success) {
                 setError(serverCheck.error ?? "Invalid email or password.");
                 setLoading(false);
+                // Reset Turnstile widget
+                if (widgetIdRef.current && window.turnstile) {
+                    window.turnstile.reset(widgetIdRef.current);
+                    setTurnstileToken("");
+                }
                 return;
             }
 
@@ -115,6 +170,9 @@ function LoginForm() {
                         autoComplete="current-password"
                     />
                 </div>
+
+                {/* Turnstile CAPTCHA widget */}
+                <div ref={turnstileRef} />
 
                 {error && (
                     <div className="px-4 py-3 rounded-[var(--radius-md)] bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
