@@ -21,16 +21,14 @@ const makeEvent = (overrides: Partial<Omit<DomainEvent, "eventKey">> & { eventKe
 } as DomainEvent);
 
 describe("resolveContract", () => {
-    it("should map user_registered to AuthRegistrationCompleted", () => {
+    it("should return null for user_registered (tracked client-side)", () => {
         const event = makeEvent({
             eventKey: "user_registered",
             payload: { method: "email", emailHash: "abc123" },
         });
 
         const result = resolveContract(event);
-        expect(result).not.toBeNull();
-        expect(result!.contract.name).toBe("auth.registration.completed");
-        expect(result!.properties.method).toBe("email");
+        expect(result).toBeNull();
     });
 
     it("should map email_verified to AuthEmailVerificationCompleted", () => {
@@ -50,14 +48,14 @@ describe("resolveContract", () => {
         expect(resolveContract(event)).toBeNull();
     });
 
-    it("should handle missing payload fields with defaults", () => {
+    it("should default time_to_verify_s to 0 for missing payload", () => {
         const event = makeEvent({
-            eventKey: "user_registered",
+            eventKey: "email_verified",
             payload: {},
         });
 
         const result = resolveContract(event);
         expect(result).not.toBeNull();
-        expect(result!.properties.method).toBe("email");
+        expect(result!.properties.time_to_verify_s).toBe(0);
     });
 });
