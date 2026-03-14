@@ -11,7 +11,7 @@ import { FeedbackModal } from "@/app/components/modals/FeedbackModal";
 
 const NAV_ITEMS = [
     { href: "/dashboard", label: "Home", icon: "🏠" },
-    { href: "/episodes", label: "Episodes", icon: "🎬" },
+    { href: "/programs", label: "Programs", icon: "📚" },
     { href: "/sessions", label: "Sessions", icon: "📹" },
     { href: "/downloads", label: "Downloads", icon: "📥" },
     { href: "/discussion", label: "Discussion", icon: "💬" },

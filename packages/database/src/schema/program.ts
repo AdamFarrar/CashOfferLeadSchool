@@ -35,12 +35,16 @@ export const program = pgTable("program", {
     id: uuid("id").primaryKey().defaultRandom(),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
+    slug: varchar("slug", { length: 100 }),
+    previewImageUrl: text("preview_image_url"),
     cohortStartDate: timestamp("cohort_start_date", { withTimezone: true }),
     status: programStatusEnum("status").notNull().default("draft"),
     organizationId: uuid("organization_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [
+    uniqueIndex("idx_program_slug").on(t.slug),
+]);
 
 // ── Modules ──
 

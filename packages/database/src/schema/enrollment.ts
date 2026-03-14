@@ -1,8 +1,8 @@
 // =============================================================================
-// Enrollment Schema — Phase 7
+// Enrollment Schema — Phase 7 (updated Phase B)
 // =============================================================================
 // Tracks user enrollment status tied to Stripe payments.
-// One enrollment per user (unique constraint on user_id).
+// Supports multi-program enrollment via compound unique (userId + programId).
 // =============================================================================
 
 import {
@@ -13,13 +13,16 @@ import {
     integer,
     timestamp,
     index,
+    uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { program } from "./program";
 
 // ── Enrollment ──
 
 export const enrollment = pgTable("enrollment", {
     id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").notNull().unique(),
+    userId: uuid("user_id").notNull(),
+    programId: uuid("program_id").references(() => program.id),
     status: varchar("status", { length: 20 }).notNull().default("active"),
     // 'active' | 'past_due' | 'cancelled' | 'refunded'
     stripeCustomerId: text("stripe_customer_id"),
@@ -32,6 +35,7 @@ export const enrollment = pgTable("enrollment", {
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
+    uniqueIndex("idx_enrollment_user_program").on(t.userId, t.programId),
     index("idx_enrollment_user_id").on(t.userId),
     index("idx_enrollment_status").on(t.status),
     index("idx_enrollment_stripe_customer").on(t.stripeCustomerId),

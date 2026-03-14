@@ -158,7 +158,7 @@ export function EpisodeView({ episode }: Props) {
                     Complete the earlier episodes first — each one builds on the last.
                     You&apos;ll be notified when this episode is ready.
                 </p>
-                <Link href="/episodes" className="program-hero-cta">
+                <Link href="/programs" className="program-hero-cta">
                     ← Back to Episodes
                 </Link>
             </div>
@@ -348,7 +348,7 @@ export function EpisodeView({ episode }: Props) {
                     <div />
                 )}
 
-                <Link href="/episodes" className="episode-nav-center">
+                <Link href="/programs" className="episode-nav-center">
                     All Episodes
                 </Link>
 

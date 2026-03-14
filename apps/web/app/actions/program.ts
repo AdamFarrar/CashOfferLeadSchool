@@ -251,3 +251,26 @@ export async function getDashboardProgress() {
 
     return getProgressSvc(identity.userId);
 }
+
+// ── Phase B: Multi-Program Actions ──
+
+export async function getProgramBySlugAction(slug: string) {
+    const identity = await getServerIdentity();
+    if (!identity) return null;
+
+    const { getProgramBySlug } = await import("@cocs/services");
+    return getProgramBySlug(slug, identity.userId);
+}
+
+export async function getUserProgramsAction() {
+    const identity = await getServerIdentity();
+    if (!identity) return [];
+
+    const { getUserPrograms } = await import("@cocs/services");
+    return getUserPrograms(identity.userId);
+}
+
+export async function resolveEpisodeSlugAction(episodeId: string) {
+    const { resolveSlugForEpisode } = await import("@cocs/services");
+    return resolveSlugForEpisode(episodeId);
+}

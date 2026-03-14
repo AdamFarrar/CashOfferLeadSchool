@@ -1916,3 +1916,105 @@
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ---------- Breadcrumbs ---------- */
+
+.breadcrumbs {
+    margin-bottom: 1.25rem;
+}
+
+.breadcrumbs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    font-size: 0.825rem;
+}
+
+.breadcrumbs-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.breadcrumbs-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.breadcrumbs-link:hover {
+    color: var(--brand-orange);
+}
+
+.breadcrumbs-separator {
+    color: var(--text-muted);
+    margin: 0 0.5rem;
+    opacity: 0.5;
+    font-size: 0.75rem;
+}
+
+.breadcrumbs-current {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ---------- Program Cards ---------- */
+
+.program-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+
+.program-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--brand-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.program-card-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    background: var(--bg-elevated);
+}
+
+.program-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.program-card-meta {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.program-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-elevated);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.program-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-orange), var(--brand-orange-light));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}

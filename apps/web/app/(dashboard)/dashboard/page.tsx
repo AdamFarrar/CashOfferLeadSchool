@@ -301,7 +301,7 @@ export default function DashboardPage() {
                         {isResume ? "▶ Resume" : "▶ Start Episode"}
                     </Link>
                 ) : (
-                    <Link href="/episodes" className="program-hero-cta">
+                    <Link href="/programs" className="program-hero-cta">
                         Browse Episodes
                     </Link>
                 )}
@@ -408,7 +408,7 @@ export default function DashboardPage() {
                             return (
                                 <Link
                                     key={mod.id}
-                                    href="/episodes"
+                                    href="/programs"
                                     className={`module-episode-item ${isCurrent ? "active" : ""}`}
                                 >
                                     <span className={`status-dot ${pct === 100 ? "done" : isCurrent ? "current" : "pending"}`} />
@@ -430,7 +430,7 @@ export default function DashboardPage() {
 
             {/* ── SECTION 3: Program Resources ── */}
             <div className="program-resources">
-                <Link href="/episodes" className="resource-link">
+                <Link href="/programs" className="resource-link">
                     <span className="resource-icon">📺</span>
                     Episodes
                 </Link>

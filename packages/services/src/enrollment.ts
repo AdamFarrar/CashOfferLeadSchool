@@ -67,6 +67,7 @@ export async function getEnrollmentByUserId(userId: string): Promise<EnrollmentR
 
 export async function createEnrollment(data: {
     userId: string;
+    programId?: string;
     stripeCustomerId?: string;
     stripeCheckoutSessionId?: string;
     stripePaymentIntentId?: string;
@@ -77,6 +78,7 @@ export async function createEnrollment(data: {
         .insert(enrollment)
         .values({
             userId: data.userId,
+            programId: data.programId ?? null,
             status: "active",
             stripeCustomerId: data.stripeCustomerId ?? null,
             stripeCheckoutSessionId: data.stripeCheckoutSessionId ?? null,
@@ -85,7 +87,7 @@ export async function createEnrollment(data: {
             currency: data.currency ?? "usd",
         })
         .onConflictDoUpdate({
-            target: enrollment.userId,
+            target: [enrollment.userId, enrollment.programId],
             set: {
                 status: "active",
                 stripeCustomerId: data.stripeCustomerId ?? null,

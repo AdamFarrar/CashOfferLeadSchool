@@ -14,6 +14,10 @@ interface Props {
     program: ProgramWithModules;
 }
 
+function getEpisodeSlug(program: ProgramWithModules) {
+    return program.slug;
+}
+
 export function EpisodeLibrary({ program }: Props) {
     const totalEpisodes = program.modules.reduce((sum, m) => sum + m.episodes.length, 0);
     const completedEpisodes = program.modules.reduce(
@@ -86,7 +90,7 @@ export function EpisodeLibrary({ program }: Props) {
                             return (
                                 <EpisodeRow
                                     key={ep.id}
-                                    episode={ep}
+                                    episode={{...ep, programSlug: getEpisodeSlug(program)}}
                                     episodeNumber={globalEpNumber}
                                 />
                             );
@@ -102,7 +106,7 @@ function EpisodeRow({
     episode,
     episodeNumber,
 }: {
-    episode: ProgramWithModules["modules"][0]["episodes"][0];
+    episode: ProgramWithModules["modules"][0]["episodes"][0] & { programSlug?: string | null };
     episodeNumber: number;
 }) {
     const rowStyle: React.CSSProperties = {
@@ -135,7 +139,7 @@ function EpisodeRow({
     }
 
     return (
-        <Link href={`/episodes/${episode.id}`} style={rowStyle}>
+        <Link href={episode.programSlug ? `/programs/${episode.programSlug}/episodes/${episode.id}` : `/episodes/${episode.id}`} style={rowStyle}>
             <span style={{ fontSize: "0.75rem" }}>
                 {episode.completed ? "✅" : "🎬"}
             </span>

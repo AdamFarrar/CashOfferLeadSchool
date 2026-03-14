@@ -14,6 +14,7 @@ import {
     episodeNote,
     episodeAsset,
     eventLog,
+    enrollment,
 } from "@cocs/database/schema";
 import { eq, and, asc, inArray, sql } from "drizzle-orm";
 
@@ -23,9 +24,24 @@ export interface ProgramWithModules {
     id: string;
     title: string;
     description: string | null;
+    slug: string | null;
+    previewImageUrl: string | null;
     cohortStartDate: Date | null;
     status: string;
     modules: ModuleWithEpisodes[];
+}
+
+export interface ProgramSummary {
+    id: string;
+    title: string;
+    description: string | null;
+    slug: string | null;
+    previewImageUrl: string | null;
+    status: string;
+    totalModules: number;
+    totalEpisodes: number;
+    completedEpisodes: number;
+    progressPercent: number;
 }
 
 export interface ModuleWithEpisodes {
@@ -130,6 +146,8 @@ export async function getActiveProgram(userId: string): Promise<ProgramWithModul
             id: prog.id,
             title: prog.title,
             description: prog.description,
+            slug: prog.slug ?? null,
+            previewImageUrl: prog.previewImageUrl ?? null,
             cohortStartDate: prog.cohortStartDate,
             status: prog.status,
             modules: [],
@@ -193,6 +211,8 @@ export async function getActiveProgram(userId: string): Promise<ProgramWithModul
         id: prog.id,
         title: prog.title,
         description: prog.description,
+        slug: prog.slug ?? null,
+        previewImageUrl: prog.previewImageUrl ?? null,
         cohortStartDate: prog.cohortStartDate,
         status: prog.status,
         modules: modulesWithEpisodes,
@@ -602,4 +622,180 @@ export async function getProgramProgressForDashboard(
         hasNotes,
         lastActivityDaysAgo,
     };
+}
+
+// ── Phase B: Multi-Program Support ──
+
+export async function getProgramBySlug(
+    slug: string,
+    userId: string,
+): Promise<ProgramWithModules | null> {
+    const programs = await db
+        .select()
+        .from(program)
+        .where(eq(program.slug, slug))
+        .limit(1);
+
+    if (programs.length === 0) return null;
+    const prog = programs[0];
+
+    const modules = await db
+        .select()
+        .from(module)
+        .where(eq(module.programId, prog.id))
+        .orderBy(asc(module.orderIndex));
+
+    if (modules.length === 0) {
+        return {
+            id: prog.id,
+            title: prog.title,
+            description: prog.description,
+            slug: prog.slug ?? null,
+            previewImageUrl: prog.previewImageUrl ?? null,
+            cohortStartDate: prog.cohortStartDate,
+            status: prog.status,
+            modules: [],
+        };
+    }
+
+    const moduleIds = modules.map((m) => m.id);
+    const episodes = await db
+        .select()
+        .from(episode)
+        .where(inArray(episode.moduleId, moduleIds))
+        .orderBy(asc(episode.orderIndex));
+
+    const episodeIds = episodes.map((e) => e.id);
+    let progressMap: Map<string, boolean> = new Map();
+
+    if (episodeIds.length > 0) {
+        const progress = await db
+            .select()
+            .from(episodeProgress)
+            .where(
+                and(
+                    eq(episodeProgress.userId, userId),
+                    inArray(episodeProgress.episodeId, episodeIds),
+                ),
+            );
+        for (const p of progress) {
+            progressMap.set(p.episodeId, p.completed);
+        }
+    }
+
+    const modulesWithEpisodes: ModuleWithEpisodes[] = modules.map((mod) => {
+        const modEpisodes = episodes.filter((e) => e.moduleId === mod.id);
+        return {
+            id: mod.id,
+            title: mod.title,
+            description: mod.description,
+            orderIndex: mod.orderIndex,
+            episodes: modEpisodes.map((ep) => {
+                const locked = !isEpisodeUnlocked(ep.unlockWeek, prog.cohortStartDate);
+                return {
+                    id: ep.id,
+                    title: ep.title,
+                    description: ep.description,
+                    videoUrl: locked ? null : ep.videoUrl,
+                    durationSeconds: ep.durationSeconds,
+                    orderIndex: ep.orderIndex,
+                    unlockWeek: ep.unlockWeek,
+                    moduleId: ep.moduleId,
+                    completed: progressMap.get(ep.id) ?? false,
+                    locked,
+                };
+            }),
+        };
+    });
+
+    return {
+        id: prog.id,
+        title: prog.title,
+        description: prog.description,
+        slug: prog.slug ?? null,
+        previewImageUrl: prog.previewImageUrl ?? null,
+        cohortStartDate: prog.cohortStartDate,
+        status: prog.status,
+        modules: modulesWithEpisodes,
+    };
+}
+
+export async function getUserPrograms(
+    userId: string,
+): Promise<ProgramSummary[]> {
+    // Get all active programs (for now, return all active programs)
+    // In future, filter by enrollment when enrollments are populated
+    const programs = await db
+        .select()
+        .from(program)
+        .where(eq(program.status, "active"))
+        .orderBy(asc(program.createdAt));
+
+    if (programs.length === 0) return [];
+
+    const result: ProgramSummary[] = [];
+
+    for (const prog of programs) {
+        const modules = await db
+            .select({ id: module.id })
+            .from(module)
+            .where(eq(module.programId, prog.id));
+
+        const moduleIds = modules.map((m) => m.id);
+        let totalEpisodes = 0;
+        let completedEpisodes = 0;
+
+        if (moduleIds.length > 0) {
+            const episodeRows = await db
+                .select({ id: episode.id })
+                .from(episode)
+                .where(inArray(episode.moduleId, moduleIds));
+
+            totalEpisodes = episodeRows.length;
+
+            if (episodeRows.length > 0) {
+                const progressRows = await db
+                    .select()
+                    .from(episodeProgress)
+                    .where(
+                        and(
+                            eq(episodeProgress.userId, userId),
+                            inArray(episodeProgress.episodeId, episodeRows.map((e) => e.id)),
+                        ),
+                    );
+                completedEpisodes = progressRows.filter((p) => p.completed).length;
+            }
+        }
+
+        result.push({
+            id: prog.id,
+            title: prog.title,
+            description: prog.description,
+            slug: prog.slug ?? null,
+            previewImageUrl: prog.previewImageUrl ?? null,
+            status: prog.status,
+            totalModules: modules.length,
+            totalEpisodes,
+            completedEpisodes,
+            progressPercent: totalEpisodes > 0
+                ? Math.round((completedEpisodes / totalEpisodes) * 100)
+                : 0,
+        });
+    }
+
+    return result;
+}
+
+export async function resolveSlugForEpisode(
+    episodeId: string,
+): Promise<string | null> {
+    const result = await db
+        .select({ slug: program.slug })
+        .from(episode)
+        .innerJoin(module, eq(episode.moduleId, module.id))
+        .innerJoin(program, eq(module.programId, program.id))
+        .where(eq(episode.id, episodeId))
+        .limit(1);
+
+    return result[0]?.slug ?? null;
 }
