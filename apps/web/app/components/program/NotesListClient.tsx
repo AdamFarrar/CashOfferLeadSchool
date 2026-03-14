@@ -39,7 +39,7 @@ export function NotesListClient({ notes }: { notes: Note[] }) {
                 icon="📝"
                 title="Your Notes Will Appear Here"
                 description="While watching any episode, use the Your Notes panel to the right of the transcript — everything auto-saves. Once you've written a note, it'll show up here organized by episode."
-                cta={{ label: "Browse Episodes", href: "/episodes" }}
+                cta={{ label: "Browse Programs", href: "/programs" }}
             />
         );
     }

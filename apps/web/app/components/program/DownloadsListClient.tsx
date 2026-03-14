@@ -36,7 +36,7 @@ export function DownloadsListClient({ assets }: { assets: Asset[] }) {
                 icon="📥"
                 title="Materials Are On the Way"
                 description="Downloadable scripts, checklists, templates, and SOPs will appear here as your program team releases materials for each episode. Check back after completing your next episode."
-                cta={{ label: "Browse Episodes", href: "/episodes" }}
+                cta={{ label: "Browse Programs", href: "/programs" }}
             />
         );
     }

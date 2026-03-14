@@ -159,7 +159,7 @@ export function EpisodeView({ episode }: Props) {
                     You&apos;ll be notified when this episode is ready.
                 </p>
                 <Link href="/programs" className="program-hero-cta">
-                    ← Back to Episodes
+                    ← Back to Programs
                 </Link>
             </div>
         );
@@ -349,7 +349,7 @@ export function EpisodeView({ episode }: Props) {
                 )}
 
                 <Link href="/programs" className="episode-nav-center">
-                    All Episodes
+                    All Programs
                 </Link>
 
                 {episode.nextEpisodeId ? (
