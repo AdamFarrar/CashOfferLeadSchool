@@ -7,8 +7,21 @@ export default defineConfig({
         include: ["**/*.test.ts", "**/*.test.tsx"],
         exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**"],
         coverage: {
-            reporter: ["text", "json", "html"],
-            exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**"],
+            provider: "v8",
+            reporter: ["text", "json-summary"],
+            include: [
+                "packages/*/src/**/*.ts",
+                "apps/web/app/lib/**/*.ts",
+                "apps/web/app/actions/**/*.ts",
+            ],
+            exclude: [
+                "**/node_modules/**",
+                "**/dist/**",
+                "**/.next/**",
+                "**/*.test.*",
+                "**/*.d.ts",
+                "**/index.ts",
+            ],
         },
     },
 });

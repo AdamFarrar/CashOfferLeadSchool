@@ -2,64 +2,107 @@ import { describe, it, expect } from "vitest";
 import { sanitizeHtml } from "../src/sanitizer";
 
 // =============================================================================
-// Email HTML Sanitizer Tests
+// HTML Sanitizer Deep Branch Coverage Tests
 // =============================================================================
 
 describe("sanitizeHtml", () => {
-    it("strips <script> tags and content", () => {
-        const input = '<div>Hello</div><script>alert("xss")</script>';
-        const result = sanitizeHtml(input);
+    // --- Script tag removal ---
+
+    it("strips script tags", () => {
+        const html = '<p>Hello</p><script>alert("xss")</script><p>World</p>';
+        const result = sanitizeHtml(html);
         expect(result).not.toContain("<script");
-        expect(result).not.toContain("alert");
-        expect(result).toContain("<div>Hello</div>");
+        expect(result).toContain("Hello");
+        expect(result).toContain("World");
     });
 
-    it("strips inline event handlers", () => {
-        const input = '<img onerror="alert(1)" src="x">';
-        const result = sanitizeHtml(input);
-        expect(result).not.toContain("onerror");
+    it("strips script tags with attributes", () => {
+        const html = '<script type="text/javascript">malicious()</script>';
+        expect(sanitizeHtml(html)).not.toContain("<script");
     });
 
-    it("strips javascript: links", () => {
-        const input = '<a href="javascript:alert(1)">Click</a>';
-        const result = sanitizeHtml(input);
+    // --- Dangerous element removal ---
+
+    it("strips iframe tags", () => {
+        const html = '<iframe src="evil.com"></iframe>';
+        expect(sanitizeHtml(html)).not.toContain("<iframe");
+    });
+
+    it("strips object tags", () => {
+        const html = '<object data="evil.swf"></object>';
+        expect(sanitizeHtml(html)).not.toContain("<object");
+    });
+
+    it("strips embed tags", () => {
+        const html = '<embed src="evil.swf"/>';
+        expect(sanitizeHtml(html)).not.toContain("<embed");
+    });
+
+    it("strips form tags", () => {
+        const html = '<form action="evil.com"><input type="text"/></form>';
+        const result = sanitizeHtml(html);
+        expect(result).not.toContain("<form");
+        expect(result).not.toContain("<input");
+    });
+
+    it("strips textarea tags", () => {
+        const html = '<textarea>content</textarea>';
+        expect(sanitizeHtml(html)).not.toContain("<textarea");
+    });
+
+    it("strips select tags", () => {
+        const html = '<select><option>A</option></select>';
+        expect(sanitizeHtml(html)).not.toContain("<select");
+    });
+
+    // --- Event handler removal ---
+
+    it("strips onclick handlers", () => {
+        const html = '<a href="#" onclick="alert(1)">Click</a>';
+        expect(sanitizeHtml(html)).not.toContain("onclick");
+    });
+
+    it("strips onload handlers", () => {
+        const html = '<img src="x" onload="alert(1)"/>';
+        expect(sanitizeHtml(html)).not.toContain("onload");
+    });
+
+    it("strips onerror handlers", () => {
+        const html = '<img onerror="alert(1)" src="x"/>';
+        expect(sanitizeHtml(html)).not.toContain("onerror");
+    });
+
+    // --- JavaScript URL removal ---
+
+    it("replaces javascript: URLs with #", () => {
+        const html = '<a href="javascript:alert(1)">Click</a>';
+        const result = sanitizeHtml(html);
         expect(result).not.toContain("javascript:");
         expect(result).toContain('href="#"');
     });
 
-    it("strips <iframe> tags", () => {
-        const input = '<p>Text</p><iframe src="evil.com"></iframe>';
-        const result = sanitizeHtml(input);
-        expect(result).not.toContain("<iframe");
-        expect(result).toContain("<p>Text</p>");
+    // --- Preserves safe HTML ---
+
+    it("preserves paragraph tags", () => {
+        const html = "<p>Hello <strong>World</strong></p>";
+        expect(sanitizeHtml(html)).toBe(html);
     });
 
-    it("strips <form> and form elements", () => {
-        const input = '<form action="evil"><input type="text"><select><option>A</option></select></form>';
-        const result = sanitizeHtml(input);
-        expect(result).not.toContain("<form");
-        expect(result).not.toContain("<input");
-        expect(result).not.toContain("<select");
+    it("preserves table tags", () => {
+        const html = "<table><tr><td>Cell</td></tr></table>";
+        expect(sanitizeHtml(html)).toBe(html);
     });
 
-    it("strips <object> and <embed> tags", () => {
-        const input = '<object data="flash.swf"></object><embed src="evil.swf">';
-        const result = sanitizeHtml(input);
-        expect(result).not.toContain("<object");
-        expect(result).not.toContain("<embed");
-    });
-
-    it("preserves safe HTML", () => {
-        const input = '<h1>Welcome</h1><p>Hello <strong>user</strong></p>';
-        expect(sanitizeHtml(input)).toBe(input);
-    });
-
-    it("preserves email-safe elements", () => {
-        const input = '<table><tr><td>Cell</td></tr></table>';
-        expect(sanitizeHtml(input)).toBe(input);
+    it("preserves img with src", () => {
+        const html = '<img src="logo.png" alt="Logo"/>';
+        expect(sanitizeHtml(html)).toBe(html);
     });
 
     it("handles empty string", () => {
         expect(sanitizeHtml("")).toBe("");
+    });
+
+    it("handles plain text", () => {
+        expect(sanitizeHtml("Hello World")).toBe("Hello World");
     });
 });

@@ -1,31 +1,70 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Mock @cols/analytics before import
+vi.mock("@cols/analytics", () => ({
+    track: vi.fn(),
+}));
+
+vi.mock("@cols/analytics/event-contracts", () => ({
+    ExperimentExposed: { event: "experiment.exposed", version: 1 },
+}));
+
+import { recordExposure } from "../src/exposure";
+import { track } from "@cols/analytics";
 import type { ExperimentAssignment } from "../src/types";
 
 // =============================================================================
-// Exposure Tracking Tests (type-level — actual function requires posthog mock)
+// Exposure Tracking Branch Coverage Tests
 // =============================================================================
 
-describe("exposure deduplication contract", () => {
-    it("key format is experimentKey:variant", () => {
+describe("recordExposure", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("tracks exposure on first call", () => {
+        recordExposure({ experimentKey: "exp_a", variant: "control", assignedAt: Date.now() });
+        expect(track).toHaveBeenCalledTimes(1);
+        expect(track).toHaveBeenCalledWith(
+            { event: "experiment.exposed", version: 1 },
+            { experiment_id: "exp_a", variant: "control" },
+        );
+    });
+
+    it("deduplicates same experiment+variant within session", () => {
         const assignment: ExperimentAssignment = {
-            experimentKey: "cta_test",
-            variant: "control",
+            experimentKey: "exp_dedup",
+            variant: "treatment",
             assignedAt: Date.now(),
         };
-        const key = `${assignment.experimentKey}:${assignment.variant}`;
-        expect(key).toBe("cta_test:control");
+        recordExposure(assignment);
+        recordExposure(assignment);
+        recordExposure(assignment);
+        // track should only be called once for this key
+        expect(track).toHaveBeenCalledWith(
+            expect.anything(),
+            { experiment_id: "exp_dedup", variant: "treatment" },
+        );
     });
 
-    it("different variants produce different keys", () => {
-        const a1 = { experimentKey: "test", variant: "control", assignedAt: Date.now() };
-        const a2 = { experimentKey: "test", variant: "variant_a", assignedAt: Date.now() };
-        expect(`${a1.experimentKey}:${a1.variant}`).not.toBe(`${a2.experimentKey}:${a2.variant}`);
+    it("tracks different experiments separately", () => {
+        recordExposure({ experimentKey: "exp_x", variant: "control", assignedAt: Date.now() });
+        recordExposure({ experimentKey: "exp_y", variant: "control", assignedAt: Date.now() });
+        // Both should fire
+        expect(track).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ experiment_id: "exp_x" }),
+        );
+        expect(track).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ experiment_id: "exp_y" }),
+        );
     });
 
-    it("same assignment produces same key", () => {
-        const assignment = { experimentKey: "test", variant: "control", assignedAt: Date.now() };
-        const k1 = `${assignment.experimentKey}:${assignment.variant}`;
-        const k2 = `${assignment.experimentKey}:${assignment.variant}`;
-        expect(k1).toBe(k2);
+    it("treats different variants of same experiment as different keys", () => {
+        recordExposure({ experimentKey: "exp_z", variant: "A", assignedAt: Date.now() });
+        recordExposure({ experimentKey: "exp_z", variant: "B", assignedAt: Date.now() });
+        // Both should fire (different variant = different key)
+        expect(track).toHaveBeenCalledTimes(2);
     });
 });

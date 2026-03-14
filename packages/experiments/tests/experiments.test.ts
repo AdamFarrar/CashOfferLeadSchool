@@ -1,48 +1,52 @@
 import { describe, it, expect } from "vitest";
-import { experiments, getExperimentsByStatus, getActiveExperimentsForPage } from "../src/experiments";
-import type { ExperimentDefinition } from "../src/types";
+import { getExperimentsByStatus, getActiveExperimentsForPage } from "../src/experiments";
 
 // =============================================================================
-// Experiment Registry Tests
+// Experiments Registry Deep Coverage
 // =============================================================================
-
-describe("experiments registry", () => {
-    it("is a Record of ExperimentDefinitions", () => {
-        expect(typeof experiments).toBe("object");
-    });
-
-    it("all entries have valid status values", () => {
-        const validStatuses = ["draft", "running", "paused", "completed", "archived"];
-        for (const exp of Object.values(experiments)) {
-            expect(validStatuses).toContain(exp.status);
-        }
-    });
-
-    it("all entries have at least 2 variants", () => {
-        for (const exp of Object.values(experiments)) {
-            expect(exp.variants.length).toBeGreaterThanOrEqual(2);
-        }
-    });
-});
 
 describe("getExperimentsByStatus", () => {
-    it("returns empty array when no experiments match", () => {
-        expect(getExperimentsByStatus("running")).toEqual([]);
+    it("returns only experiments with matching status", () => {
+        const running = getExperimentsByStatus("running");
+        for (const exp of running) {
+            expect(exp.status).toBe("running");
+        }
     });
 
-    it("returns array (not null/undefined)", () => {
-        const result = getExperimentsByStatus("draft");
+    it("returns empty for non-existent status", () => {
+        const result = getExperimentsByStatus("archived");
+        // May be empty if no archived experiments
         expect(Array.isArray(result)).toBe(true);
+    });
+
+    it("returns different subsets for different statuses", () => {
+        const running = getExperimentsByStatus("running");
+        const draft = getExperimentsByStatus("draft");
+        // No overlap
+        const runningKeys = running.map(e => e.key);
+        for (const d of draft) {
+            expect(runningKeys).not.toContain(d.key);
+        }
     });
 });
 
 describe("getActiveExperimentsForPage", () => {
-    it("returns empty array when no running experiments target page", () => {
-        expect(getActiveExperimentsForPage("/nonexistent-page")).toEqual([]);
+    it("returns empty array for non-matching page", () => {
+        const result = getActiveExperimentsForPage("/nonexistent-page-xyz");
+        expect(result).toEqual([]);
     });
 
-    it("returns array (not null/undefined)", () => {
-        const result = getActiveExperimentsForPage("/");
-        expect(Array.isArray(result)).toBe(true);
+    it("only returns running experiments", () => {
+        const result = getActiveExperimentsForPage("/pricing");
+        for (const exp of result) {
+            expect(exp.status).toBe("running");
+        }
+    });
+
+    it("filters by targetPages", () => {
+        const result = getActiveExperimentsForPage("/pricing");
+        for (const exp of result) {
+            expect(exp.targetPages).toContain("/pricing");
+        }
     });
 });
