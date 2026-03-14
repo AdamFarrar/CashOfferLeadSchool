@@ -178,6 +178,14 @@ export default function DashboardLayout({
                             </div>
                         </div>
                     </div>
+                    <Link
+                        href="/settings"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`sidebar-link mb-1 ${pathname === "/settings" ? "sidebar-link-active font-semibold" : ""}`}
+                    >
+                        <span className="text-base">⚙️</span>
+                        Settings
+                    </Link>
                     <button
                         onClick={() => { resetIdentity(); signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } }); }}
                         className="w-full p-2 text-[0.8rem] text-[color:var(--text-muted)] bg-transparent border border-[var(--border-subtle)] rounded-[var(--radius-sm)] cursor-pointer transition-colors hover:border-[var(--border-hover)]"
