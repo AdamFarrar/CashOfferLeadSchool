@@ -17,7 +17,8 @@ export function LandingNav() {
                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-sm">
                         🏠
                     </span>
-                    COCS
+                    <span className="hidden sm:inline">Cash Offer Lead School</span>
+                    <span className="sm:hidden">COLS</span>
                 </Link>
 
                 {/* Desktop nav */}
