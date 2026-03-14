@@ -17,6 +17,7 @@ interface Note {
     moduleTitle: string;
     content: string;
     updatedAt: Date;
+    programSlug?: string | null;
 }
 
 export function NotesListClient({ notes }: { notes: Note[] }) {
@@ -80,7 +81,7 @@ export function NotesListClient({ notes }: { notes: Note[] }) {
                     {filtered.map((note) => (
                         <Link
                             key={note.episodeId}
-                            href={`/episodes/${note.episodeId}`}
+                            href={note.programSlug ? `/programs/${note.programSlug}/episodes/${note.episodeId}` : `/episodes/${note.episodeId}`}
                             style={{
                                 display: "flex",
                                 alignItems: "flex-start",

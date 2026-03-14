@@ -20,9 +20,10 @@ interface GuidanceMessage {
 interface CompletionGuidanceProps {
     messages: GuidanceMessage[];
     nextEpisodeId?: string | null;
+    programSlug?: string | null;
 }
 
-export function CompletionGuidance({ messages, nextEpisodeId }: CompletionGuidanceProps) {
+export function CompletionGuidance({ messages, nextEpisodeId, programSlug }: CompletionGuidanceProps) {
     if (!messages || messages.length === 0) {
         return (
             <FeaturePreview
@@ -64,7 +65,7 @@ export function CompletionGuidance({ messages, nextEpisodeId }: CompletionGuidan
             </p>
             {msg.type === "stalled" && nextEpisodeId && (
                 <Link
-                    href={`/episodes/${nextEpisodeId}`}
+                    href={programSlug ? `/programs/${programSlug}/episodes/${nextEpisodeId}` : `/episodes/${nextEpisodeId}`}
                     style={{
                         display: "inline-block",
                         marginTop: "0.75rem",

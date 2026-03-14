@@ -19,6 +19,7 @@ interface EpisodePlayerProps {
     episodeId: string;
     moduleId: string;
     programId: string;
+    programSlug?: string | null;
     videoUrl: string | null;
     durationSeconds: number | null;
     lastPositionSeconds: number;
@@ -36,6 +37,7 @@ export function EpisodePlayer({
     episodeId,
     moduleId,
     programId,
+    programSlug,
     videoUrl,
     durationSeconds,
     lastPositionSeconds,
@@ -105,7 +107,8 @@ export function EpisodePlayer({
                         clearInterval(countdownTimer.current);
                         countdownTimer.current = null;
                     }
-                    router.push(`/episodes/${nextEpisodeId}`);
+                    const nextUrl = programSlug ? `/programs/${programSlug}/episodes/${nextEpisodeId}` : `/episodes/${nextEpisodeId}`;
+                    router.push(nextUrl);
                     return 0;
                 }
                 return prev - 1;
@@ -271,7 +274,7 @@ export function EpisodePlayer({
 
                     <button
                         className="next-overlay-cta"
-                        onClick={() => router.push(`/episodes/${nextEpisodeId}`)}
+                        onClick={() => router.push(programSlug ? `/programs/${programSlug}/episodes/${nextEpisodeId}` : `/episodes/${nextEpisodeId}`)}
                     >
                         Continue Watching →
                     </button>

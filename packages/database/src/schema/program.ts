@@ -19,6 +19,7 @@ import {
     index,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { user } from "./auth";
 
 // ── Enums ──
@@ -43,7 +44,7 @@ export const program = pgTable("program", {
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    uniqueIndex("idx_program_slug").on(t.slug),
+    uniqueIndex("idx_program_slug").on(t.slug).where(sql`slug IS NOT NULL`),
 ]);
 
 // ── Modules ──

@@ -174,6 +174,7 @@ export function EpisodeView({ episode }: Props) {
                         episodeId={episode.id}
                         moduleId={episode.moduleId}
                         programId={episode.programId}
+                        programSlug={episode.programSlug}
                         videoUrl={episode.videoUrl}
                         durationSeconds={episode.durationSeconds}
                         lastPositionSeconds={episode.lastPositionSeconds}
@@ -340,7 +341,7 @@ export function EpisodeView({ episode }: Props) {
             {/* ── ZONE 3: Episode Navigation ── */}
             <nav className="episode-nav">
                 {episode.prevEpisodeId ? (
-                    <Link href={`/episodes/${episode.prevEpisodeId}`} className="episode-nav-card" aria-label="Go to previous episode">
+                    <Link href={episode.programSlug ? `/programs/${episode.programSlug}/episodes/${episode.prevEpisodeId}` : `/episodes/${episode.prevEpisodeId}`} className="episode-nav-card" aria-label="Go to previous episode">
                         <span className="nav-label">← Previous</span>
                         <span className="nav-title">Previous Episode</span>
                     </Link>
@@ -353,7 +354,7 @@ export function EpisodeView({ episode }: Props) {
                 </Link>
 
                 {episode.nextEpisodeId ? (
-                    <Link href={`/episodes/${episode.nextEpisodeId}`} className="episode-nav-card next" aria-label="Go to next episode">
+                    <Link href={episode.programSlug ? `/programs/${episode.programSlug}/episodes/${episode.nextEpisodeId}` : `/episodes/${episode.nextEpisodeId}`} className="episode-nav-card next" aria-label="Go to next episode">
                         <span className="nav-label">Next →</span>
                         <span className="nav-title">Next Episode</span>
                     </Link>

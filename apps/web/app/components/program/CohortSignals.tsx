@@ -20,6 +20,7 @@ interface CohortSignal {
 
 interface CohortSignalsProps {
     signals: CohortSignal[] | null;
+    programSlug?: string | null;
 }
 
 const SIGNAL_ICONS: Record<string, string> = {
@@ -28,7 +29,7 @@ const SIGNAL_ICONS: Record<string, string> = {
     top_takeaway: "💡",
 };
 
-export function CohortSignals({ signals }: CohortSignalsProps) {
+export function CohortSignals({ signals, programSlug }: CohortSignalsProps) {
     if (!signals || signals.length === 0) {
         return (
             <FeaturePreview
@@ -100,7 +101,7 @@ export function CohortSignals({ signals }: CohortSignalsProps) {
                         </p>
                         {signal.episodeId && (
                             <Link
-                                href={`/episodes/${signal.episodeId}`}
+                                href={programSlug && signal.episodeId ? `/programs/${programSlug}/episodes/${signal.episodeId}` : `/episodes/${signal.episodeId}`}
                                 style={{
                                     display: "inline-block",
                                     marginTop: "0.5rem",

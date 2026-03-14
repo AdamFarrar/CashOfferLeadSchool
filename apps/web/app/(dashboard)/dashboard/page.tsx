@@ -295,7 +295,7 @@ export default function DashboardPage() {
 
                 {heroEpisode ? (
                     <Link
-                        href={`/episodes/${heroEpisode.id}`}
+                        href={progress?.programSlug ? `/programs/${progress.programSlug}/episodes/${heroEpisode.id}` : `/episodes/${heroEpisode.id}`}
                         className="program-hero-cta"
                     >
                         {isResume ? "▶ Resume" : "▶ Start Episode"}
@@ -380,6 +380,7 @@ export default function DashboardPage() {
             <CompletionGuidance
                 messages={guidanceMessages as Parameters<typeof CompletionGuidance>[0]["messages"]}
                 nextEpisodeId={progress?.nextEpisode?.id}
+                programSlug={progress?.programSlug ?? null}
             />
 
             {/* Live session */}
@@ -426,7 +427,7 @@ export default function DashboardPage() {
             )}
 
             {/* Phase 6: Cohort Signals */}
-            <CohortSignals signals={cohortSignals as Parameters<typeof CohortSignals>[0]["signals"]} />
+            <CohortSignals signals={cohortSignals as Parameters<typeof CohortSignals>[0]["signals"]} programSlug={progress?.programSlug ?? null} />
 
             {/* ── SECTION 3: Program Resources ── */}
             <div className="program-resources">

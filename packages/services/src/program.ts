@@ -76,6 +76,7 @@ export interface EpisodeDetail {
     moduleTitle: string;
     moduleOrderIndex: number;
     programId: string;
+    programSlug: string | null;
     completed: boolean;
     locked: boolean;
     note: string | null;
@@ -315,6 +316,7 @@ export async function getEpisodeDetail(
         moduleTitle: mod.title,
         moduleOrderIndex: mod.orderIndex,
         programId: mod.programId,
+        programSlug: programs[0]?.slug ?? null,
         completed,
         locked,
         note: locked ? null : note,
@@ -377,7 +379,7 @@ export async function saveEpisodeNote(
 
 export async function getUserNotes(
     userId: string,
-): Promise<{ episodeId: string; episodeTitle: string; moduleTitle: string; content: string; updatedAt: Date }[]> {
+): Promise<{ episodeId: string; episodeTitle: string; moduleTitle: string; content: string; updatedAt: Date; programSlug: string | null }[]> {
     const notes = await db
         .select({
             episodeId: episodeNote.episodeId,
@@ -385,10 +387,12 @@ export async function getUserNotes(
             updatedAt: episodeNote.updatedAt,
             episodeTitle: episode.title,
             moduleTitle: module.title,
+            programSlug: program.slug,
         })
         .from(episodeNote)
         .innerJoin(episode, eq(episodeNote.episodeId, episode.id))
         .innerJoin(module, eq(episode.moduleId, module.id))
+        .innerJoin(program, eq(module.programId, program.id))
         .where(eq(episodeNote.userId, userId))
         .orderBy(asc(module.orderIndex), asc(episode.orderIndex));
 
@@ -466,6 +470,7 @@ export async function updateResumePosition(
 export interface DashboardProgress {
     programTitle: string;
     programId: string;
+    programSlug: string | null;
     cohortStartDate: Date | null;
     totalEpisodes: number;
     completedEpisodes: number;
@@ -611,6 +616,7 @@ export async function getProgramProgressForDashboard(
     return {
         programTitle: prog.title,
         programId: prog.id,
+        programSlug: prog.slug ?? null,
         cohortStartDate,
         totalEpisodes: episodes.length,
         completedEpisodes,
