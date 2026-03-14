@@ -12,6 +12,7 @@ import {
     rateLimitKey,
     RATE_LIMITS,
 } from "@cocs/services";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 import { getServerIdentity } from "./identity";
 
 const MAX_BODY_LENGTH = 2000;
@@ -86,6 +87,19 @@ export async function submitFeedbackAction(input: SubmitFeedbackActionInput) {
             rating: input.rating,
             promptSeenAt: input.promptSeenAt ? new Date(input.promptSeenAt) : undefined,
         });
+
+        // Fire-and-forget
+        emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.FEEDBACK_SUBMITTED,
+            actor: { type: "user", id: identity.userId },
+            subject: { type: "feedback", id: entry.id },
+            organizationId: identity.organizationId,
+            payload: {
+                userId: identity.userId,
+                type: input.type,
+                context: input.context,
+            },
+        }).catch(() => {});
 
         return { success: true, id: entry.id };
     } catch (err) {

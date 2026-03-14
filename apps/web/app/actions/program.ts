@@ -142,6 +142,15 @@ export async function saveNote(episodeId: string, content: string) {
             { length: content.length },
         );
 
+        // Emit domain event for automation/analytics
+        emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.NOTE_CREATED,
+            actor: { type: "user", id: identity.userId },
+            subject: { type: "episode_note", id: episodeId },
+            organizationId: identity.organizationId,
+            payload: { episodeId, noteLength: content.length },
+        }).catch(() => {});
+
         return { success: true };
     } catch (err) {
         console.error("[PROGRAM] Save note error:", err);

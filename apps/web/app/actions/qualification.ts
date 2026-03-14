@@ -7,6 +7,7 @@ import {
     rateLimitKey,
     RATE_LIMITS,
 } from "@cocs/services";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
 import { getServerIdentity } from "./identity";
 
 // =============================================================================
@@ -73,7 +74,7 @@ export async function submitQualification(data: SubmitQualificationInput) {
     }
 
     try {
-        return await submitQualificationForm({
+        const result = await submitQualificationForm({
             userId: identity.userId,
             organizationId: identity.organizationId,
             businessName: data.businessName,
@@ -85,6 +86,22 @@ export async function submitQualification(data: SubmitQualificationInput) {
             goals: data.goals,
             responses: data.responses,
         });
+
+        // Fire-and-forget — don't block response
+        emitDomainEvent({
+            eventKey: DOMAIN_EVENTS.QUALIFICATION_SUBMITTED,
+            actor: { type: "user", id: identity.userId },
+            subject: { type: "qualification", id: identity.userId },
+            organizationId: identity.organizationId,
+            payload: {
+                userId: identity.userId,
+                businessName: data.businessName,
+                businessType: data.businessType,
+                marketArea: data.marketArea,
+            },
+        }).catch(() => {});
+
+        return result;
     } catch (err) {
         if (process.env.NODE_ENV !== "production") {
             console.error("Qualification submission error:", err);
