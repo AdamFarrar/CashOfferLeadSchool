@@ -237,7 +237,7 @@ export default function SessionDetailPage() {
                         </button>
                     )}
 
-                    {session.rsvpCount > 0 && (
+                    {(isUpcoming || isLive) && session.rsvpCount > 0 && (
                         <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                             {session.rsvpCount} attending
                         </span>
@@ -311,8 +311,13 @@ export default function SessionDetailPage() {
                                 height: "48px",
                                 borderRadius: "50%",
                                 background: host.headshotUrl
-                                    ? `url(${host.headshotUrl}) center/cover`
+                                    ? undefined
                                     : "linear-gradient(135deg, var(--accent-purple), var(--accent-blue))",
+                                backgroundImage: host.headshotUrl
+                                    ? `url(${host.headshotUrl})`
+                                    : undefined,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",

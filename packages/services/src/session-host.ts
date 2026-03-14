@@ -4,7 +4,7 @@
 
 import { db } from "@cocs/database";
 import { sessionHost, sessionHostAssignment } from "@cocs/database/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 // ── List All Hosts ──
 
@@ -92,10 +92,12 @@ export async function removeHostFromSession(sessionId: string, hostId: string) {
     const result = await db
         .delete(sessionHostAssignment)
         .where(
-            eq(sessionHostAssignment.sessionId, sessionId),
+            and(
+                eq(sessionHostAssignment.sessionId, sessionId),
+                eq(sessionHostAssignment.hostId, hostId),
+            ),
         )
         .returning({ id: sessionHostAssignment.id });
-    // Filter by hostId in app layer since drizzle AND requires different approach
     return result.length > 0;
 }
 

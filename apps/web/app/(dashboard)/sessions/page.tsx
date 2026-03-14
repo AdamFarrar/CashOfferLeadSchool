@@ -212,19 +212,21 @@ export default function SessionsPage() {
                                     </div>
                                 </div>
                                 {s.recordingUrl ? (
-                                    <a
-                                        href={s.recordingUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <span
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            window.open(s.recordingUrl!, "_blank", "noopener,noreferrer");
+                                        }}
                                         style={{
                                             fontSize: "0.75rem",
                                             fontWeight: 600,
                                             color: "#a855f7",
-                                            textDecoration: "none",
+                                            cursor: "pointer",
                                         }}
                                     >
                                         ▶ Watch Recording
-                                    </a>
+                                    </span>
                                 ) : (
                                     <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
                                         Recording coming soon

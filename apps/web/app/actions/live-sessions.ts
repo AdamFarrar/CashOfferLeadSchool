@@ -23,6 +23,8 @@ import {
 } from "@cocs/services";
 import type { LiveSessionStatus } from "@cocs/services";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // ── User: Get Upcoming Sessions ──
 
 export async function getUpcomingSessionsAction() {
@@ -56,6 +58,7 @@ export async function getPastSessionsAction() {
 // ── User: Get Session Detail (with hosts + RSVP) ──
 
 export async function getSessionDetailAction(sessionId: string) {
+    if (!UUID_RE.test(sessionId)) return { success: false, session: null };
     const identity = await getServerIdentity();
     if (!identity) return { success: false, session: null };
 
@@ -68,6 +71,7 @@ export async function getSessionDetailAction(sessionId: string) {
 // ── User: Toggle RSVP ──
 
 export async function toggleRsvpAction(sessionId: string) {
+    if (!UUID_RE.test(sessionId)) return { success: false, rsvpd: false };
     const identity = await getServerIdentity();
     if (!identity) return { success: false, rsvpd: false };
 
