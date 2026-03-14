@@ -1,9 +1,9 @@
 "use server";
 
-import { auth } from "@cocs/auth/server";
+import { auth } from "@cols/auth/server";
 import { headers } from "next/headers";
-import { db } from "@cocs/database/client";
-import { member } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { member } from "@cols/database/schema";
 import { eq } from "drizzle-orm";
 
 // =============================================================================

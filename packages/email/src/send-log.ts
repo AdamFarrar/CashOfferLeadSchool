@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/email — Send Log Writer
+// @cols/email — Send Log Writer
 // =============================================================================
 // Records every email send attempt for auditability.
 // =============================================================================
 
-import { db } from "@cocs/database/client";
-import { emailSendLog } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { emailSendLog } from "@cols/database/schema";
 
 export interface SendLogEntry {
     eventKey: string;

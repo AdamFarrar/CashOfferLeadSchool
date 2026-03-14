@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/events — Listener Registry (globalThis Singleton)
+// @cols/events — Listener Registry (globalThis Singleton)
 // =============================================================================
 // Uses globalThis to ensure a single registry instance across all Next.js
 // bundle chunks. Without this, instrumentation.ts and API routes get
@@ -9,7 +9,7 @@
 import type { DomainEventKey, DomainEventListener } from "./types";
 
 // Symbol key prevents collision with other libraries
-const REGISTRY_KEY = Symbol.for("@cocs/events/registry");
+const REGISTRY_KEY = Symbol.for("@cols/events/registry");
 
 interface RegistryState {
     listeners: Map<DomainEventKey, DomainEventListener[]>;

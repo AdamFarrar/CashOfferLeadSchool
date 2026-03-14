@@ -25,8 +25,8 @@ import {
     rateLimitKey,
     getProgramProgressForDashboard,
     getAdminEpisodeList,
-} from "@cocs/services";
-import type { RateLimitConfig } from "@cocs/services";
+} from "@cols/services";
+import type { RateLimitConfig } from "@cols/services";
 import {
     generateTakeaways,
     generateDigest,
@@ -35,8 +35,8 @@ import {
     generateCohortSignals,
     evaluateCompletionGuidance,
     episodeChat,
-} from "@cocs/ai";
-import type { ChatMessage, GuidanceInput } from "@cocs/ai";
+} from "@cols/ai";
+import type { ChatMessage, GuidanceInput } from "@cols/ai";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

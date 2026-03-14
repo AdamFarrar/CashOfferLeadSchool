@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useSession, useActiveOrganization } from "@cocs/auth/client";
+import { useSession, useActiveOrganization } from "@cols/auth/client";
 import { FeedbackPrompt } from "@/app/components/FeedbackPrompt";
-import { track } from "@cocs/analytics";
-import { QualificationConfirmationViewed } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { QualificationConfirmationViewed } from "@cols/analytics/event-contracts";
 
 export default function ConfirmationPage() {
     const { data: session } = useSession();

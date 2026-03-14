@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/email — Hardcoded Fallback Templates
+// @cols/email — Hardcoded Fallback Templates
 // =============================================================================
 // Used when no database template exists. These ensure critical emails
 // (verification, password reset) always send even before admin setup.

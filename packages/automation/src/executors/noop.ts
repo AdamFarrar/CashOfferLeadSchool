@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/automation — Noop Channel Executor (Placeholder)
+// @cols/automation — Noop Channel Executor (Placeholder)
 // =============================================================================
 
 import type { ChannelExecutor, PlannedAction, ExecutorContext, ExecutorResult } from "../types";

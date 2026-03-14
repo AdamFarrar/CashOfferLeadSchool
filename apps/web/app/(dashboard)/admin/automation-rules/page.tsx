@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession, useActiveOrganization } from "@cocs/auth/client";
+import { useSession, useActiveOrganization } from "@cols/auth/client";
 import {
     listAutomationRulesAction,
     createAutomationRuleAction,
     deleteAutomationRuleAction,
     toggleAutomationRuleAction,
 } from "@/app/actions/automation-rules";
-import { DOMAIN_EVENTS } from "@cocs/events";
+import { DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
 // Admin Automation Rules — Phase 1.6

@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/experiments — Barrel Export
+// @cols/experiments — Barrel Export
 // =============================================================================
 
 export { ExperimentProvider, useExperiment } from "./provider";

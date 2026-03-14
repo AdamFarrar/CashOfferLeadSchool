@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/email — Renderer Pipeline
+// @cols/email — Renderer Pipeline
 // =============================================================================
 // Sanitize → Validate → Inject → Verify
 // Sanitization happens BEFORE variable injection to prevent XSS.

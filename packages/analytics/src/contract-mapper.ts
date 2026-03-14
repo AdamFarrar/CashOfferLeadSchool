@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/analytics — Contract Mapper (R2 Fix)
+// @cols/analytics — Contract Mapper (R2 Fix)
 // =============================================================================
 // Maps DomainEvent → existing EventContract for PostHog tracking.
 // Preserves the existing typed contract system.
 // =============================================================================
 
-import type { DomainEvent } from "@cocs/events";
+import type { DomainEvent } from "@cols/events";
 import type { EventContract } from "./types";
 import {
     AuthEmailVerificationCompleted,

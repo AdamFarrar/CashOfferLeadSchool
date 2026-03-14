@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/analytics — Domain Event Bus Listener (R2 Fix)
+// @cols/analytics — Domain Event Bus Listener (R2 Fix)
 // =============================================================================
 // Wildcard listener: fires for EVERY domain event.
 // Maps DomainEvent → EventEnvelope → serverTrack() → PostHog.
 // =============================================================================
 
-import { registerListenerAll, type DomainEvent } from "@cocs/events";
+import { registerListenerAll, type DomainEvent } from "@cols/events";
 import { serverTrack } from "./server-track";
 import { resolveContract } from "./contract-mapper";
 

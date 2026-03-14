@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/analytics — Barrel Export
+// @cols/analytics — Barrel Export
 // =============================================================================
 
 export { track, setAnalyticsContext, setActiveExperiments, setTrafficSource } from "./track";

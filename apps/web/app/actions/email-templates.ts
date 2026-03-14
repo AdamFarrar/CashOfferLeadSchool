@@ -13,11 +13,11 @@ import {
     publishTemplateVersion,
     rollbackTemplateVersion,
     getPublishedVersion,
-} from "@cocs/services";
-import { renderEmail } from "@cocs/email";
-import { deliverEmail } from "@cocs/email";
-import { db } from "@cocs/database/client";
-import { emailSendLog } from "@cocs/database/schema";
+} from "@cols/services";
+import { renderEmail } from "@cols/email";
+import { deliverEmail } from "@cols/email";
+import { db } from "@cols/database/client";
+import { emailSendLog } from "@cols/database/schema";
 import { sql, gte, eq, and } from "drizzle-orm";
 
 // =============================================================================

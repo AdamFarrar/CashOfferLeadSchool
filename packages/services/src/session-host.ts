@@ -2,8 +2,8 @@
 // Session Host Service — Phase C
 // =============================================================================
 
-import { db } from "@cocs/database";
-import { sessionHost, sessionHostAssignment } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { sessionHost, sessionHostAssignment } from "@cols/database/schema";
 import { eq, desc, and } from "drizzle-orm";
 
 // ── List All Hosts ──

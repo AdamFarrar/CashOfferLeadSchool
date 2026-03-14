@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/ui — Shared UI Components
+// @cols/ui — Shared UI Components
 // =============================================================================
 // Primitive components used across the application.
 // All components use design tokens from globals.css via CSS variables.

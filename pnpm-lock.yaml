@@ -20,34 +20,34 @@ importers:
 
   apps/web:
     dependencies:
-      '@cocs/ai':
+      '@cols/ai':
         specifier: workspace:*
         version: link:../../packages/ai
-      '@cocs/analytics':
+      '@cols/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
-      '@cocs/auth':
+      '@cols/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@cocs/automation':
+      '@cols/automation':
         specifier: workspace:*
         version: link:../../packages/automation
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@cocs/email':
+      '@cols/email':
         specifier: workspace:*
         version: link:../../packages/email
-      '@cocs/events':
+      '@cols/events':
         specifier: workspace:*
         version: link:../../packages/events
-      '@cocs/experiments':
+      '@cols/experiments':
         specifier: workspace:*
         version: link:../../packages/experiments
-      '@cocs/services':
+      '@cols/services':
         specifier: workspace:*
         version: link:../../packages/services
-      '@cocs/ui':
+      '@cols/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@sentry/nextjs':
@@ -102,7 +102,7 @@ importers:
 
   packages/ai:
     dependencies:
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../database
       openai:
@@ -115,7 +115,7 @@ importers:
 
   packages/analytics:
     dependencies:
-      '@cocs/events':
+      '@cols/events':
         specifier: workspace:*
         version: link:../events
       posthog-js:
@@ -134,13 +134,13 @@ importers:
       '@better-auth/drizzle-adapter':
         specifier: ^1.2.0
         version: 1.5.4(@better-auth/core@1.5.4(@better-auth/utils@0.3.1)(@better-fetch/fetch@1.1.21)(better-call@1.3.2(zod@4.3.6))(jose@6.2.0)(kysely@0.28.11)(nanostores@1.1.1))(@better-auth/utils@0.3.1)(drizzle-orm@0.41.0(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.9.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.6.1)(kysely@0.28.11)(mysql2@3.15.3)(postgres@3.4.8)(prisma@7.4.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)))
-      '@cocs/analytics':
+      '@cols/analytics':
         specifier: workspace:*
         version: link:../analytics
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../database
-      '@cocs/events':
+      '@cols/events':
         specifier: workspace:*
         version: link:../events
       better-auth:
@@ -159,13 +159,13 @@ importers:
 
   packages/automation:
     dependencies:
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../database
-      '@cocs/email':
+      '@cols/email':
         specifier: workspace:*
         version: link:../email
-      '@cocs/events':
+      '@cols/events':
         specifier: workspace:*
         version: link:../events
       drizzle-orm:
@@ -197,7 +197,7 @@ importers:
 
   packages/email:
     dependencies:
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../database
       drizzle-orm:
@@ -222,7 +222,7 @@ importers:
 
   packages/experiments:
     dependencies:
-      '@cocs/analytics':
+      '@cols/analytics':
         specifier: workspace:*
         version: link:../analytics
       react:
@@ -241,13 +241,13 @@ importers:
 
   packages/services:
     dependencies:
-      '@cocs/auth':
+      '@cols/auth':
         specifier: workspace:*
         version: link:../auth
-      '@cocs/database':
+      '@cols/database':
         specifier: workspace:*
         version: link:../database
-      '@cocs/events':
+      '@cols/events':
         specifier: workspace:*
         version: link:../events
       drizzle-orm:

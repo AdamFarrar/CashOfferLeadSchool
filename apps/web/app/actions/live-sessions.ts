@@ -20,8 +20,8 @@ import {
     createSessionHost,
     assignHostToSession,
     removeHostFromSession,
-} from "@cocs/services";
-import type { LiveSessionStatus } from "@cocs/services";
+} from "@cols/services";
+import type { LiveSessionStatus } from "@cols/services";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

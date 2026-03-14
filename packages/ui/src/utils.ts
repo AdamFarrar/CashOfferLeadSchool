@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/ui — Class Name Utility
+// @cols/ui — Class Name Utility
 // =============================================================================
 // Minimal class merging util. Filters falsy values and joins with space.
 // Avoids adding clsx/tailwind-merge as dependencies for this small package.

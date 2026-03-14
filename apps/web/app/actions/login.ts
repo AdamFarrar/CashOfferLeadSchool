@@ -7,10 +7,10 @@
 // Never reveals account existence.
 // =============================================================================
 
-import { auth } from "@cocs/auth/server";
+import { auth } from "@cols/auth/server";
 import { headers } from "next/headers";
-import { checkRateLimit, rateLimitKey } from "@cocs/services";
-import type { RateLimitConfig } from "@cocs/services";
+import { checkRateLimit, rateLimitKey } from "@cols/services";
+import type { RateLimitConfig } from "@cols/services";
 
 const LOGIN_RATE_LIMIT: RateLimitConfig = {
     maxRequests: 10,

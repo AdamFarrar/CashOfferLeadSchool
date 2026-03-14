@@ -1,12 +1,12 @@
 // =============================================================================
-// @cocs/automation — Event Bus Listener
+// @cols/automation — Event Bus Listener
 // =============================================================================
 // Subscribes per-event (NOT wildcard) via the AUTOMATION_EVENTS registry.
 // Handles: evaluate rules → plan actions → dispatch.
 // Circuit breaker: MAX_ACTIONS_PER_EVENT limits action count.
 // =============================================================================
 
-import { registerListener, type DomainEvent } from "@cocs/events";
+import { registerListener, type DomainEvent } from "@cols/events";
 import { AUTOMATION_EVENTS } from "./events";
 import { evaluateRules } from "./evaluator";
 import { planActions } from "./planner";

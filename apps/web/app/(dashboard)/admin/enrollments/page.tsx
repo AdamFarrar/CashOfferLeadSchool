@@ -7,7 +7,7 @@
 // =============================================================================
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "@cocs/auth/client";
+import { useSession } from "@cols/auth/client";
 import { adminListEnrollmentsAction, adminEnrollUserAction } from "@/app/actions/stripe";
 
 interface EnrollmentRow {

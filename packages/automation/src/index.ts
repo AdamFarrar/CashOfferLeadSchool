@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/automation — Barrel Export
+// @cols/automation — Barrel Export
 // =============================================================================
 
 export { registerAutomationListener } from "./listener";

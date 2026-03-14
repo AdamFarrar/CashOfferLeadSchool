@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/services — Sliding Window Rate Limiter
+// @cols/services — Sliding Window Rate Limiter
 // =============================================================================
 // In-memory rate limiter with sliding window algorithm.
 // Gracefully degrades on failure — never blocks legitimate requests if the

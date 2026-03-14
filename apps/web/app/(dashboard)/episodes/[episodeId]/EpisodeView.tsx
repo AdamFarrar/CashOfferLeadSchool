@@ -24,7 +24,7 @@ import { EpisodeChat } from "@/app/components/program/EpisodeChat";
 import { EpisodeReflection } from "@/app/components/program/EpisodeReflection";
 import { BestMoments } from "@/app/components/program/BestMoments";
 import { OperatorHighlights } from "@/app/components/program/OperatorHighlights";
-import type { EpisodeDetail, ThreadSummary } from "@cocs/services";
+import type { EpisodeDetail, ThreadSummary } from "@cols/services";
 
 interface Props {
     episode: EpisodeDetail;

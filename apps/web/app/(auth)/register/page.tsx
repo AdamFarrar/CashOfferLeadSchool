@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { track } from "@cocs/analytics";
-import { AuthRegistrationStarted, AuthRegistrationCompleted } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { AuthRegistrationStarted, AuthRegistrationCompleted } from "@cols/analytics/event-contracts";
 import { registerAction } from "@/app/actions/register";
 import { TURNSTILE_SITE_KEY } from "@/app/lib/turnstile";
 

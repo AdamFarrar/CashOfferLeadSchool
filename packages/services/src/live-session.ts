@@ -2,9 +2,9 @@
 // Live Session Service — Phase 9 + Phase C
 // =============================================================================
 
-import { db } from "@cocs/database";
-import { liveSession, sessionHostAssignment, sessionHost, sessionRsvp } from "@cocs/database/schema";
-import type { LiveSessionStatus } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { liveSession, sessionHostAssignment, sessionHost, sessionRsvp } from "@cols/database/schema";
+import type { LiveSessionStatus } from "@cols/database/schema";
 import { eq, desc, gte, and, sql } from "drizzle-orm";
 
 export type { LiveSessionStatus };

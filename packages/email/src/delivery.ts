@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/email — Resend Delivery Adapter
+// @cols/email — Resend Delivery Adapter
 // =============================================================================
 
 import { Resend } from "resend";

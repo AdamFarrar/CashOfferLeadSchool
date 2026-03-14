@@ -8,7 +8,7 @@
 // =============================================================================
 
 import { useState, useEffect } from "react";
-import { authClient, useSession } from "@cocs/auth/client";
+import { authClient, useSession } from "@cols/auth/client";
 
 export default function SettingsPage() {
     const { data: session, isPending } = useSession();

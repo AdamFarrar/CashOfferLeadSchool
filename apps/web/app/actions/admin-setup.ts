@@ -6,7 +6,7 @@
 // Queries counts across key tables to show admin what's configured.
 // =============================================================================
 
-import { db } from "@cocs/database";
+import { db } from "@cols/database";
 import {
     episode,
     episodeAsset,
@@ -14,7 +14,7 @@ import {
     automationRule,
     aiInsight,
     liveSession,
-} from "@cocs/database/schema";
+} from "@cols/database/schema";
 import { count } from "drizzle-orm";
 import { getServerIdentity } from "./identity";
 

@@ -5,7 +5,7 @@
 // All queries enforce server-side identity. No client-trusted data.
 // =============================================================================
 
-import { db } from "@cocs/database/client";
+import { db } from "@cols/database/client";
 import {
     program,
     module,
@@ -15,7 +15,7 @@ import {
     episodeAsset,
     eventLog,
     enrollment,
-} from "@cocs/database/schema";
+} from "@cols/database/schema";
 import { eq, and, asc, inArray, sql } from "drizzle-orm";
 
 // ── Types ──

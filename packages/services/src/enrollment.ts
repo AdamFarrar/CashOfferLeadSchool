@@ -5,8 +5,8 @@
 // All DB operations for payment gating go through this service.
 // =============================================================================
 
-import { db } from "@cocs/database";
-import { enrollment } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { enrollment } from "@cols/database/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 // ── Types ──

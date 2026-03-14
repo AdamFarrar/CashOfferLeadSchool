@@ -4,8 +4,8 @@
 // Platform Settings Server Actions — P3-6
 // =============================================================================
 
-import { db } from "@cocs/database";
-import { platformSetting } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { platformSetting } from "@cols/database/schema";
 import { eq } from "drizzle-orm";
 import { getServerIdentity } from "./identity";
 

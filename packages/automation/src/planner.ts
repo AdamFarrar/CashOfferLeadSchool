@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/automation — Action Planner
+// @cols/automation — Action Planner
 // =============================================================================
 // Converts matched rules into planned actions.
 // No idempotency logic here — DB handles it in the dispatcher.

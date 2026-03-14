@@ -5,7 +5,7 @@
 // Admins bypass enrollment. Non-enrolled users redirect to /pricing.
 // =============================================================================
 
-import { isUserEnrolled } from "@cocs/services";
+import { isUserEnrolled } from "@cols/services";
 
 export async function checkEnrollment(
     userId: string,

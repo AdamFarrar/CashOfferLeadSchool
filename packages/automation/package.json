@@ -1,5 +1,5 @@
 {
-    "name": "@cocs/automation",
+    "name": "@cols/automation",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -11,9 +11,9 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@cocs/events": "workspace:*",
-        "@cocs/database": "workspace:*",
-        "@cocs/email": "workspace:*",
+        "@cols/events": "workspace:*",
+        "@cols/database": "workspace:*",
+        "@cols/email": "workspace:*",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {

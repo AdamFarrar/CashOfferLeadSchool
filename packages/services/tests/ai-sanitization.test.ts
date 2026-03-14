@@ -12,14 +12,14 @@ import { describe, it, expect, vi } from "vitest";
 
 // Mock the database client with a flexible execute mock
 const mockExecute = vi.fn();
-vi.mock("@cocs/database", () => ({
+vi.mock("@cols/database", () => ({
     db: {
         execute: mockExecute,
     },
 }));
 
 // Mock schema imports
-vi.mock("@cocs/database/schema", () => ({
+vi.mock("@cols/database/schema", () => ({
     aiInsight: {},
     aiInsightReference: {},
     episode: {},

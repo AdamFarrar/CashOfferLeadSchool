@@ -16,7 +16,7 @@ import {
     toggleReactionAction,
     getThreadDetailAction,
 } from "@/app/actions/discussion";
-import type { PostWithReactions } from "@cocs/services";
+import type { PostWithReactions } from "@cols/services";
 
 interface Props {
     thread: {

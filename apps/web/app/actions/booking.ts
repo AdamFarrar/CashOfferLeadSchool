@@ -6,14 +6,14 @@
 
 import { getServerIdentity } from "./identity";
 import { requireAdmin } from "./guards";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 import {
     createBooking,
     getUserBooking,
     listBookings,
     updateBookingStatus,
-} from "@cocs/services";
-import type { BookingStatus } from "@cocs/services";
+} from "@cols/services";
+import type { BookingStatus } from "@cols/services";
 
 export async function submitBookingAction(params: {
     requestedDate: string | null;

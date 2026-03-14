@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
                 break;
             }
 
-            const { createEnrollment } = await import("@cocs/services");
+            const { createEnrollment } = await import("@cols/services");
 
             await createEnrollment({
                 userId,
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
             });
 
             // Emit domain event for automation (welcome email, etc.)
-            const { emitDomainEvent, DOMAIN_EVENTS } = await import("@cocs/events");
+            const { emitDomainEvent, DOMAIN_EVENTS } = await import("@cols/events");
             await emitDomainEvent({
                 eventKey: DOMAIN_EVENTS.ENROLLMENT_COMPLETED,
                 actor: { type: "system", id: "stripe-webhook" },
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
             const paymentIntent = typeof charge.payment_intent === "string" ? charge.payment_intent : null;
 
             if (paymentIntent) {
-                const { updateEnrollmentByPaymentIntent } = await import("@cocs/services");
+                const { updateEnrollmentByPaymentIntent } = await import("@cols/services");
                 await updateEnrollmentByPaymentIntent(paymentIntent, "refunded");
                 console.log("[Stripe Webhook] Enrollment refunded for PI:", paymentIntent);
             }

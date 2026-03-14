@@ -9,8 +9,8 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { submitFeedbackAction } from "@/app/actions/feedback";
-import { track } from "@cocs/analytics";
-import { FeedbackOpened, FeedbackSubmitted } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { FeedbackOpened, FeedbackSubmitted } from "@cols/analytics/event-contracts";
 
 interface FeedbackModalProps {
     stakeholderGroup: "internal" | "pilot_user" | "admin";

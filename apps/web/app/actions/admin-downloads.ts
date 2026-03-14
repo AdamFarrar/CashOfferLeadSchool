@@ -5,8 +5,8 @@
 // =============================================================================
 
 import { requireAdmin } from "./guards";
-import { db } from "@cocs/database";
-import { episodeAsset, episode, module } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { episodeAsset, episode, module } from "@cols/database/schema";
 import { eq, desc } from "drizzle-orm";
 
 export async function listAssetsAction() {

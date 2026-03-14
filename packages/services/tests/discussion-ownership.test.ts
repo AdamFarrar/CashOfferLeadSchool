@@ -47,7 +47,7 @@ vi.mock("drizzle-orm", () => ({
 }));
 
 // Mock schema tables with column accessors
-vi.mock("@cocs/database/schema", () => {
+vi.mock("@cols/database/schema", () => {
     const makeCol = (name: string) => name;
     return {
         contentPost: {
@@ -105,7 +105,7 @@ const mockDb = {
     delete: vi.fn(),
 };
 
-vi.mock("@cocs/database/client", () => ({
+vi.mock("@cols/database/client", () => ({
     db: mockDb,
 }));
 

@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/events — Domain Event Emitter
+// @cols/events — Domain Event Emitter
 // =============================================================================
 // Single entry point for all side effects. Business code calls
 // emitDomainEvent() — listeners handle the rest.

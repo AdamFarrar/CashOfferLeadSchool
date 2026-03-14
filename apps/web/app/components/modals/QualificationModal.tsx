@@ -10,12 +10,12 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { submitQualification } from "@/app/actions/qualification";
-import { track } from "@cocs/analytics";
+import { track } from "@cols/analytics";
 import {
     QualificationStarted,
     QualificationStepCompleted,
     QualificationSubmitted,
-} from "@cocs/analytics/event-contracts";
+} from "@cols/analytics/event-contracts";
 
 const BUSINESS_TYPES = [
     "Real Estate Investor",

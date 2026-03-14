@@ -1,7 +1,7 @@
-import { db } from "@cocs/database/client";
-import { qualificationForm } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { qualificationForm } from "@cols/database/schema";
 import { eq, and } from "drizzle-orm";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
 // Qualification Service — Phase 1

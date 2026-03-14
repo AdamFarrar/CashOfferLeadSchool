@@ -1,7 +1,7 @@
-import { auth } from "@cocs/auth/server";
+import { auth } from "@cols/auth/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { checkRateLimit, rateLimitKey, RATE_LIMITS } from "@cocs/services";
+import { checkRateLimit, rateLimitKey, RATE_LIMITS } from "@cols/services";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

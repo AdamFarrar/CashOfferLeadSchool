@@ -26,7 +26,7 @@ import {
     hideThread,
     pinThread,
     DISCUSSION_LIMITS,
-} from "@cocs/services";
+} from "@cols/services";
 
 // ── Rate Limits ──
 

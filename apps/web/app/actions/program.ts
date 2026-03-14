@@ -19,9 +19,9 @@ import {
     getProgramProgressForDashboard as getProgressSvc,
     checkRateLimit,
     rateLimitKey,
-} from "@cocs/services";
+} from "@cols/services";
 import { getServerIdentity } from "./identity";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // ── Rate Limit Configs ──
 
@@ -267,7 +267,7 @@ export async function getProgramBySlugAction(slug: string) {
     const identity = await getServerIdentity();
     if (!identity) return null;
 
-    const { getProgramBySlug } = await import("@cocs/services");
+    const { getProgramBySlug } = await import("@cols/services");
     return getProgramBySlug(slug, identity.userId);
 }
 
@@ -275,11 +275,11 @@ export async function getUserProgramsAction() {
     const identity = await getServerIdentity();
     if (!identity) return [];
 
-    const { getUserPrograms } = await import("@cocs/services");
+    const { getUserPrograms } = await import("@cols/services");
     return getUserPrograms(identity.userId);
 }
 
 export async function resolveEpisodeSlugAction(episodeId: string) {
-    const { resolveSlugForEpisode } = await import("@cocs/services");
+    const { resolveSlugForEpisode } = await import("@cols/services");
     return resolveSlugForEpisode(episodeId);
 }

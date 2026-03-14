@@ -5,8 +5,8 @@
 // Used by server actions only.
 // =============================================================================
 
-import { db } from "@cocs/database";
-import { booking } from "@cocs/database/schema";
+import { db } from "@cols/database";
+import { booking } from "@cols/database/schema";
 import { eq, desc } from "drizzle-orm";
 
 export type BookingRow = typeof booking.$inferSelect;

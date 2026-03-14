@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // =============================================================================
 
 // Mock the database client and events before importing
-vi.mock("@cocs/database/client", () => ({
+vi.mock("@cols/database/client", () => ({
     db: {
         select: vi.fn().mockReturnThis(),
         from: vi.fn().mockReturnThis(),
@@ -21,7 +21,7 @@ vi.mock("@cocs/database/client", () => ({
     },
 }));
 
-vi.mock("@cocs/database/schema", () => ({
+vi.mock("@cols/database/schema", () => ({
     qualificationForm: {
         id: "id",
         userId: "user_id",
@@ -39,7 +39,7 @@ vi.mock("@cocs/database/schema", () => ({
     },
 }));
 
-vi.mock("@cocs/events", () => ({
+vi.mock("@cols/events", () => ({
     emitDomainEvent: vi.fn().mockResolvedValue(undefined),
     DOMAIN_EVENTS: {
         QUALIFICATION_SUBMITTED: "qualification_submitted",
@@ -47,7 +47,7 @@ vi.mock("@cocs/events", () => ({
 }));
 
 import { submitQualificationForm, getQualificationByUser } from "../src/qualification";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 describe("submitQualificationForm", () => {
     beforeEach(() => {

@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/email — Multi-Tenant Template Resolver
+// @cols/email — Multi-Tenant Template Resolver
 // =============================================================================
 // Resolution order: org template → system template → hardcoded fallback
 // =============================================================================
 
-import { db } from "@cocs/database/client";
-import { emailTemplate, emailTemplateVersion } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { emailTemplate, emailTemplateVersion } from "@cols/database/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { getFallbackHtml, getFallbackSubject } from "./fallbacks";
 

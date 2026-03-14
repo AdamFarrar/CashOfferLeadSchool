@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/automation — Email Channel Executor
+// @cols/automation — Email Channel Executor
 // =============================================================================
-// Invokes the @cocs/email pipeline: resolve → render → deliver → log.
+// Invokes the @cols/email pipeline: resolve → render → deliver → log.
 // =============================================================================
 
 import type { ChannelExecutor, PlannedAction, ExecutorContext, ExecutorResult } from "../types";
-import { resolveTemplate, renderEmail, deliverEmail, logEmailSend } from "@cocs/email";
+import { resolveTemplate, renderEmail, deliverEmail, logEmailSend } from "@cols/email";
 
 export const emailExecutor: ChannelExecutor = {
     channel: "email",

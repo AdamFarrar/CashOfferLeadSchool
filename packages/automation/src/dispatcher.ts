@@ -1,14 +1,14 @@
 // =============================================================================
-// @cocs/automation — Action Dispatcher
+// @cols/automation — Action Dispatcher
 // =============================================================================
 // INSERT ON CONFLICT for idempotency → execute → update status.
 // Uses Promise.allSettled for executor isolation.
 // =============================================================================
 
-import type { DomainEvent } from "@cocs/events";
+import type { DomainEvent } from "@cols/events";
 import type { PlannedAction, ChannelExecutor, ExecutorContext, ExecutorResult } from "./types";
-import { db } from "@cocs/database/client";
-import { automationActionLog } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { automationActionLog } from "@cols/database/schema";
 import { eq, and } from "drizzle-orm";
 import { webhookExecutor } from "./executors/webhook";
 import { noopExecutor } from "./executors/noop";

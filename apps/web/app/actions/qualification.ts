@@ -6,8 +6,8 @@ import {
     checkRateLimit,
     rateLimitKey,
     RATE_LIMITS,
-} from "@cocs/services";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+} from "@cols/services";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 import { getServerIdentity } from "./identity";
 
 // =============================================================================

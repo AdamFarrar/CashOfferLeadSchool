@@ -6,7 +6,7 @@
 // Import this module in the root layout to activate on app startup.
 // =============================================================================
 
-import { registerAutomationListener } from "@cocs/automation";
+import { registerAutomationListener } from "@cols/automation";
 
 let _registered = false;
 

@@ -8,8 +8,8 @@
 // =============================================================================
 
 import Link from "next/link";
-import { track } from "@cocs/analytics";
-import { FunnelCtaClicked } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { FunnelCtaClicked } from "@cols/analytics/event-contracts";
 
 interface TrackedCtaProps {
     href: string;

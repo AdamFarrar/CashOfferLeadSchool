@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@cocs/ui";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@cols/ui";
 
 const FAQS = [
     { q: "Who is this for?", a: "Operators and teams running — or planning to run — a cash offer lead generation and conversion business. If you're buying leads, running a disposition desk, or want to start, this is built for you." },

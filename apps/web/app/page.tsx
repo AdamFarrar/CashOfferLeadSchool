@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { TrackedCta } from "./components/TrackedCta";
 import { FaqAccordion } from "./components/FaqAccordion";
-import { Badge } from "@cocs/ui";
+import { Badge } from "@cols/ui";
 import { LandingNav } from "./components/LandingNav";
 
 // ── Static image imports (bundled into _next/static/media/) ──

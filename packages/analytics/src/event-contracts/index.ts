@@ -2,7 +2,7 @@
 // Event Contracts — Barrel Export
 // =============================================================================
 // Single import for all event contracts:
-//   import { FunnelCtaClicked, AuthLoginCompleted } from "@cocs/analytics/event-contracts";
+//   import { FunnelCtaClicked, AuthLoginCompleted } from "@cols/analytics/event-contracts";
 // =============================================================================
 
 export * from "./funnel";

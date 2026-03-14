@@ -1,11 +1,11 @@
 // =============================================================================
-// @cocs/automation — Automatable Events Registry (R1 Fix)
+// @cols/automation — Automatable Events Registry (R1 Fix)
 // =============================================================================
 // Explicit list of events the automation orchestrator subscribes to.
 // Events NOT in this list are NOT processed by automation.
 // =============================================================================
 
-import { DOMAIN_EVENTS, type DomainEventKey } from "@cocs/events";
+import { DOMAIN_EVENTS, type DomainEventKey } from "@cols/events";
 
 /**
  * Events that the automation orchestrator listens to.

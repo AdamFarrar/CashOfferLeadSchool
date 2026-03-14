@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/analytics — Traffic Segmentation Context
+// @cols/analytics — Traffic Segmentation Context
 // =============================================================================
 // Defines canonical segmentation values and auto-detection logic.
 // Used by track() and serverTrack() to tag every event with context

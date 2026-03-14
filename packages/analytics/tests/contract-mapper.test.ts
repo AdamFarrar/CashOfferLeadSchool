@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveContract } from "../src/contract-mapper";
-import type { DomainEvent } from "@cocs/events";
+import type { DomainEvent } from "@cols/events";
 
 // =============================================================================
 // Contract Mapper Unit Tests

@@ -8,10 +8,10 @@ import {
     listAllAutomationRules,
     getAutomationRule,
     toggleAutomationRule,
-} from "@cocs/services";
-import { isUrlBlocked } from "@cocs/automation/ssrf";
-import { validateConditionDepth } from "@cocs/automation";
-import type { ConditionExpression } from "@cocs/automation";
+} from "@cols/services";
+import { isUrlBlocked } from "@cols/automation/ssrf";
+import { validateConditionDepth } from "@cols/automation";
+import type { ConditionExpression } from "@cols/automation";
 
 // =============================================================================
 // Automation Rule Server Actions — Admin Only

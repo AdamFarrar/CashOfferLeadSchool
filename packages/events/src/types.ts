@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/events — Domain Event Types
+// @cols/events — Domain Event Types
 // =============================================================================
 // Canonical event model for the platform. DomainEvent is the authoritative
 // system event. All side effects flow through emitDomainEvent().

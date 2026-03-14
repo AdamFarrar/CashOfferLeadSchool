@@ -1,5 +1,5 @@
 {
-    "name": "@cocs/email",
+    "name": "@cols/email",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -10,7 +10,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@cocs/database": "workspace:*",
+        "@cols/database": "workspace:*",
         "resend": "^4.0.0",
         "drizzle-orm": "^0.41.0"
     },

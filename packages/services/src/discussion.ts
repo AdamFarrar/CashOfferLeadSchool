@@ -14,7 +14,7 @@
 //   - Thread stats caching (no live COUNT on thread list)
 // =============================================================================
 
-import { db } from "@cocs/database/client";
+import { db } from "@cols/database/client";
 import {
     contentThread,
     contentPost,
@@ -22,7 +22,7 @@ import {
     threadStats,
     program,
     user,
-} from "@cocs/database/schema";
+} from "@cols/database/schema";
 import { eq, and, asc, desc, sql, inArray, count, gte } from "drizzle-orm";
 
 // ── Constants ──

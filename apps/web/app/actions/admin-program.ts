@@ -9,8 +9,8 @@
 // =============================================================================
 
 import { requireAdmin } from "./guards";
-import { db } from "@cocs/database/client";
-import { program, module, episode } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { program, module, episode } from "@cols/database/schema";
 import { eq, asc, inArray } from "drizzle-orm";
 
 // ── List all episodes grouped by module ──

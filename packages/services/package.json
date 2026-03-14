@@ -1,5 +1,5 @@
 {
-    "name": "@cocs/services",
+    "name": "@cols/services",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -10,9 +10,9 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@cocs/database": "workspace:*",
-        "@cocs/auth": "workspace:*",
-        "@cocs/events": "workspace:*",
+        "@cols/database": "workspace:*",
+        "@cols/auth": "workspace:*",
+        "@cols/events": "workspace:*",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {

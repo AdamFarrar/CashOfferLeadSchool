@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getServerIdentity } from "@/app/actions/identity";
 import { getProgramThreadsAction } from "@/app/actions/discussion";
 import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
-import { getActiveProgram } from "@cocs/services";
+import { getActiveProgram } from "@cols/services";
 
 export const metadata: Metadata = {
     title: "Discussion — Cash Offer Conversion School",

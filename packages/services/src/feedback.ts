@@ -1,7 +1,7 @@
-import { db } from "@cocs/database/client";
-import { feedbackEntry } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { feedbackEntry } from "@cols/database/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
 // Feedback Service — Phase 1.5A

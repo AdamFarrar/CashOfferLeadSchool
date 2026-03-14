@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { authClient, signOut, useSession } from "@cocs/auth/client";
-import { resetIdentity } from "@cocs/analytics";
+import { authClient, signOut, useSession } from "@cols/auth/client";
+import { resetIdentity } from "@cols/analytics";
 import { ADMIN_NAV_ITEMS } from "@/app/lib/admin-nav";
 import { getEnrollmentStatusAction } from "@/app/actions/stripe";
 import { FeedbackModal } from "@/app/components/modals/FeedbackModal";
@@ -109,7 +109,7 @@ export default function DashboardLayout({
                     <span className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--brand-orange)] to-[var(--brand-orange-dark)] flex items-center justify-center text-xs">
                         🏠
                     </span>
-                    COCS
+                    Cash Offer Lead School
                 </Link>
 
                 {/* Nav */}
@@ -206,7 +206,7 @@ export default function DashboardLayout({
                     >
                         ☰
                     </button>
-                    <span className="font-bold text-[0.95rem]">COCS</span>
+                    <span className="font-bold text-[0.95rem]">COLS</span>
                     <div className="w-5" />
                 </header>
 

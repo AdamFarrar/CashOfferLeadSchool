@@ -1,7 +1,7 @@
-import { db } from "@cocs/database/client";
+import { db } from "@cols/database/client";
 import {
     emailTemplate, emailTemplateVersion,
-} from "@cocs/database/schema";
+} from "@cols/database/schema";
 import { eq, and, desc, isNull, sql } from "drizzle-orm";
 
 // =============================================================================

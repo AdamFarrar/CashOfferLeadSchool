@@ -4,8 +4,8 @@ import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { resendVerificationEmail } from "@/app/actions/resend-verification";
-import { track } from "@cocs/analytics";
-import { AuthEmailVerificationSent } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { AuthEmailVerificationSent } from "@cols/analytics/event-contracts";
 
 function VerifyEmailForm() {
     const searchParams = useSearchParams();

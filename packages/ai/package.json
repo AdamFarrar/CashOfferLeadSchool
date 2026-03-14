@@ -1,5 +1,5 @@
 {
-    "name": "@cocs/ai",
+    "name": "@cols/ai",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -10,7 +10,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@cocs/database": "workspace:*",
+        "@cols/database": "workspace:*",
         "openai": "^4.73.0"
     },
     "devDependencies": {

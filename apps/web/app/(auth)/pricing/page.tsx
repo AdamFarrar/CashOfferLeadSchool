@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@cocs/auth/client";
+import { useSession } from "@cols/auth/client";
 import { createCheckoutSessionAction, getEnrollmentStatusAction } from "@/app/actions/stripe";
 
 const FEATURES = [

@@ -9,7 +9,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import type { ThreadSummary } from "@cocs/services";
+import type { ThreadSummary } from "@cols/services";
 import {
     createThreadAction,
     getEpisodeThreadsAction,

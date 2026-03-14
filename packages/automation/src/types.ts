@@ -1,8 +1,8 @@
 // =============================================================================
-// @cocs/automation — Types
+// @cols/automation — Types
 // =============================================================================
 
-import type { DomainEventKey } from "@cocs/events";
+import type { DomainEventKey } from "@cols/events";
 
 export interface AutomationRule {
     id: string;

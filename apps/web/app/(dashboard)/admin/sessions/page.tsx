@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "@cocs/auth/client";
+import { useSession } from "@cols/auth/client";
 import {
     adminListSessionsAction,
     adminCreateSessionAction,

@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "@cocs/database/client";
-import { user } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { user } from "@cols/database/schema";
 import { eq } from "drizzle-orm";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
 // Resend Verification Email — Server Action
@@ -49,7 +49,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
         }
 
         // Generate a verification URL using BetterAuth's API
-        const { auth } = await import("@cocs/auth/server");
+        const { auth } = await import("@cols/auth/server");
         // Use BetterAuth's internal method to create a verification token+URL
         // This calls our sendVerificationEmail callback which emits the domain event
         await auth.api.sendVerificationEmail({

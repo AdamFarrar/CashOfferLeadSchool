@@ -7,12 +7,12 @@
 // Phase 6 additions: multi-type queries, operator highlights, cohort data.
 // =============================================================================
 
-import { db } from "@cocs/database";
+import { db } from "@cols/database";
 import {
     aiInsight,
     aiInsightReference,
     episode,
-} from "@cocs/database/schema";
+} from "@cols/database/schema";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
 
 // ── Types ──

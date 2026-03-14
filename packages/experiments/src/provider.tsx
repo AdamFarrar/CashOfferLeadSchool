@@ -9,7 +9,7 @@
 
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { setActiveExperiments } from "@cocs/analytics";
+import { setActiveExperiments } from "@cols/analytics";
 import { getActiveExperimentsForPage } from "./experiments";
 import { getAssignment } from "./assignment";
 import { recordExposure } from "./exposure";

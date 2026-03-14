@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/email — Placeholder Registry
+// @cols/email — Placeholder Registry
 // =============================================================================
 // Defines the set of allowed placeholders for email templates.
 // Placeholders are injected AFTER sanitization to prevent XSS.

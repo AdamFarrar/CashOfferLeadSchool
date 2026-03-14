@@ -16,7 +16,7 @@ import {
     getEnrollmentByUserId,
     listEnrollments,
     adminCreateManualEnrollment,
-} from "@cocs/services";
+} from "@cols/services";
 
 // ── Create Checkout Session ──
 

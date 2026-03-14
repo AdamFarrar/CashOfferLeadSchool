@@ -3,9 +3,9 @@
 import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "@cocs/auth/client";
-import { track, identify } from "@cocs/analytics";
-import { AuthLoginCompleted } from "@cocs/analytics/event-contracts";
+import { signIn } from "@cols/auth/client";
+import { track, identify } from "@cols/analytics";
+import { AuthLoginCompleted } from "@cols/analytics/event-contracts";
 import { loginAction } from "@/app/actions/login";
 import { TURNSTILE_SITE_KEY } from "@/app/lib/turnstile";
 

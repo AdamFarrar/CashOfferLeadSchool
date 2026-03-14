@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { submitFeedbackAction } from "@/app/actions/feedback";
-import { track } from "@cocs/analytics";
-import { FeedbackPromptViewed, FeedbackOpened, FeedbackSubmitted } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { FeedbackPromptViewed, FeedbackOpened, FeedbackSubmitted } from "@cols/analytics/event-contracts";
 
 // =============================================================================
 // Dashboard Feedback Widget — Phase 1.5A

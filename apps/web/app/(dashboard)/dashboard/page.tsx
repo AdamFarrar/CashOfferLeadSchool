@@ -15,16 +15,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession, useActiveOrganization } from "@cocs/auth/client";
+import { useSession, useActiveOrganization } from "@cols/auth/client";
 import { QualificationModal } from "@/app/components/modals/QualificationModal";
-import { track, identify } from "@cocs/analytics";
-import { DashboardFirstViewed } from "@cocs/analytics/event-contracts";
+import { track, identify } from "@cols/analytics";
+import { DashboardFirstViewed } from "@cols/analytics/event-contracts";
 import { getQualificationStatus } from "@/app/actions/qualification";
 import { getDashboardProgress } from "@/app/actions/program";
 import { getDashboardIntelligenceAction } from "@/app/actions/ai";
 import { CompletionGuidance } from "@/app/components/program/CompletionGuidance";
 import { CohortSignals } from "@/app/components/program/CohortSignals";
-import type { DashboardProgress } from "@cocs/services";
+import type { DashboardProgress } from "@cols/services";
 import { getNextSessionAction } from "@/app/actions/live-sessions";
 import { LoadingSkeleton } from "@/app/components/ui/LoadingSkeleton";
 

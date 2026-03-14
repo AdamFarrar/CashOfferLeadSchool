@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/automation — Webhook Channel Executor
+// @cols/automation — Webhook Channel Executor
 // =============================================================================
 // HTTP POST to configured URL with SSRF protection.
 // Defense layers: deny list → redirect blocking → response URL validation.

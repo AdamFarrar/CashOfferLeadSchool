@@ -2,11 +2,11 @@
 // Experiment Exposure Tracking
 // =============================================================================
 // Records experiment exposure via the standardized experiment.exposed contract.
-// Uses the track() helper from @cocs/analytics — never calls posthog.capture.
+// Uses the track() helper from @cols/analytics — never calls posthog.capture.
 // =============================================================================
 
-import { track } from "@cocs/analytics";
-import { ExperimentExposed } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { ExperimentExposed } from "@cols/analytics/event-contracts";
 import type { ExperimentAssignment } from "./types";
 
 const _exposedSet = new Set<string>();

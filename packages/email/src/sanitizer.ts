@@ -1,5 +1,5 @@
 // =============================================================================
-// @cocs/email — HTML Sanitizer (Lightweight, No JSDOM)
+// @cols/email — HTML Sanitizer (Lightweight, No JSDOM)
 // =============================================================================
 // Strips dangerous elements from email HTML without requiring jsdom.
 // For system-controlled templates (verification, welcome, password reset),

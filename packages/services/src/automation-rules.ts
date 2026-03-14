@@ -1,5 +1,5 @@
-import { db } from "@cocs/database/client";
-import { automationRule } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { automationRule } from "@cols/database/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
 
 // =============================================================================

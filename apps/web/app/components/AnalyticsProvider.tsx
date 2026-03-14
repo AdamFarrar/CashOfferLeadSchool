@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { track } from "@cocs/analytics";
-import { FunnelLandingViewed } from "@cocs/analytics/event-contracts";
+import { track } from "@cols/analytics";
+import { FunnelLandingViewed } from "@cols/analytics/event-contracts";
 
 // =============================================================================
 // AnalyticsProvider — D4

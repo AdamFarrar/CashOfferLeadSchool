@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { submitFeedbackAction } from "@/app/actions/feedback";
-import { track } from "@cocs/analytics";
+import { track } from "@cols/analytics";
 import {
     FeedbackPromptViewed,
     FeedbackOpened,
     FeedbackSubmitted as FeedbackSubmittedContract,
     FeedbackDismissed,
-} from "@cocs/analytics/event-contracts";
+} from "@cols/analytics/event-contracts";
 
 // =============================================================================
 // Post-Qualification Feedback Prompt — Phase 1.5A

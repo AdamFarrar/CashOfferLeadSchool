@@ -1,5 +1,5 @@
 {
-    "name": "@cocs/auth",
+    "name": "@cols/auth",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -16,9 +16,9 @@
         "better-auth": "^1.2.0",
         "@better-auth/drizzle-adapter": "^1.2.0",
         "resend": "^4.0.0",
-        "@cocs/database": "workspace:*",
-        "@cocs/analytics": "workspace:*",
-        "@cocs/events": "workspace:*"
+        "@cols/database": "workspace:*",
+        "@cols/analytics": "workspace:*",
+        "@cols/events": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",

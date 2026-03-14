@@ -1,14 +1,14 @@
 // =============================================================================
-// @cocs/automation — Rule Evaluator
+// @cols/automation — Rule Evaluator
 // =============================================================================
 // Loads rules from DB, evaluates conditions against event payload.
 // Safety: MAX_CONDITION_DEPTH = 5 prevents recursive condition abuse.
 // =============================================================================
 
-import type { DomainEvent } from "@cocs/events";
+import type { DomainEvent } from "@cols/events";
 import type { AutomationRule, ConditionExpression } from "./types";
-import { db } from "@cocs/database/client";
-import { automationRule } from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import { automationRule } from "@cols/database/schema";
 import { eq, and, or, isNull } from "drizzle-orm";
 
 /**

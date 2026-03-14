@@ -5,8 +5,8 @@
 // Constructs a canonical EventEnvelope and sends via PostHog.
 //
 // Usage:
-//   import { track } from "@cocs/analytics";
-//   import { FunnelCtaClicked } from "@cocs/analytics/event-contracts";
+//   import { track } from "@cols/analytics";
+//   import { FunnelCtaClicked } from "@cols/analytics/event-contracts";
 //   track(FunnelCtaClicked, { cta_id: "hero", cta_text: "Get Started", section: "hero" });
 // =============================================================================
 

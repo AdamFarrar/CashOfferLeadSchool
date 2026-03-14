@@ -1,10 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins/organization";
-import { db } from "@cocs/database/client";
-import * as schema from "@cocs/database/schema";
+import { db } from "@cols/database/client";
+import * as schema from "@cols/database/schema";
 import { ac, owner, admin, instructor, student, prospect } from "./permissions";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cocs/events";
+import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
 // Production Startup Validation
@@ -146,8 +146,8 @@ export const auth = betterAuth({
                             query: { userId: user.id } as any,
                         }).catch(async () => {
                             // Fallback: direct DB insert if API method fails
-                            const { db } = await import("@cocs/database/client");
-                            const { organization, member } = await import("@cocs/database/schema");
+                            const { db } = await import("@cols/database/client");
+                            const { organization, member } = await import("@cols/database/schema");
                             const orgId = crypto.randomUUID();
                             await db.insert(organization).values({
                                 id: orgId,

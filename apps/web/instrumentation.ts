@@ -8,13 +8,13 @@
 export async function register() {
     if (process.env.NEXT_RUNTIME === "nodejs") {
         // Dynamic imports to avoid loading server modules in edge runtime
-        const { registerAutomationListener } = await import("@cocs/automation");
+        const { registerAutomationListener } = await import("@cols/automation");
         const {
             registerAnalyticsListener,
             registerInternalEmails,
             registerInternalUserIds,
             registerStakeholderUserIds,
-        } = await import("@cocs/analytics");
+        } = await import("@cols/analytics");
 
         registerAutomationListener();
         registerAnalyticsListener();

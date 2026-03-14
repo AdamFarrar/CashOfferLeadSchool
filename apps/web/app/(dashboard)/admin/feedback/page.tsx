@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession, useActiveOrganization } from "@cocs/auth/client";
+import { useSession, useActiveOrganization } from "@cols/auth/client";
 import { getAdminFeedbackAction, reviewFeedbackAction } from "@/app/actions/feedback";
 
 // =============================================================================

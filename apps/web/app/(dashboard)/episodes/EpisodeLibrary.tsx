@@ -8,7 +8,7 @@
 // =============================================================================
 
 import Link from "next/link";
-import type { ProgramWithModules } from "@cocs/services";
+import type { ProgramWithModules } from "@cols/services";
 
 interface Props {
     program: ProgramWithModules;
