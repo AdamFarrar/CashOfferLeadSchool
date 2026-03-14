@@ -111,7 +111,7 @@ pnpm dev
 pnpm dev
 
 # Build for production
-pnpm turbo build --filter=@cocs/web
+pnpm turbo build --filter=@cols/web
 
 # Run tests
 pnpm test

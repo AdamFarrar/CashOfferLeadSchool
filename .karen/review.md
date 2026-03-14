@@ -25,10 +25,10 @@ But you've built the plumbing for a mansion and you're still living in the frami
 The event-driven architecture is justified — you need qualification → automation → email pipelines and that model actually fits. The 9-package monorepo is reasonable for what you're building.
 
 Docking 6 points:
-- **Over-engineered for current scope.** You have an entire `@cocs/automation` package with a planner, evaluator, dispatcher, and 3 channel executors. But right now it only sends welcome emails. That's a lot of machinery for `sendEmail(to, subject, body)`.
+- **Over-engineered for current scope.** You have an entire `@cols/automation` package with a planner, evaluator, dispatcher, and 3 channel executors. But right now it only sends welcome emails. That's a lot of machinery for `sendEmail(to, subject, body)`.
 - [planner.ts](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/automation/src/planner.ts) + [evaluator.ts](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/automation/src/evaluator.ts) + [dispatcher.ts](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/automation/src/dispatcher.ts) — three files for "find matching rules, check conditions, execute." Could be one file at this stage.
-- `@cocs/experiments` package exists with full feature flag infrastructure for a product without an Academy, courses, or multiple user personas yet. Premature.
-- `@cocs/ui` package is literally 8 lines — just a version constant. It exists for future use. Fair, but it's dead weight right now.
+- `@cols/experiments` package exists with full feature flag infrastructure for a product without an Academy, courses, or multiple user personas yet. Premature.
+- `@cols/ui` package is literally 8 lines — just a version constant. It exists for future use. Fair, but it's dead weight right now.
 
 ### ⚙️ Actually Works: 16/20
 
@@ -58,7 +58,7 @@ Genuinely good code quality. Highlights:
 Docking 3 points:
 - **Inline styles everywhere.** Every React component uses `style={{}}` objects. [layout.tsx](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/apps/web/app/(dashboard)/layout.tsx) has 100+ lines of style objects. [qualify/page.tsx](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/apps/web/app/(dashboard)/qualify/page.tsx) is the same. You have CSS files and CSS variables defined already — use them.
 - The `source` field in `emailSendLog` ([email.ts:86](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/database/src/schema/email.ts#L86)) is a `text` column used as a pseudo-enum (`"org" | "system" | "fallback" | "test"`). Should be a `pgEnum` like you did with `emailSendStatusEnum` on line 13.
-- [send-log.ts](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/email/src/send-log.ts) still has unresolved module import warnings for `@cocs/database/client` and `@cocs/database/schema`.
+- [send-log.ts](file:///Users/afarrar/Desktop/CashOfferLeadSchool/CashOfferLeadSchool/packages/email/src/send-log.ts) still has unresolved module import warnings for `@cols/database/client` and `@cols/database/schema`.
 
 ### ✅ Completion Honesty: 11/20
 

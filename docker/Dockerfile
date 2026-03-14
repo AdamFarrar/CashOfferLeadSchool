@@ -37,7 +37,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN pnpm turbo build --filter=@cocs/web
+RUN pnpm turbo build --filter=@cols/web
 
 # Stage 3: Production runner
 FROM node:20-alpine AS runner

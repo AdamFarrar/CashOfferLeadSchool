@@ -71,7 +71,7 @@ Use this to exclude local development and staging traffic.
 Add user IDs or emails at app startup:
 
 ```typescript
-import { registerInternalEmails, registerInternalUserIds } from "@cocs/analytics";
+import { registerInternalEmails, registerInternalUserIds } from "@cols/analytics";
 
 // From environment variable or config
 const internalEmails = (process.env.INTERNAL_EMAILS || "").split(",").filter(Boolean);
@@ -84,7 +84,7 @@ registerInternalUserIds(internalUserIds);
 ### Stakeholder Test Users
 
 ```typescript
-import { registerStakeholderUserIds } from "@cocs/analytics";
+import { registerStakeholderUserIds } from "@cols/analytics";
 
 const stakeholderIds = (process.env.STAKEHOLDER_USER_IDS || "").split(",").filter(Boolean);
 registerStakeholderUserIds(stakeholderIds);
@@ -95,7 +95,7 @@ registerStakeholderUserIds(stakeholderIds);
 Set traffic source on admin pages:
 
 ```typescript
-import { setTrafficSource } from "@cocs/analytics";
+import { setTrafficSource } from "@cols/analytics";
 
 // In admin layout or page component
 setTrafficSource("admin");

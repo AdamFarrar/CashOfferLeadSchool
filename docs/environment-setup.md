@@ -111,7 +111,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm build --filter=@cocs/web
+RUN pnpm build --filter=@cols/web
 
 # Stage 3: Production runtime
 FROM node:20-alpine AS runner

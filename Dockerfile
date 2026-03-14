@@ -42,7 +42,7 @@ ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm build --filter=@cocs/web
+RUN pnpm build --filter=@cols/web
 
 # ── Stage 3: Production runtime ──
 FROM node:20-alpine AS runner

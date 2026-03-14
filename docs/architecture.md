@@ -145,12 +145,12 @@ Renderer pipeline:
 
 PostHog handles:
 - Behavior tracking (page views, CTA clicks, funnel events)
-- Feature flags (experiment framework via `@cocs/experiments`)
+- Feature flags (experiment framework via `@cols/experiments`)
 - User identification
 
 Analytics event contracts are defined in `packages/analytics/src/event-contracts.ts`.
 
-Client-side tracking uses `@cocs/analytics` package with lazy PostHog initialization.
+Client-side tracking uses `@cols/analytics` package with lazy PostHog initialization.
 
 ---
 
