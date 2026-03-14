@@ -1,5 +1,5 @@
 // =============================================================================
-// Enrollment Schema — Phase 7 (updated Phase B)
+// Enrollment Schema
 // =============================================================================
 // Tracks user enrollment status tied to Stripe payments.
 // Supports multi-program enrollment via compound unique (userId + programId).

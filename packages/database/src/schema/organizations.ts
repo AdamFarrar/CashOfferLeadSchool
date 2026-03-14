@@ -44,7 +44,7 @@ export const invitation = pgTable("invitation", {
 
 // =============================================================================
 // Domain Tables — Qualification Form
-// Captures operator qualification data during the conversion funnel (Phase 1).
+// Captures operator qualification data during the conversion funnel.
 // =============================================================================
 
 export const qualificationForm = pgTable("qualification_form", {

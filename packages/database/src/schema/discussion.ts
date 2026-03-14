@@ -1,5 +1,5 @@
 // =============================================================================
-// Discussion Schema — Phase 4
+// Discussion Schema
 // =============================================================================
 // Content-anchored discussion system. No global forums.
 // Every thread requires program_id. module_id/episode_id optional.

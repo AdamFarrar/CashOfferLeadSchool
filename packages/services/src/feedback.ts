@@ -4,7 +4,7 @@ import { eq, and, desc, isNull } from "drizzle-orm";
 import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 
 // =============================================================================
-// Feedback Service — Phase 1.5A
+// Feedback Service
 // =============================================================================
 // Business logic for stakeholder feedback collection, prompt lifecycle
 // tracking, and admin review workflows.

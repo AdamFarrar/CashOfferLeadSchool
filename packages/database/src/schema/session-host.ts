@@ -1,5 +1,5 @@
 // =============================================================================
-// Session Host Schema — Phase C
+// Session Host Schema
 // =============================================================================
 
 import { pgTable, uuid, text, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";

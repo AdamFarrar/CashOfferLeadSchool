@@ -1,5 +1,5 @@
 // =============================================================================
-// Program Delivery Schema — Phase 2
+// Program Delivery Schema
 // =============================================================================
 // Structured cohort program model: Program → Modules → Episodes
 // All content is database-driven. UI renders this data.
