@@ -11,13 +11,20 @@ import {
 import dynamic from "next/dynamic";
 
 // =============================================================================
-// GrapesJS Email Template Editor — Phase 1.6
+// GrapesJS Email Template Editor
 // =============================================================================
 // Dynamic import to avoid SSR issues with GrapesJS.
 // Saves editor_json + html_template + subject as new version.
 // =============================================================================
 
 type Template = { id: string; key: string; name: string };
+
+interface GrapesJSEditor {
+    getHtml(): string;
+    getCss(): string;
+    getProjectData(): Record<string, unknown>;
+    destroy(): void;
+}
 
 export default function EditorPage() {
     const { data: session } = useSession();
@@ -36,7 +43,7 @@ export default function EditorPage() {
     const [testEmail, setTestEmail] = useState("");
     const [sending, setSending] = useState(false);
     const [sendResult, setSendResult] = useState<string | null>(null);
-    const editorRef = useRef<any>(null);
+    const editorRef = useRef<GrapesJSEditor | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -67,7 +74,7 @@ export default function EditorPage() {
                 },
             });
 
-            editorRef.current = editor;
+            editorRef.current = editor as unknown as GrapesJSEditor;
         }
 
         initEditor();

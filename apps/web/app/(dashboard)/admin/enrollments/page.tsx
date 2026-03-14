@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Admin Enrollments Page — Phase 7
+// Admin Enrollments Page
 // =============================================================================
 // Lists all enrollments, allows manual enrollment of users.
 // =============================================================================
@@ -16,7 +16,7 @@ interface EnrollmentRow {
     status: string;
     amountCents: number;
     currency: string;
-    enrolledAt: string;
+    enrolledAt: Date | string;
     stripeCustomerId: string | null;
     userName: string;
     userEmail: string;

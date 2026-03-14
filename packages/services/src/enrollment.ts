@@ -1,5 +1,5 @@
 // =============================================================================
-// Enrollment Service — Phase 7
+// Enrollment Service
 // =============================================================================
 // Handles enrollment persistence and lookups.
 // All DB operations for payment gating go through this service.
@@ -7,6 +7,7 @@
 
 import { db } from "@cols/database";
 import { enrollment } from "@cols/database/schema";
+import { user } from "@cols/database/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 // ── Types ──
@@ -138,54 +139,31 @@ export async function updateEnrollmentByPaymentIntent(
 export async function listEnrollments(page: number = 1, limit: number = 50) {
     const offset = (page - 1) * limit;
 
-    const results = await db.execute(sql`
-        SELECT
-            e.id,
-            e.user_id,
-            e.status,
-            e.amount_cents,
-            e.currency,
-            e.enrolled_at,
-            e.stripe_customer_id,
-            e.stripe_checkout_session_id,
-            u.name AS user_name,
-            u.email AS user_email
-        FROM enrollment e
-        JOIN "user" u ON u.id = e.user_id
-        ORDER BY e.enrolled_at DESC
-        LIMIT ${limit} OFFSET ${offset}
-    `);
+    const [rows, countResult] = await Promise.all([
+        db
+            .select({
+                id: enrollment.id,
+                userId: enrollment.userId,
+                status: enrollment.status,
+                amountCents: enrollment.amountCents,
+                currency: enrollment.currency,
+                enrolledAt: enrollment.enrolledAt,
+                stripeCustomerId: enrollment.stripeCustomerId,
+                stripeCheckoutSessionId: enrollment.stripeCheckoutSessionId,
+                userName: user.name,
+                userEmail: user.email,
+            })
+            .from(enrollment)
+            .innerJoin(user, eq(enrollment.userId, user.id))
+            .orderBy(desc(enrollment.enrolledAt))
+            .limit(limit)
+            .offset(offset),
+        db
+            .select({ total: sql<number>`count(*)::int` })
+            .from(enrollment),
+    ]);
 
-    const countResult = await db.execute(sql`SELECT COUNT(*)::int AS total FROM enrollment`);
-
-    interface EnrollmentRow {
-        id: string;
-        user_id: string;
-        status: string;
-        amount_cents: number;
-        currency: string;
-        enrolled_at: string;
-        stripe_customer_id: string | null;
-        stripe_checkout_session_id: string | null;
-        user_name: string;
-        user_email: string;
-    }
-
-    const rows = ((results as { rows?: EnrollmentRow[] }).rows ?? []).map((r) => ({
-        id: r.id,
-        userId: r.user_id,
-        status: r.status,
-        amountCents: r.amount_cents,
-        currency: r.currency,
-        enrolledAt: r.enrolled_at,
-        stripeCustomerId: r.stripe_customer_id,
-        userName: r.user_name,
-        userEmail: r.user_email,
-    }));
-
-    const total = ((countResult as { rows?: Array<{ total: number }> }).rows?.[0]?.total) ?? 0;
-
-    return { enrollments: rows, total, page, limit };
+    return { enrollments: rows, total: countResult[0]?.total ?? 0, page, limit };
 }
 
 // ── Admin: Manual Enrollment (comp/test) ──
