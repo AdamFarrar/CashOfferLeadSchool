@@ -3,7 +3,6 @@
 import { db } from "@cols/database/client";
 import { user } from "@cols/database/schema";
 import { eq } from "drizzle-orm";
-import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
 import { devLog } from "@cols/services";
 
 // =============================================================================

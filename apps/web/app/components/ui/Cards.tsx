@@ -4,8 +4,7 @@
 // These components eliminate repeated patterns and enforce
 // consistent padding, spacing, and typography hierarchy.
 // =============================================================================
-
-import Link from "next/link";
+// =============================================================================
 
 // ── FeatureCard ──
 // Used for landing page feature/deliverable sections

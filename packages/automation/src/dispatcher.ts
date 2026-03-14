@@ -6,7 +6,7 @@
 // =============================================================================
 
 import type { DomainEvent } from "@cols/events";
-import type { PlannedAction, ChannelExecutor, ExecutorContext, ExecutorResult } from "./types";
+import type { PlannedAction, ChannelExecutor, ExecutorContext } from "./types";
 import { db } from "@cols/database/client";
 import { automationActionLog } from "@cols/database/schema";
 import { eq, and } from "drizzle-orm";

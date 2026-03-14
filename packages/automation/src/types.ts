@@ -2,7 +2,7 @@
 // @cols/automation — Types
 // =============================================================================
 
-import type { DomainEventKey } from "@cols/events";
+import type { DomainEventKey as _DomainEventKey } from "@cols/events"; // Used as type constraint for eventKey
 
 export interface AutomationRule {
     id: string;
