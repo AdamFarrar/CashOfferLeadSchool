@@ -10,6 +10,7 @@ export {
     generateReflectionPrompts,
     generateBestMoments,
     generateCohortSignals,
+    moderateContent,
     type TakeawayResult,
     type DigestResult,
     type ReflectionResult,
@@ -17,6 +18,7 @@ export {
     type BestMomentResult,
     type CohortSignal,
     type CohortSignalResult,
+    type ModerationResult,
 } from "./generate";
 
 export {

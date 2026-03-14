@@ -241,6 +241,9 @@ importers:
 
   packages/services:
     dependencies:
+      '@cols/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@cols/auth':
         specifier: workspace:*
         version: link:../auth

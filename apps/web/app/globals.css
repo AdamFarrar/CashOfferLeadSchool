@@ -1773,6 +1773,94 @@
 }
 .discussion-load-more:hover { border-color: var(--brand-orange); }
 
+/* Discussion Tabs */
+.discussion-tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 0;
+}
+.discussion-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.discussion-tab:hover { color: var(--text-primary); }
+.discussion-tab.active {
+    color: var(--brand-orange);
+    border-bottom-color: var(--brand-orange);
+    font-weight: 600;
+}
+
+/* Conduct Agreement Modal */
+.conduct-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+.conduct-modal {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg, 12px);
+    padding: 2rem;
+    max-width: 32rem;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+.conduct-icon { font-size: 2.5rem; text-align: center; margin-bottom: 0.75rem; }
+.conduct-title { font-size: 1.25rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+.conduct-subtitle { font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 1.5rem; line-height: 1.5; }
+.conduct-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.conduct-rule {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.conduct-rule-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
+.conduct-rule strong { font-size: 0.85rem; display: block; margin-bottom: 0.15rem; }
+.conduct-rule p { font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.4; }
+.conduct-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+    cursor: pointer;
+}
+.conduct-checkbox { accent-color: var(--brand-orange); }
+.conduct-agree-btn {
+    width: 100%;
+    padding: 0.65rem;
+    background: var(--brand-orange);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.conduct-agree-btn:hover:not(:disabled) { opacity: 0.9; }
+.conduct-agree-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* Thread Detail */
 .thread-header { margin-bottom: 2rem; }
 .thread-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }

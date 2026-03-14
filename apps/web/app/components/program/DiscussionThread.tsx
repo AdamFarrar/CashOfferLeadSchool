@@ -14,7 +14,9 @@ import {
     createThreadAction,
     getEpisodeThreadsAction,
     getProgramThreadsAction,
+    checkConductAction,
 } from "@/app/actions/discussion";
+import { ConductAgreementModal } from "./ConductAgreementModal";
 
 interface Props {
     threads: ThreadSummary[];
@@ -23,6 +25,7 @@ interface Props {
     moduleId?: string | null;
     episodeId?: string | null;
     discussionPrompt?: string;
+    hasAgreedToConduct?: boolean;
 }
 
 export function DiscussionThreadList({
@@ -32,6 +35,7 @@ export function DiscussionThreadList({
     moduleId,
     episodeId,
     discussionPrompt,
+    hasAgreedToConduct: initialConductStatus = false,
 }: Props) {
     const [threads, setThreads] = useState(initialThreads);
     const [total, setTotal] = useState(initialTotal);
@@ -39,23 +43,58 @@ export function DiscussionThreadList({
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
+    const [threadType, setThreadType] = useState<string>(episodeId ? "episode" : "general");
     const [error, setError] = useState("");
     const [isPending, startTransition] = useTransition();
+    const [activeTab, setActiveTab] = useState<"all" | "general" | "episode">("all");
+    const [hasAgreed, setHasAgreed] = useState(initialConductStatus);
+    const [showConduct, setShowConduct] = useState(false);
 
     const hasMore = threads.length < total;
 
     function loadMore() {
         const nextPage = page + 1;
+        const filter = activeTab === "all" ? undefined : activeTab;
         startTransition(async () => {
             const result = episodeId
                 ? await getEpisodeThreadsAction(episodeId, nextPage)
-                : await getProgramThreadsAction(programId, nextPage);
+                : await getProgramThreadsAction(programId, nextPage, filter);
             if (result.success && result.threads) {
                 setThreads((prev) => [...prev, ...result.threads]);
                 setPage(nextPage);
                 setTotal(result.total);
             }
         });
+    }
+
+    function switchTab(tab: "all" | "general" | "episode") {
+        setActiveTab(tab);
+        const filter = tab === "all" ? undefined : tab;
+        startTransition(async () => {
+            const result = episodeId
+                ? await getEpisodeThreadsAction(episodeId, 1)
+                : await getProgramThreadsAction(programId, 1, filter);
+            if (result.success && result.threads) {
+                setThreads(result.threads);
+                setTotal(result.total);
+                setPage(1);
+            }
+        });
+    }
+
+    async function handleStartPost() {
+        if (hasAgreed) {
+            setShowForm(!showForm);
+            return;
+        }
+        // Check conduct status
+        const result = await checkConductAction();
+        if (result.agreed) {
+            setHasAgreed(true);
+            setShowForm(!showForm);
+        } else {
+            setShowConduct(true);
+        }
     }
 
     function handleSubmit() {
@@ -70,6 +109,7 @@ export function DiscussionThreadList({
                 episodeId: episodeId ?? undefined,
                 title: title.trim(),
                 body: body.trim(),
+                threadType,
             });
 
             if (result.success) {
@@ -77,9 +117,10 @@ export function DiscussionThreadList({
                 setTitle("");
                 setBody("");
                 // Refresh thread list
+                const filter = activeTab === "all" ? undefined : activeTab;
                 const refresh = episodeId
                     ? await getEpisodeThreadsAction(episodeId, 1)
-                    : await getProgramThreadsAction(programId, 1);
+                    : await getProgramThreadsAction(programId, 1, filter);
                 if (refresh.success && refresh.threads) {
                     setThreads(refresh.threads);
                     setTotal(refresh.total);
@@ -93,6 +134,17 @@ export function DiscussionThreadList({
 
     return (
         <div className="discussion-section">
+            {/* Conduct Agreement Modal */}
+            {showConduct && (
+                <ConductAgreementModal
+                    onAgreed={() => {
+                        setShowConduct(false);
+                        setHasAgreed(true);
+                        setShowForm(true);
+                    }}
+                />
+            )}
+
             {/* Header */}
             <div className="discussion-header">
                 <div>
@@ -104,13 +156,29 @@ export function DiscussionThreadList({
                     )}
                 </div>
                 <button
-                    onClick={() => setShowForm(!showForm)}
+                    onClick={handleStartPost}
                     className="discussion-cta"
                     aria-label={showForm ? "Cancel starting a thread" : "Start a new discussion thread"}
                 >
                     {showForm ? "Cancel" : "+ Start a Thread"}
                 </button>
             </div>
+
+            {/* Thread Type Tabs */}
+            {!episodeId && (
+                <div className="discussion-tabs">
+                    {(["all", "general", "episode"] as const).map((tab) => (
+                        <button
+                            key={tab}
+                            className={`discussion-tab ${activeTab === tab ? "active" : ""}`}
+                            onClick={() => switchTab(tab)}
+                            disabled={isPending}
+                        >
+                            {tab === "all" ? "All" : tab === "general" ? "💬 General" : "📺 Episode"}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Participation Prompt */}
             {threads.length === 0 && !showForm && (
@@ -137,6 +205,18 @@ export function DiscussionThreadList({
                         maxLength={255}
                         className="discussion-input"
                     />
+                    {!episodeId && (
+                        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.8rem", cursor: "pointer", opacity: threadType === "general" ? 1 : 0.5 }}>
+                                <input type="radio" name="threadType" value="general" checked={threadType === "general"} onChange={() => setThreadType("general")} />
+                                💬 General
+                            </label>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.8rem", cursor: "pointer", opacity: threadType === "episode" ? 1 : 0.5 }}>
+                                <input type="radio" name="threadType" value="episode" checked={threadType === "episode"} onChange={() => setThreadType("episode")} />
+                                📺 Episode
+                            </label>
+                        </div>
+                    )}
                     <textarea
                         placeholder="Share your thoughts..."
                         value={body}
@@ -169,6 +249,8 @@ export function DiscussionThreadList({
                             <div className="discussion-thread-meta">
                                 {thread.isPinned && <span className="discussion-badge-pin">📌</span>}
                                 {thread.isLocked && <span className="discussion-badge-lock">🔒</span>}
+                                {(thread as any).threadType === "episode" && <span style={{ fontSize: "0.7rem" }}>📺</span>}
+                                {(thread as any).threadType === "general" && <span style={{ fontSize: "0.7rem" }}>💬</span>}
                             </div>
                             <h3 className="discussion-thread-title">{thread.title}</h3>
                             <div className="discussion-thread-info">

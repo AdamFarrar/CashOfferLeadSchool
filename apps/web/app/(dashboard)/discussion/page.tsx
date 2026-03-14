@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getServerIdentity } from "@/app/actions/identity";
-import { getProgramThreadsAction } from "@/app/actions/discussion";
+import { getProgramThreadsAction, checkConductAction } from "@/app/actions/discussion";
 import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
 import { getActiveProgram } from "@cols/services";
 
@@ -28,10 +28,15 @@ export default async function DiscussionPage() {
     // Graceful error handling — never crash the page
     let threads: any[] = [];
     let total = 0;
+    let hasAgreed = false;
     try {
-        const result = await getProgramThreadsAction(program.id, 1);
-        threads = result.threads ?? [];
-        total = result.total ?? 0;
+        const [threadResult, conductResult] = await Promise.all([
+            getProgramThreadsAction(program.id, 1),
+            checkConductAction(),
+        ]);
+        threads = threadResult.threads ?? [];
+        total = threadResult.total ?? 0;
+        hasAgreed = conductResult.agreed;
     } catch (e) {
         console.error("[DiscussionPage] Failed to load threads:", e);
     }
@@ -52,6 +57,7 @@ export default async function DiscussionPage() {
                 total={total}
                 programId={program.id}
                 discussionPrompt="What has changed the way you run your operation since joining the program?"
+                hasAgreedToConduct={hasAgreed}
             />
         </div>
     );

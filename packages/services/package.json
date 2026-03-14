@@ -13,6 +13,7 @@
         "@cols/database": "workspace:*",
         "@cols/auth": "workspace:*",
         "@cols/events": "workspace:*",
+        "@cols/ai": "workspace:*",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {

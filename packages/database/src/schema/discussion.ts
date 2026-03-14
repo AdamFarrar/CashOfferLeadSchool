@@ -29,10 +29,12 @@ export const contentThread = pgTable("content_thread", {
     moduleId: uuid("module_id").references(() => module.id, { onDelete: "cascade" }),
     episodeId: uuid("episode_id").references(() => episode.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
+    threadType: varchar("thread_type", { length: 20 }).notNull().default("general"),
     createdBy: uuid("created_by").notNull().references(() => user.id, { onDelete: "cascade" }),
     isLocked: boolean("is_locked").notNull().default(false),
     isPinned: boolean("is_pinned").notNull().default(false),
     isHidden: boolean("is_hidden").notNull().default(false),
+    flagReason: text("flag_reason"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
     index("idx_content_thread_program").on(t.programId),
@@ -52,6 +54,7 @@ export const contentPost = pgTable("content_post", {
     postPositionSeconds: integer("post_position_seconds"),
     body: text("body").notNull(),
     isDeleted: boolean("is_deleted").notNull().default(false),
+    flagReason: text("flag_reason"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     editedAt: timestamp("edited_at", { withTimezone: true }),
 }, (t) => [
@@ -78,3 +81,13 @@ export const threadStats = pgTable("thread_stats", {
     participantCount: integer("participant_count").notNull().default(0),
     lastActivityAt: timestamp("last_activity_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ── Conduct Agreement ──
+
+export const discussionConductAgreement = pgTable("discussion_conduct_agreement", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    agreedAt: timestamp("agreed_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+    uniqueIndex("idx_conduct_user").on(t.userId),
+]);

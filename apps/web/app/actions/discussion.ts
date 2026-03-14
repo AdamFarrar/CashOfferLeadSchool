@@ -25,6 +25,10 @@ import {
     lockThread,
     hideThread,
     pinThread,
+    hasAgreedToConduct,
+    recordConductAgreement,
+    getAIFlaggedContent,
+    resolveContentFlag,
     DISCUSSION_LIMITS,
 } from "@cols/services";
 
@@ -52,6 +56,7 @@ export async function createThreadAction(input: {
     episodeId?: string;
     title: string;
     body: string;
+    threadType?: string;
 }) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, error: "Not authenticated." };
@@ -87,6 +92,7 @@ export async function createThreadAction(input: {
             body,
             input.moduleId,
             input.episodeId,
+            input.threadType,
         );
 
         await logEvent(
@@ -102,7 +108,7 @@ export async function createThreadAction(input: {
             },
         );
 
-        return { success: true, threadId: result.threadId };
+        return { success: true, threadId: result.threadId, flagged: result.flagged };
     } catch (e) {
         return { success: false, error: e instanceof Error ? e.message : "Failed to create thread." };
     }
@@ -122,13 +128,13 @@ export async function getEpisodeThreadsAction(episodeId: string, page: number = 
 
 // ── Get Program Threads ──
 
-export async function getProgramThreadsAction(programId: string, page: number = 1) {
+export async function getProgramThreadsAction(programId: string, page: number = 1, threadType?: string) {
     const identity = await getServerIdentity();
     if (!identity) return { success: false, threads: [], total: 0 };
     if (!isValidUuid(programId)) return { success: false, threads: [], total: 0 };
 
     const isAdmin = identity.role === "owner" || identity.role === "admin";
-    const result = await getThreadsForProgram(programId, page, isAdmin);
+    const result = await getThreadsForProgram(programId, page, isAdmin, threadType);
     return { success: true, ...result };
 }
 
@@ -296,5 +302,38 @@ export async function pinThreadAction(threadId: string, pinned: boolean) {
 
     await pinThread(threadId, pinned);
     await logEvent(identity.userId, identity.organizationId, "thread_pinned", "thread", threadId, { pinned });
+    return { success: true };
+}
+
+// ── Conduct Agreement ──
+
+export async function checkConductAction() {
+    const identity = await getServerIdentity();
+    if (!identity) return { agreed: false };
+    const agreed = await hasAgreedToConduct(identity.userId);
+    return { agreed };
+}
+
+export async function agreeToConductAction() {
+    const identity = await getServerIdentity();
+    if (!identity) return { success: false, error: "Not authenticated." };
+    await recordConductAgreement(identity.userId);
+    await logEvent(identity.userId, identity.organizationId, "conduct_agreed", "user", identity.userId, {});
+    return { success: true };
+}
+
+// ── Admin: Flagged Content Queue ──
+
+export async function getFlaggedContentAction() {
+    await requireAdmin();
+    const items = await getAIFlaggedContent();
+    return { success: true, items };
+}
+
+export async function resolveFlagAction(id: string, type: "thread" | "post", accepted: boolean) {
+    const identity = await requireAdmin();
+    if (!isValidUuid(id)) return { success: false, error: "Invalid ID." };
+    await resolveContentFlag(id, type, accepted);
+    await logEvent(identity.userId, identity.organizationId, "flag_resolved", type, id, { accepted });
     return { success: true };
 }

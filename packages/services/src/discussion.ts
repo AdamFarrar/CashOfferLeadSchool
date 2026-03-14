@@ -20,10 +20,11 @@ import {
     contentPost,
     contentReaction,
     threadStats,
+    discussionConductAgreement,
     program,
     user,
 } from "@cols/database/schema";
-import { eq, and, asc, desc, sql, inArray, count, gte } from "drizzle-orm";
+import { eq, and, asc, desc, sql, inArray, count, gte, isNotNull } from "drizzle-orm";
 
 // ── Constants ──
 
@@ -53,6 +54,7 @@ export interface ThreadSummary {
     createdAt: Date;
     postCount: number;
     helpfulCount: number;
+    threadType: string;
     latestPostAt: Date | null;
 }
 
@@ -128,6 +130,24 @@ async function updateHelpfulCount(threadId: string, delta: number): Promise<void
         .where(eq(threadStats.threadId, threadId));
 }
 
+// ── Conduct Agreement ──
+
+export async function hasAgreedToConduct(userId: string): Promise<boolean> {
+    const rows = await db
+        .select({ id: discussionConductAgreement.id })
+        .from(discussionConductAgreement)
+        .where(eq(discussionConductAgreement.userId, userId))
+        .limit(1);
+    return rows.length > 0;
+}
+
+export async function recordConductAgreement(userId: string): Promise<void> {
+    await db
+        .insert(discussionConductAgreement)
+        .values({ userId })
+        .onConflictDoNothing();
+}
+
 // ── Create Thread ──
 
 export async function createThread(
@@ -137,7 +157,8 @@ export async function createThread(
     firstPostBody: string,
     moduleId?: string | null,
     episodeId?: string | null,
-): Promise<{ threadId: string; postId: string }> {
+    threadType?: string,
+): Promise<{ threadId: string; postId: string; flagged: boolean }> {
     // Validate program exists
     const programs = await db
         .select({ id: program.id })
@@ -164,6 +185,23 @@ export async function createThread(
         }
     }
 
+    // AI content moderation (fail-open)
+    let flagReason: string | null = null;
+    try {
+        const { moderateContent } = await import("@cols/ai");
+        const [titleResult, bodyResult] = await Promise.all([
+            moderateContent(title, "thread_title"),
+            moderateContent(firstPostBody, "post_body"),
+        ]);
+        if (titleResult.flagged) flagReason = `Title: ${titleResult.reason}`;
+        else if (bodyResult.flagged) flagReason = `Body: ${bodyResult.reason}`;
+    } catch (err) {
+        console.error("[createThread] AI moderation unavailable:", err);
+    }
+
+    // Resolve thread type
+    const resolvedType = threadType ?? (episodeId ? "episode" : "general");
+
     // Create thread
     const [thread] = await db
         .insert(contentThread)
@@ -172,7 +210,10 @@ export async function createThread(
             moduleId: moduleId ?? null,
             episodeId: episodeId ?? null,
             title: title.trim(),
+            threadType: resolvedType,
             createdBy: userId,
+            isHidden: flagReason !== null, // Auto-hide flagged threads
+            flagReason,
         })
         .returning({ id: contentThread.id });
 
@@ -189,7 +230,7 @@ export async function createThread(
     // Init stats row
     await initThreadStats(thread.id);
 
-    return { threadId: thread.id, postId: post.id };
+    return { threadId: thread.id, postId: post.id, flagged: flagReason !== null };
 }
 
 // ── Get Threads for Episode ──
@@ -219,6 +260,7 @@ export async function getThreadsForEpisode(
             authorName: user.name,
             isLocked: contentThread.isLocked,
             isPinned: contentThread.isPinned,
+            threadType: contentThread.threadType,
             createdAt: contentThread.createdAt,
             postCount: threadStats.postCount,
             helpfulCount: threadStats.helpfulCount,
@@ -260,6 +302,7 @@ export async function getThreadsForProgram(
     programId: string,
     page: number = 1,
     isAdmin: boolean = false,
+    threadTypeFilter?: string,
 ): Promise<{ threads: ThreadSummary[]; total: number }> {
     const limit = DISCUSSION_LIMITS.THREADS_PER_PAGE;
     const offset = (page - 1) * limit;
@@ -267,6 +310,9 @@ export async function getThreadsForProgram(
     const conditions = [eq(contentThread.programId, programId)];
     if (!isAdmin) {
         conditions.push(eq(contentThread.isHidden, false));
+    }
+    if (threadTypeFilter) {
+        conditions.push(eq(contentThread.threadType, threadTypeFilter));
     }
 
     const threads = await db
@@ -280,6 +326,7 @@ export async function getThreadsForProgram(
             authorName: user.name,
             isLocked: contentThread.isLocked,
             isPinned: contentThread.isPinned,
+            threadType: contentThread.threadType,
             createdAt: contentThread.createdAt,
             postCount: threadStats.postCount,
             helpfulCount: threadStats.helpfulCount,
@@ -306,6 +353,7 @@ export async function getThreadsForProgram(
     return {
         threads: threads.map((t) => ({
             ...t,
+            threadType: t.threadType ?? "general",
             postCount: Number(t.postCount ?? 0),
             helpfulCount: Number(t.helpfulCount ?? 0),
             latestPostAt: t.lastActivityAt ?? null,
@@ -426,7 +474,7 @@ export async function createPost(
     body: string,
     parentPostId?: string | null,
     postPositionSeconds?: number | null,
-): Promise<{ postId: string }> {
+): Promise<{ postId: string; flagged: boolean }> {
     const threads = await db
         .select({ id: contentThread.id, isLocked: contentThread.isLocked })
         .from(contentThread)
@@ -436,6 +484,16 @@ export async function createPost(
     if (threads.length === 0) throw new Error("Thread not found.");
     if (threads[0].isLocked) throw new Error("Thread is locked — no new posts.");
 
+    // AI content moderation (fail-open)
+    let flagReason: string | null = null;
+    try {
+        const { moderateContent } = await import("@cols/ai");
+        const result = await moderateContent(body, "post_body");
+        if (result.flagged) flagReason = result.reason;
+    } catch (err) {
+        console.error("[createPost] AI moderation unavailable:", err);
+    }
+
     const [post] = await db
         .insert(contentPost)
         .values({
@@ -444,13 +502,15 @@ export async function createPost(
             parentPostId: parentPostId ?? null,
             postPositionSeconds: postPositionSeconds ?? null,
             body: body.trim(),
+            isDeleted: flagReason !== null, // Auto-hide flagged posts
+            flagReason,
         })
         .returning({ id: contentPost.id });
 
     // Update stats
     await incrementPostCount(threadId, userId);
 
-    return { postId: post.id };
+    return { postId: post.id, flagged: flagReason !== null };
 }
 
 // ── Edit Post ──
@@ -601,4 +661,94 @@ export async function getThreadCountsForEpisodes(
     return new Map(
         results.map((r) => [r.episodeId!, Number(r.threadCount)]),
     );
+}
+
+// ── AI Flagged Content (Admin Queue) ──
+
+export interface FlaggedItem {
+    id: string;
+    type: "thread" | "post";
+    title: string | null;
+    body: string | null;
+    flagReason: string;
+    authorName: string | null;
+    createdAt: Date;
+}
+
+export async function getAIFlaggedContent(): Promise<FlaggedItem[]> {
+    const flaggedThreads = await db
+        .select({
+            id: contentThread.id,
+            title: contentThread.title,
+            flagReason: contentThread.flagReason,
+            authorName: user.name,
+            createdAt: contentThread.createdAt,
+        })
+        .from(contentThread)
+        .leftJoin(user, eq(contentThread.createdBy, user.id))
+        .where(isNotNull(contentThread.flagReason))
+        .orderBy(desc(contentThread.createdAt))
+        .limit(50);
+
+    const flaggedPosts = await db
+        .select({
+            id: contentPost.id,
+            body: contentPost.body,
+            flagReason: contentPost.flagReason,
+            authorName: user.name,
+            createdAt: contentPost.createdAt,
+        })
+        .from(contentPost)
+        .leftJoin(user, eq(contentPost.userId, user.id))
+        .where(isNotNull(contentPost.flagReason))
+        .orderBy(desc(contentPost.createdAt))
+        .limit(50);
+
+    const items: FlaggedItem[] = [
+        ...flaggedThreads.map((t) => ({
+            id: t.id,
+            type: "thread" as const,
+            title: t.title,
+            body: null,
+            flagReason: t.flagReason!,
+            authorName: t.authorName,
+            createdAt: t.createdAt,
+        })),
+        ...flaggedPosts.map((p) => ({
+            id: p.id,
+            type: "post" as const,
+            title: null,
+            body: p.body,
+            flagReason: p.flagReason!,
+            authorName: p.authorName,
+            createdAt: p.createdAt,
+        })),
+    ];
+
+    items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return items;
+}
+
+export async function resolveContentFlag(
+    id: string,
+    type: "thread" | "post",
+    accepted: boolean,
+): Promise<void> {
+    if (type === "thread") {
+        await db
+            .update(contentThread)
+            .set({
+                flagReason: null,
+                isHidden: !accepted, // If rejected, keep hidden; if accepted, unhide
+            })
+            .where(eq(contentThread.id, id));
+    } else {
+        await db
+            .update(contentPost)
+            .set({
+                flagReason: null,
+                isDeleted: !accepted,
+            })
+            .where(eq(contentPost.id, id));
+    }
 }

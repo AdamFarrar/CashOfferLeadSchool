@@ -9,12 +9,16 @@
 // =============================================================================
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import {
     createPostAction,
     editPostAction,
     deletePostAction,
     toggleReactionAction,
     getThreadDetailAction,
+    lockThreadAction,
+    pinThreadAction,
+    hideThreadAction,
 } from "@/app/actions/discussion";
 import type { PostWithReactions } from "@cols/services";
 
@@ -40,7 +44,8 @@ interface Props {
 
 const REACTION_ICONS: Record<string, string> = { like: "👍", helpful: "💡", fire: "🔥" };
 
-export function ThreadDetail({ thread, posts: initialPosts, totalPosts: initialTotal, currentUserId, isAdmin }: Props) {
+export function ThreadDetail({ thread: initialThread, posts: initialPosts, totalPosts: initialTotal, currentUserId, isAdmin }: Props) {
+    const [thread, setThread] = useState(initialThread);
     const [posts, setPosts] = useState(initialPosts);
     const [totalPosts, setTotalPosts] = useState(initialTotal);
     const [page, setPage] = useState(1);
@@ -126,6 +131,13 @@ export function ThreadDetail({ thread, posts: initialPosts, totalPosts: initialT
 
     return (
         <div>
+            {/* Breadcrumbs */}
+            <nav style={{ marginBottom: "1.5rem" }}>
+                <Link href="/discussion" className="discussion-breadcrumb-link" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textDecoration: "none" }}>
+                    ← Back to Discussion
+                </Link>
+            </nav>
+
             {/* Thread Header */}
             <div className="thread-header">
                 <h1 className="thread-title">{thread.title}</h1>
@@ -137,6 +149,51 @@ export function ThreadDetail({ thread, posts: initialPosts, totalPosts: initialT
                     {thread.isLocked && <span>🔒 Locked</span>}
                     {thread.isHidden && <span>👁️‍🗨️ Hidden</span>}
                 </div>
+
+                {/* Admin Moderation Controls */}
+                {isAdmin && (
+                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+                        <button
+                            onClick={() => {
+                                startTransition(async () => {
+                                    await lockThreadAction(thread.id, !thread.isLocked);
+                                    setThread((t) => ({ ...t, isLocked: !t.isLocked }));
+                                });
+                            }}
+                            disabled={isPending}
+                            className="discussion-btn-ghost"
+                            style={{ fontSize: "0.75rem", padding: "0.25rem 0.75rem" }}
+                        >
+                            {thread.isLocked ? "🔓 Unlock" : "🔒 Lock"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                startTransition(async () => {
+                                    await pinThreadAction(thread.id, !thread.isPinned);
+                                    setThread((t) => ({ ...t, isPinned: !t.isPinned }));
+                                });
+                            }}
+                            disabled={isPending}
+                            className="discussion-btn-ghost"
+                            style={{ fontSize: "0.75rem", padding: "0.25rem 0.75rem" }}
+                        >
+                            {thread.isPinned ? "📌 Unpin" : "📌 Pin"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                startTransition(async () => {
+                                    await hideThreadAction(thread.id, !thread.isHidden);
+                                    setThread((t) => ({ ...t, isHidden: !t.isHidden }));
+                                });
+                            }}
+                            disabled={isPending}
+                            className="discussion-btn-ghost"
+                            style={{ fontSize: "0.75rem", padding: "0.25rem 0.75rem" }}
+                        >
+                            {thread.isHidden ? "👁️ Show" : "🙈 Hide"}
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Posts */}

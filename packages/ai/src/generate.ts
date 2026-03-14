@@ -328,3 +328,78 @@ Focus on patterns that would help operators guide learners. No markdown, just JS
     };
 }
 
+// ── Content Moderation (Phase E) ──
+
+export interface ModerationResult {
+    flagged: boolean;
+    reason: string | null;
+    confidence: number; // 0.0 – 1.0
+}
+
+export async function moderateContent(
+    text: string,
+    context: "thread_title" | "post_body",
+): Promise<ModerationResult> {
+    if (!text || text.trim().length === 0) {
+        return { flagged: false, reason: null, confidence: 1.0 };
+    }
+
+    try {
+        const client = getAIClient();
+
+        const response = await client.chat.completions.create({
+            model: MODELS.SUMMARY,
+            temperature: 0,
+            max_tokens: 150,
+            messages: [
+                {
+                    role: "system",
+                    content: `You are a content moderation assistant for the Cash Offer Lead School, a professional training community for real estate operators who buy houses with cash offers.
+
+Evaluate the following ${context === "thread_title" ? "discussion thread title" : "discussion post"} for community guideline violations.
+
+FLAG content that contains:
+- Hate speech, slurs, or personal attacks
+- Spam, advertising, or unsolicited promotion
+- Personally identifiable information (phone numbers, addresses, SSNs)
+- Sexually explicit content
+- Threats or harassment
+
+DO NOT FLAG content that:
+- Discusses real estate deals, cash offers, properties, or market conditions
+- Uses industry jargon (ARV, comps, wholesale, assignment, etc.)
+- Contains strong opinions about business strategy
+- Includes dollar amounts or deal figures (this is normal in RE)
+- Uses casual or informal language
+
+Return ONLY a JSON object: {"flagged": boolean, "reason": string|null, "confidence": number}
+- confidence: 0.0 to 1.0 (how sure you are)
+- reason: short explanation if flagged, null if not flagged
+No markdown, just JSON.`,
+                },
+                {
+                    role: "user",
+                    content: text.slice(0, 2000),
+                },
+            ],
+        });
+
+        const raw = response.choices[0]?.message?.content ?? "{}";
+        let parsed: { flagged?: boolean; reason?: string | null; confidence?: number };
+        try {
+            parsed = JSON.parse(raw);
+        } catch {
+            return { flagged: false, reason: null, confidence: 0 };
+        }
+
+        return {
+            flagged: Boolean(parsed.flagged),
+            reason: parsed.flagged ? (parsed.reason ?? "Flagged by AI moderation") : null,
+            confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
+        };
+    } catch (err) {
+        // Fail-open: if AI call fails, content passes through
+        console.error("[moderateContent] AI moderation failed, allowing content:", err);
+        return { flagged: false, reason: null, confidence: 0 };
+    }
+}
