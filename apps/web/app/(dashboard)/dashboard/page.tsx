@@ -129,6 +129,7 @@ export default function DashboardPage() {
     const userId = session?.user?.id || "";
     const { data: activeOrg } = useActiveOrganization();
     const organizationId = activeOrg?.id || "";
+    const [qualLoading, setQualLoading] = useState(true);
     const [qualCompleted, setQualCompleted] = useState(false);
     const [showVerifiedToast, setShowVerifiedToast] = useState(false);
     const [progress, setProgress] = useState<DashboardProgress | null>(null);
@@ -185,15 +186,21 @@ export default function DashboardPage() {
                 }
             });
 
+            // CRITICAL: Check qualification FIRST, before anything else.
+            // Must complete before we render the modal or the dashboard.
             getQualificationStatus().then((status) => {
                 const completed = !!status?.submittedAt;
-                if (completed) setQualCompleted(true);
+                setQualCompleted(completed);
+                setQualLoading(false); // NOW we know whether to show modal
                 const key = "cocs_dashboard_first_viewed";
                 if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
                     track(DashboardFirstViewed, { qualification_completed: completed });
                     sessionStorage.setItem(key, "1");
                 }
             }).catch(() => {
+                // On error, assume qualified — don't block the user
+                setQualCompleted(true);
+                setQualLoading(false);
                 const key = "cocs_dashboard_first_viewed";
                 if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
                     track(DashboardFirstViewed, { qualification_completed: false });
@@ -245,7 +252,8 @@ export default function DashboardPage() {
             )}
 
             {/* Qualification modal — blocks dashboard until completed */}
-            {!qualCompleted && (
+            {/* NEVER render until qualification check is done (prevents flicker) */}
+            {!qualLoading && !qualCompleted && (
                 <QualificationModal
                     nextSessionDate={nextSessionDate}
                     onComplete={() => setQualCompleted(true)}
