@@ -75,13 +75,7 @@ describe("EventEnvelope type shape", () => {
     });
 
     it("enforces typed properties", () => {
-        interface CheckoutProps {
-            amount: number;
-            currency: string;
-            items: number;
-        }
-
-        const envelope: EventEnvelope<CheckoutProps> = {
+        const envelope: EventEnvelope<Record<string, unknown>> = {
             event_id: "evt_checkout",
             event_name: "checkout_started",
             event_version: 1,

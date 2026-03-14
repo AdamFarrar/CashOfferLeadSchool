@@ -82,6 +82,33 @@
 .page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
 .page-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
 
+/* ---------- Landing Page ---------- */
+.landing-body-text {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-secondary);
+}
+.landing-muted-text {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-muted);
+}
+.landing-card {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+.landing-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: var(--bg-elevated);
+}
+.landing-semibold { font-weight: 600; }
+.img-cover { object-fit: cover; }
+
 /* ---------- Global Resets ---------- */
 @layer base {
 

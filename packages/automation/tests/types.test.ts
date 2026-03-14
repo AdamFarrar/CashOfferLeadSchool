@@ -17,24 +17,22 @@ describe("AutomationRule type shape", () => {
         const rule: AutomationRule = {
             id: "rule-1",
             name: "Welcome Email",
-            description: "Send welcome email on signup",
             eventKey: "user.signup",
             conditions: { field: "role", operator: "eq", value: "student" },
-            actions: [
-                {
-                    channel: "email",
-                    actionType: "send_template",
-                    config: { templateId: "welcome" },
-                },
-            ],
+            actionChannel: "email",
+            actionType: "send_template",
+            actionConfig: { templateId: "welcome" },
             enabled: true,
             priority: 10,
             organizationId: "org-1",
+            delayMs: 0,
+            maxRetries: 3,
+            retryDelayMs: 5000,
         };
 
         expect(rule.enabled).toBe(true);
-        expect(rule.actions).toHaveLength(1);
-        expect(rule.actions[0].channel).toBe("email");
+        expect(rule.actionChannel).toBe("email");
+        expect(rule.actionType).toBe("send_template");
     });
 });
 

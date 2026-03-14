@@ -126,7 +126,7 @@ export default function LandingPage() {
                             {" "}Into Your Operation
                         </h1>
 
-                        <p className="animate-fade-in-up animate-delay-200 text-lg max-w-[650px] mx-auto leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif", color: "var(--text-secondary)" }}>
+                        <p className="animate-fade-in-up animate-delay-200 text-lg max-w-[650px] mx-auto leading-relaxed landing-body-text">
                             Stop guessing why leads don&apos;t close. Install the scripts, systems,
                             and operator habits that turn cash offer leads into signed contracts.
                         </p>
@@ -140,7 +140,7 @@ export default function LandingPage() {
                             </a>
                         </div>
 
-                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm mt-4" style={{ fontFamily: "'Inter', system-ui, sans-serif", color: "var(--text-muted)" }}>
+                        <div className="animate-fade-in-up animate-delay-500 flex flex-wrap justify-center gap-6 text-sm mt-4 landing-muted-text">
                             <span>✓ 12 weeks, live</span>
                             <span>✓ Real operators, not theory</span>
                             <span>✓ Install and keep the systems</span>
@@ -251,7 +251,7 @@ export default function LandingPage() {
                                     ].map((leak) => (
                                         <div key={leak.label} className="flex items-start gap-4">
                                             <div className="w-10 h-10 rounded-lg bg-[var(--bg-card)] flex items-center justify-center text-xl shrink-0">{leak.icon}</div>
-                                            <p className="text-base leading-relaxed pt-2" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{leak.label}</p>
+                                            <p className="text-base leading-relaxed pt-2 landing-body-text">{leak.label}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -286,11 +286,11 @@ export default function LandingPage() {
                                         <div className="flex items-center gap-3">
                                             <span className="module-preview-number">{mod.number}</span>
                                             <div>
-                                                <h3 className="text-xl" style={{ fontWeight: 600 }}>{mod.title}</h3>
-                                                <span className="text-xs" style={{ color: "var(--text-muted)", fontFamily: "'Inter', system-ui, sans-serif" }}>{mod.weeks} • {mod.episodes} episodes</span>
+                                                <h3 className="text-xl landing-semibold">{mod.title}</h3>
+                                                <span className="text-xs landing-muted-text">{mod.weeks} • {mod.episodes} episodes</span>
                                             </div>
                                         </div>
-                                        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{mod.description}</p>
+                                        <p className="text-base leading-relaxed landing-body-text">{mod.description}</p>
                                     </div>
                                 </div>
                             ))}
@@ -349,9 +349,9 @@ export default function LandingPage() {
                                 { icon: "📊", label: "Teams converting 50+ leads per month" },
                                 { icon: "🏗️", label: "Founders who built their operation from scratch" },
                             ].map((item) => (
-                                <div key={item.label} className="text-center rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)" }}>
+                                <div key={item.label} className="text-center rounded-xl p-6 space-y-3 landing-card">
                                     <div className="text-3xl">{item.icon}</div>
-                                    <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{item.label}</p>
+                                    <p className="text-base leading-relaxed landing-body-text">{item.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -368,10 +368,10 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {DELIVERABLES.map((d) => (
-                                <div key={d.title} className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)" }}>
-                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{ background: "var(--bg-elevated)" }}>{d.icon}</div>
-                                    <h3 className="text-xl" style={{ fontWeight: 600 }}>{d.title}</h3>
-                                    <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>{d.detail}</p>
+                                <div key={d.title} className="rounded-xl p-6 space-y-3 landing-card">
+                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl landing-card-icon">{d.icon}</div>
+                                    <h3 className="text-xl landing-semibold">{d.title}</h3>
+                                    <p className="text-base leading-relaxed landing-body-text">{d.detail}</p>
                                 </div>
                             ))}
                         </div>
@@ -397,7 +397,7 @@ export default function LandingPage() {
                         <h2 className="text-[40px] md:text-[48px] font-bold tracking-tight max-w-[700px] mx-auto leading-[1.1]">
                             Ready to Install a Real Conversion System?
                         </h2>
-                        <p className="max-w-[650px] mx-auto text-lg leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "'Inter', system-ui, sans-serif" }}>
+                        <p className="max-w-[650px] mx-auto text-lg leading-relaxed landing-body-text">
                             Season 1 has limited seats. Save yours now and get a personalized
                             conversion audit before the program begins.
                         </p>
@@ -426,7 +426,7 @@ export default function LandingPage() {
 
             {/* ── FOOTER ── */}
             <footer className="border-t border-[var(--border-subtle)] py-8">
-                <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm" style={{ color: "var(--text-muted)", fontFamily: "'Inter', system-ui, sans-serif" }}>
+                <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm landing-muted-text">
                     <span>&copy; 2026 Cash Offer Lead School. All rights reserved.</span>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Privacy</a>
