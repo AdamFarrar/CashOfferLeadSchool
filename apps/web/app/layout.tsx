@@ -4,7 +4,7 @@ import { AnalyticsProvider } from "./components/AnalyticsProvider";
 import "./lib/automation-init";
 
 export const metadata: Metadata = {
-    title: "Cash Offer Conversion School",
+    title: "Cash Offer Lead School",
     description:
         "Learn to build and operate a successful cash offer lead generation and conversion business.",
     robots: {

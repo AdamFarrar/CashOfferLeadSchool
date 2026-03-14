@@ -4,7 +4,7 @@ import { getUserProgramsAction } from "@/app/actions/program";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Programs — Cash Offer Conversion School",
+    title: "Programs — Cash Offer Lead School",
     description: "Browse your enrolled programs.",
 };
 

@@ -15,11 +15,11 @@ import operatorCrm from "../public/images/operator-crm.png";
 import operatorClosing from "../public/images/operator-closing.png";
 
 export const metadata: Metadata = {
-    title: "Cash Offer Conversion School — 12-Week Installation System for Operators",
+    title: "Cash Offer Lead School — 12-Week Installation System for Operators",
     description:
         "The 12-week installation system that trains your team to convert cash offer leads into closed deals. Live sessions, proven scripts, real operators. Save your seat for Season 1.",
     openGraph: {
-        title: "Cash Offer Conversion School — Season 1",
+        title: "Cash Offer Lead School — Season 1",
         description:
             "A 12-week installation system for cash offer teams. Live sessions. Real operators. Proven conversion systems.",
         type: "website",
@@ -428,7 +428,7 @@ export default function LandingPage() {
             {/* ── FOOTER ── */}
             <footer className="border-t border-[var(--border-subtle)] py-8">
                 <div className="max-w-[1100px] mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm" style={{ color: "var(--text-muted)", fontFamily: "'Inter', system-ui, sans-serif" }}>
-                    <span>&copy; 2026 Cash Offer Conversion School. All rights reserved.</span>
+                    <span>&copy; 2026 Cash Offer Lead School. All rights reserved.</span>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Privacy</a>
                         <a href="#" className="hover:text-[color:var(--text-primary)] transition-colors">Terms</a>

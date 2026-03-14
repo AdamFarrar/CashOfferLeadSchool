@@ -5,7 +5,7 @@ import { getThreadDetailAction } from "@/app/actions/discussion";
 import { ThreadDetail } from "@/app/components/program/ThreadDetail";
 
 export const metadata: Metadata = {
-    title: "Thread — Cash Offer Conversion School",
+    title: "Thread — Cash Offer Lead School",
     description: "Discussion thread detail.",
 };
 

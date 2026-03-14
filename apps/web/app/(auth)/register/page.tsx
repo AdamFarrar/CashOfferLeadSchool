@@ -107,7 +107,7 @@ export default function RegisterPage() {
                     Save My Seat
                 </h1>
                 <p className="text-[0.9rem] text-[var(--text-secondary)]">
-                    Join Season 1 of the Cash Offer Conversion School.
+                    Join Season 1 of the Cash Offer Lead School.
                 </p>
             </div>
 

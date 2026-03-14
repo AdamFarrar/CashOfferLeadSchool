@@ -3,7 +3,7 @@ import { getDownloadAssets } from "@/app/actions/program";
 import { DownloadsListClient } from "@/app/components/program/DownloadsListClient";
 
 export const metadata: Metadata = {
-    title: "Downloads — Cash Offer Conversion School",
+    title: "Downloads — Cash Offer Lead School",
     description: "Scripts, checklists, and SOPs from your program.",
 };
 

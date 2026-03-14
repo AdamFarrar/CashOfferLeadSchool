@@ -5,7 +5,7 @@ import { DiscussionThreadList } from "@/app/components/program/DiscussionThread"
 import { getActiveProgram } from "@cols/services";
 
 export const metadata: Metadata = {
-    title: "Discussion — Cash Offer Conversion School",
+    title: "Discussion — Cash Offer Lead School",
     description: "Program-wide discussion threads.",
 };
 

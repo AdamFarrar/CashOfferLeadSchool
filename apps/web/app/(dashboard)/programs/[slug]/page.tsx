@@ -13,8 +13,8 @@ export async function generateMetadata({
     const program = await getProgramBySlugAction(slug);
     return {
         title: program
-            ? `${program.title} — Cash Offer Conversion School`
-            : "Program — Cash Offer Conversion School",
+            ? `${program.title} — Cash Offer Lead School`
+            : "Program — Cash Offer Lead School",
     };
 }
 

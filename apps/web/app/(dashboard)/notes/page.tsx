@@ -3,7 +3,7 @@ import { getNotes } from "@/app/actions/program";
 import { NotesListClient } from "@/app/components/program/NotesListClient";
 
 export const metadata: Metadata = {
-    title: "My Notes — Cash Offer Conversion School",
+    title: "My Notes — Cash Offer Lead School",
     description: "Your personal notes from episodes.",
 };
 

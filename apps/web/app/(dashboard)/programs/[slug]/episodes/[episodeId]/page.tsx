@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props) {
     const { episodeId } = await params;
     const episode = await getEpisode(episodeId);
     return {
-        title: episode ? `${episode.title} — Cash Offer Conversion School` : "Episode Not Found",
+        title: episode ? `${episode.title} — Cash Offer Lead School` : "Episode Not Found",
         description: episode?.description ?? "",
     };
 }
