@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Episode Chat — Phase 5 (Feature 3)
+// Episode Chat (Feature 3)
 // =============================================================================
 // Slide-out chat panel for asking AI about episode content.
 // Uses transcript as context. Non-streaming server action.

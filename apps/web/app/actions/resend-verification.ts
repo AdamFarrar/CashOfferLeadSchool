@@ -4,6 +4,7 @@ import { db } from "@cols/database/client";
 import { user } from "@cols/database/schema";
 import { eq } from "drizzle-orm";
 import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
+import { devLog } from "@cols/services";
 
 // =============================================================================
 // Resend Verification Email — Server Action
@@ -40,7 +41,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
 
         if (!found) {
             // Don't reveal whether user exists — always return success
-            console.info("[RESEND] No user found — returning silent success");
+            devLog.info("[RESEND] No user found — returning silent success");
             return { success: true };
         }
 
@@ -57,7 +58,7 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
         });
 
         _lastResend.set(normalizedEmail, Date.now());
-        console.info("[RESEND] Verification email triggered");
+        devLog.info("[RESEND] Verification email triggered");
         return { success: true };
     } catch (err) {
         console.error("[RESEND] Failed:", err instanceof Error ? err.message : err);

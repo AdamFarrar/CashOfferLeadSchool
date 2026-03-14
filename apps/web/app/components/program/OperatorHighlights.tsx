@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Operator Highlights — Phase 6 Feature 2
+// Operator Highlights Feature 2
 // =============================================================================
 // Displays admin-curated "Highlighted Moment" cards.
 // Each card shows a title, body text, and optional timestamp link.

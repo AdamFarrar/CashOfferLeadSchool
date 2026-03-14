@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Best Moments Timeline — Phase 6 Feature 3
+// Best Moments Timeline Feature 3
 // =============================================================================
 // Displays AI-detected best moments as clickable timestamp links.
 // Clicking seeks the video player to that moment.

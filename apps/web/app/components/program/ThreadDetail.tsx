@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Thread Detail — Phase 4
+// Thread Detail
 // =============================================================================
 // Full thread view: posts with reactions, reply form, edit/delete controls.
 // Flat/lightly indented replies (no nested forum UI).

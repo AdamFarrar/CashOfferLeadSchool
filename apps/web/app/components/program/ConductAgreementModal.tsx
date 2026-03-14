@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Conduct Agreement Modal — Phase E
+// Conduct Agreement Modal
 // =============================================================================
 // One-time gate before first post. Reading is always allowed.
 // Users who have already agreed never see this.

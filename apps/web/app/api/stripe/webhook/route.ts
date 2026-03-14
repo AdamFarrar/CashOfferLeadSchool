@@ -1,5 +1,5 @@
 // =============================================================================
-// Stripe Webhook Handler — Phase 7
+// Stripe Webhook Handler
 // =============================================================================
 // POST /api/stripe/webhook
 // Handles checkout.session.completed and charge.refunded events.

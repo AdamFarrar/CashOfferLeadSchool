@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// Stripe Server Actions — Phase 7
+// Stripe Server Actions
 // =============================================================================
 // createCheckoutSessionAction — creates Stripe Checkout, returns URL
 // getEnrollmentStatusAction — returns current user's enrollment

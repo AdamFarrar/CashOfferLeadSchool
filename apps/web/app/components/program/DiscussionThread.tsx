@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Discussion Thread List — Phase 4
+// Discussion Thread List
 // =============================================================================
 // Renders threads for a program or episode context.
 // Includes "Start a Thread" form and participation prompts.
@@ -249,8 +249,8 @@ export function DiscussionThreadList({
                             <div className="discussion-thread-meta">
                                 {thread.isPinned && <span className="discussion-badge-pin">📌</span>}
                                 {thread.isLocked && <span className="discussion-badge-lock">🔒</span>}
-                                {(thread as any).threadType === "episode" && <span style={{ fontSize: "0.7rem" }}>📺</span>}
-                                {(thread as any).threadType === "general" && <span style={{ fontSize: "0.7rem" }}>💬</span>}
+                                {thread.threadType === "episode" && <span style={{ fontSize: "0.7rem" }}>📺</span>}
+                                {thread.threadType === "general" && <span style={{ fontSize: "0.7rem" }}>💬</span>}
                             </div>
                             <h3 className="discussion-thread-title">{thread.title}</h3>
                             <div className="discussion-thread-info">

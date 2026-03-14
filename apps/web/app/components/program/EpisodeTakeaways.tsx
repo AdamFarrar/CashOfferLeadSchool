@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Episode Takeaways — Phase 5 (Feature 1)
+// Episode Takeaways (Feature 1)
 // =============================================================================
 // Displays AI-generated key takeaways below the video metadata.
 // Read-only for users. Loaded from cached ai_insight.

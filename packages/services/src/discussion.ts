@@ -150,15 +150,20 @@ export async function recordConductAgreement(userId: string): Promise<void> {
 
 // ── Create Thread ──
 
+export interface CreateThreadOptions {
+    userId: string;
+    programId: string;
+    title: string;
+    firstPostBody: string;
+    moduleId?: string | null;
+    episodeId?: string | null;
+    threadType?: string;
+}
+
 export async function createThread(
-    userId: string,
-    programId: string,
-    title: string,
-    firstPostBody: string,
-    moduleId?: string | null,
-    episodeId?: string | null,
-    threadType?: string,
+    opts: CreateThreadOptions,
 ): Promise<{ threadId: string; postId: string; flagged: boolean }> {
+    const { userId, programId, title, firstPostBody, moduleId, episodeId, threadType } = opts;
     // Validate program exists
     const programs = await db
         .select({ id: program.id })

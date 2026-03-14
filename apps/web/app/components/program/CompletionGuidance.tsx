@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Completion Guidance — Phase 6 Feature 5
+// Completion Guidance Feature 5
 // =============================================================================
 // Dashboard nudge cards. Deterministic rules, NOT AI-generated.
 // Computed dynamically per user — not persisted (Rule 5).

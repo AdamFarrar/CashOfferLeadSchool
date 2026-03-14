@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Episode Reflection — Phase 5 (Feature 5)
+// Episode Reflection (Feature 5)
 // =============================================================================
 // Displays AI-generated reflection prompts below the notes editor.
 // Forces learners to apply what they learned. Increases completion rates.

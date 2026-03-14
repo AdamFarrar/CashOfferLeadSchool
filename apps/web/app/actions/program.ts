@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// Program Server Actions — Phase 3
+// Program Server Actions
 // =============================================================================
 // All actions use getServerIdentity() — never trust client.
 // Enhanced with resume watching, episode playback events, and dashboard progress.
@@ -180,7 +180,7 @@ export async function getDownloadAssets() {
     }
 }
 
-// ── Phase 3: Playback Events ──
+// ── Playback Events ──
 
 export async function logPlaybackEvent(
     episodeId: string,

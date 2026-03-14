@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// QualificationModal — Phase A UX Flow Corrections
+// QualificationModal UX Flow Corrections
 // =============================================================================
 // Forced modal for unqualified users. Cannot be dismissed until completed.
 // Replaces the standalone /qualify page approach.

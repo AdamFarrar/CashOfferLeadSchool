@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// FeedbackModal — Phase A UX Flow Corrections
+// FeedbackModal UX Flow Corrections
 // =============================================================================
 // Persistent feedback modal triggered from sidebar nav.
 // Replaces the inline FeedbackWidget that was on the dashboard page only.

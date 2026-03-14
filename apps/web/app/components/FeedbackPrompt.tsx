@@ -11,7 +11,7 @@ import {
 } from "@cols/analytics/event-contracts";
 
 // =============================================================================
-// Post-Qualification Feedback Prompt — Phase 1.5A
+// Post-Qualification Feedback Prompt
 // =============================================================================
 // Non-modal inline card shown after qualification submission.
 // Tracks prompt_seen_at, dismissed_at, and submitted_at lifecycle.

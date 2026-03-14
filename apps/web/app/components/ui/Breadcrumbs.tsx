@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Breadcrumbs — Phase B
+// Breadcrumbs
 // =============================================================================
 // Reusable breadcrumb navigation component.
 // Owner: @frontend-specialist | Reviewer: @ui-specialist, @design-system-enforcer

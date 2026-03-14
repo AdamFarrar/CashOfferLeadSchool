@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// Discussion Server Actions — Phase 4
+// Discussion Server Actions
 // =============================================================================
 // 11 actions: CRUD for threads/posts, reactions, moderation.
 // All use getServerIdentity(), validate UUIDs, enforce rate limits.
@@ -85,15 +85,15 @@ export async function createThreadAction(input: {
     if (!rl.allowed) return { success: false, error: "Too many threads created. Try again later." };
 
     try {
-        const result = await createThread(
-            identity.userId,
-            input.programId,
+        const result = await createThread({
+            userId: identity.userId,
+            programId: input.programId,
             title,
-            body,
-            input.moduleId,
-            input.episodeId,
-            input.threadType,
-        );
+            firstPostBody: body,
+            moduleId: input.moduleId,
+            episodeId: input.episodeId,
+            threadType: input.threadType,
+        });
 
         await logEvent(
             identity.userId,

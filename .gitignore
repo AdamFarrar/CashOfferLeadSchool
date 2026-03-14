@@ -31,3 +31,4 @@ pnpm-debug.log*
 
 # Excluded: separate project accidentally in repo
 prpm-extract/
+.desloppify/

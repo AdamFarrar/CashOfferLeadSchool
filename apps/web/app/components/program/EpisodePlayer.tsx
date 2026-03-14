@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// EpisodePlayer — Platform Video Component (Phase 3.5)
+// EpisodePlayer — Platform Video Component
 // =============================================================================
 // Single reusable video player for all episode playback.
 // Emits rate-limited analytics events. Manages resume state.

@@ -3,6 +3,7 @@ import { getServerIdentity } from "@/app/actions/identity";
 import { getProgramThreadsAction, checkConductAction } from "@/app/actions/discussion";
 import { DiscussionThreadList } from "@/app/components/program/DiscussionThread";
 import { getActiveProgram } from "@cols/services";
+import type { ThreadSummary } from "@cols/services";
 
 export const metadata: Metadata = {
     title: "Discussion — Cash Offer Lead School",
@@ -17,8 +18,8 @@ export default async function DiscussionPage() {
     if (!program) {
         return (
             <div>
-                <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>Discussion</h1>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                <h1 className="page-title">Discussion</h1>
+                <p className="page-subtitle">
                     No active program found.
                 </p>
             </div>
@@ -26,7 +27,7 @@ export default async function DiscussionPage() {
     }
 
     // Graceful error handling — never crash the page
-    let threads: any[] = [];
+    let threads: ThreadSummary[] = [];
     let total = 0;
     let hasAgreed = false;
     try {
@@ -43,11 +44,9 @@ export default async function DiscussionPage() {
 
     return (
         <div>
-            <div style={{ marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-                    Discussion
-                </h1>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+            <div className="page-header">
+                <h1 className="page-title">Discussion</h1>
+                <p className="page-subtitle">
                     {program.title} — conversations across all modules and episodes.
                 </p>
             </div>

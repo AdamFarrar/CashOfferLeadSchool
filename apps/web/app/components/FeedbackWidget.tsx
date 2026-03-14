@@ -6,7 +6,7 @@ import { track } from "@cols/analytics";
 import { FeedbackPromptViewed, FeedbackOpened, FeedbackSubmitted } from "@cols/analytics/event-contracts";
 
 // =============================================================================
-// Dashboard Feedback Widget — Phase 1.5A
+// Dashboard Feedback Widget
 // =============================================================================
 // Persistent, collapsed widget on the dashboard for ongoing feedback.
 // =============================================================================
