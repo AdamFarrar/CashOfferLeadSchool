@@ -195,7 +195,9 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Turnstile CAPTCHA widget */}
-                <div ref={turnstileRef} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div ref={turnstileRef} />
+                </div>
 
                 {error && (
                     <div className="px-4 py-3 rounded-[var(--radius-md)] bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
