@@ -1,5 +1,5 @@
 // =============================================================================
-// Program Service — Phase 2
+// Program Service
 // =============================================================================
 // Business logic for the program delivery system.
 // All queries enforce server-side identity. No client-trusted data.

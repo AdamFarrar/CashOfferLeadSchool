@@ -1,5 +1,5 @@
 // =============================================================================
-// Booking Service — Phase H (Product Hardening)
+// Booking Service
 // =============================================================================
 // Business logic for audit booking lifecycle.
 // Used by server actions only.
