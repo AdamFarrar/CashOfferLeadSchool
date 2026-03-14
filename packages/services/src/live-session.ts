@@ -1,9 +1,9 @@
 // =============================================================================
-// Live Session Service — Phase 9
+// Live Session Service — Phase 9 + Phase C
 // =============================================================================
 
 import { db } from "@cocs/database";
-import { liveSession } from "@cocs/database/schema";
+import { liveSession, sessionHostAssignment, sessionHost, sessionRsvp } from "@cocs/database/schema";
 import type { LiveSessionStatus } from "@cocs/database/schema";
 import { eq, desc, gte, and, sql } from "drizzle-orm";
 
@@ -57,6 +57,93 @@ export async function getSessionById(sessionId: string) {
     return rows[0] ?? null;
 }
 
+// ── Get Session Detail (with hosts + RSVP) ──
+
+export async function getSessionDetail(sessionId: string, userId?: string) {
+    const session = await getSessionById(sessionId);
+    if (!session) return null;
+
+    // Get hosts
+    const hosts = await db
+        .select({
+            id: sessionHost.id,
+            name: sessionHost.name,
+            headshotUrl: sessionHost.headshotUrl,
+            bio: sessionHost.bio,
+            role: sessionHostAssignment.role,
+        })
+        .from(sessionHostAssignment)
+        .innerJoin(sessionHost, eq(sessionHostAssignment.hostId, sessionHost.id))
+        .where(eq(sessionHostAssignment.sessionId, sessionId));
+
+    // Get RSVP count
+    const countResult = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(sessionRsvp)
+        .where(eq(sessionRsvp.sessionId, sessionId));
+    const rsvpCount = countResult[0]?.count ?? 0;
+
+    // Check if user has RSVP'd
+    let userRsvp = false;
+    if (userId) {
+        const rsvpRows = await db
+            .select({ id: sessionRsvp.id })
+            .from(sessionRsvp)
+            .where(and(
+                eq(sessionRsvp.sessionId, sessionId),
+                eq(sessionRsvp.userId, userId),
+            ))
+            .limit(1);
+        userRsvp = rsvpRows.length > 0;
+    }
+
+    return {
+        ...session,
+        hosts,
+        rsvpCount,
+        userRsvp,
+    };
+}
+
+// ── Toggle RSVP (idempotent) ──
+
+export async function toggleSessionRsvp(sessionId: string, userId: string): Promise<boolean> {
+    // Check existing RSVP
+    const existing = await db
+        .select({ id: sessionRsvp.id })
+        .from(sessionRsvp)
+        .where(and(
+            eq(sessionRsvp.sessionId, sessionId),
+            eq(sessionRsvp.userId, userId),
+        ))
+        .limit(1);
+
+    if (existing.length > 0) {
+        // Remove RSVP
+        await db
+            .delete(sessionRsvp)
+            .where(eq(sessionRsvp.id, existing[0].id));
+        return false; // no longer RSVP'd
+    } else {
+        // Add RSVP
+        await db
+            .insert(sessionRsvp)
+            .values({ sessionId, userId })
+            .onConflictDoNothing();
+        return true; // now RSVP'd
+    }
+}
+
+// ── Get RSVP Count ──
+
+export async function getSessionRsvpCount(sessionId: string): Promise<number> {
+    const result = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(sessionRsvp)
+        .where(eq(sessionRsvp.sessionId, sessionId));
+    return result[0]?.count ?? 0;
+}
+
 // ── Admin: List All Sessions ──
 
 export async function listAllSessions(page = 1, pageSize = 20) {
@@ -89,6 +176,7 @@ export async function createSession(params: {
     durationMinutes?: number;
     meetingUrl?: string;
     hostName?: string;
+    programId?: string;
 }) {
     const rows = await db
         .insert(liveSession)
@@ -99,6 +187,7 @@ export async function createSession(params: {
             durationMinutes: params.durationMinutes ?? 60,
             meetingUrl: params.meetingUrl ?? null,
             hostName: params.hostName ?? "Adam Farrar",
+            programId: params.programId ?? null,
         })
         .returning();
 
@@ -118,6 +207,7 @@ export async function updateSession(
         meetingUrl: string | null;
         recordingUrl: string | null;
         hostName: string;
+        programId: string | null;
     }>,
 ) {
     const rows = await db
@@ -150,3 +240,4 @@ export async function getPastSessionsWithRecordings(limit = 10) {
         .orderBy(desc(liveSession.scheduledAt))
         .limit(limit);
 }
+

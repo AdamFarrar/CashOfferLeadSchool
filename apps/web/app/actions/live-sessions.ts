@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// Live Session Server Actions — Phase 9
+// Live Session Server Actions — Phase 9 + Phase C
 // =============================================================================
 
 import { getServerIdentity } from "./identity";
@@ -14,6 +14,12 @@ import {
     createSession,
     updateSession,
     deleteSession,
+    getSessionDetail,
+    toggleSessionRsvp,
+    listSessionHosts,
+    createSessionHost,
+    assignHostToSession,
+    removeHostFromSession,
 } from "@cocs/services";
 import type { LiveSessionStatus } from "@cocs/services";
 
@@ -47,6 +53,28 @@ export async function getPastSessionsAction() {
     return { success: true, sessions };
 }
 
+// ── User: Get Session Detail (with hosts + RSVP) ──
+
+export async function getSessionDetailAction(sessionId: string) {
+    const identity = await getServerIdentity();
+    if (!identity) return { success: false, session: null };
+
+    const session = await getSessionDetail(sessionId, identity.userId);
+    if (!session) return { success: false, session: null };
+
+    return { success: true, session };
+}
+
+// ── User: Toggle RSVP ──
+
+export async function toggleRsvpAction(sessionId: string) {
+    const identity = await getServerIdentity();
+    if (!identity) return { success: false, rsvpd: false };
+
+    const rsvpd = await toggleSessionRsvp(sessionId, identity.userId);
+    return { success: true, rsvpd };
+}
+
 // ── Admin: List All ──
 
 export async function adminListSessionsAction(page = 1) {
@@ -63,6 +91,7 @@ export async function adminCreateSessionAction(params: {
     durationMinutes?: number;
     meetingUrl?: string;
     hostName?: string;
+    programId?: string;
 }) {
     await requireAdmin();
 
@@ -90,6 +119,7 @@ export async function adminUpdateSessionAction(
         meetingUrl: string | null;
         recordingUrl: string | null;
         hostName: string;
+        programId: string | null;
     }>,
 ) {
     await requireAdmin();
@@ -109,4 +139,43 @@ export async function adminDeleteSessionAction(sessionId: string) {
     await requireAdmin();
     const deleted = await deleteSession(sessionId);
     return { success: deleted, error: deleted ? undefined : "Session not found." };
+}
+
+// ── Admin: List Hosts ──
+
+export async function adminListHostsAction() {
+    await requireAdmin();
+    const hosts = await listSessionHosts();
+    return { success: true, hosts };
+}
+
+// ── Admin: Create Host ──
+
+export async function adminCreateHostAction(params: {
+    name: string;
+    headshotUrl?: string;
+    bio?: string;
+    role?: string;
+}) {
+    await requireAdmin();
+    if (!params.name?.trim()) return { success: false, error: "Host name required." };
+
+    const host = await createSessionHost(params);
+    return { success: true, host };
+}
+
+// ── Admin: Assign Host to Session ──
+
+export async function adminAssignHostAction(sessionId: string, hostId: string, role = "host") {
+    await requireAdmin();
+    const assignment = await assignHostToSession(sessionId, hostId, role);
+    return { success: true, assignment };
+}
+
+// ── Admin: Remove Host from Session ──
+
+export async function adminRemoveHostAction(sessionId: string, hostId: string) {
+    await requireAdmin();
+    await removeHostFromSession(sessionId, hostId);
+    return { success: true };
 }

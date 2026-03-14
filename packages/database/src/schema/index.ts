@@ -11,5 +11,7 @@ export * from "./ai";
 export * from "./booking";
 export * from "./enrollment";
 export * from "./live-session";
+export * from "./session-host";
+export * from "./session-rsvp";
 export * from "./platform";
 

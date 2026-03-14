@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
     getUpcomingSessionsAction,
     getPastSessionsAction,
@@ -109,11 +110,14 @@ export default function SessionsPage() {
                             const isLive = s.status === "live" || countdown === "Live Now";
 
                             return (
-                                <div key={s.id} style={{
+                                <Link key={s.id} href={`/sessions/${s.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                                <div style={{
                                     padding: "1.25rem",
                                     borderRadius: "var(--radius-md)",
                                     border: isLive ? "1px solid rgba(34,197,94,0.3)" : "1px solid var(--border-subtle)",
                                     background: isLive ? "rgba(34,197,94,0.03)" : undefined,
+                                    cursor: "pointer",
+                                    transition: "border-color 0.15s",
                                 }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                         <div>
@@ -175,6 +179,7 @@ export default function SessionsPage() {
                                         </div>
                                     </div>
                                 </div>
+                                </Link>
                             );
                         })}
                     </div>
@@ -189,13 +194,16 @@ export default function SessionsPage() {
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         {past.map((s) => (
-                            <div key={s.id} style={{
+                            <Link key={s.id} href={`/sessions/${s.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                            <div style={{
                                 padding: "0.75rem 1rem",
                                 borderRadius: "var(--radius-sm)",
                                 border: "1px solid var(--border-subtle)",
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
+                                cursor: "pointer",
+                                transition: "border-color 0.15s",
                             }}>
                                 <div>
                                     <div style={{ fontSize: "0.85rem", fontWeight: 600 }}>{s.title}</div>
@@ -223,6 +231,7 @@ export default function SessionsPage() {
                                     </span>
                                 )}
                             </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

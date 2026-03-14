@@ -1,8 +1,9 @@
 // =============================================================================
-// Live Session Schema — Phase 9
+// Live Session Schema — Phase 9 + Phase C
 // =============================================================================
 
 import { pgTable, uuid, text, timestamp, integer } from "drizzle-orm/pg-core";
+import { program } from "./program";
 
 export type LiveSessionStatus = "scheduled" | "live" | "completed" | "cancelled";
 
@@ -17,6 +18,7 @@ export const liveSession = pgTable("live_session", {
     recordingUrl: text("recording_url"),
     hostName: text("host_name").notNull().default("Adam Farrar"),
     maxAttendees: integer("max_attendees").default(100),
+    programId: uuid("program_id").references(() => program.id),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
