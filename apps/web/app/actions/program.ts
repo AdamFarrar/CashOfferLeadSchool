@@ -269,7 +269,8 @@ export async function getProgramBySlugAction(slug: string) {
         if (!identity) return null;
 
         const { getProgramBySlug } = await import("@cols/services");
-        return getProgramBySlug(slug, identity.userId);
+        const result = await getProgramBySlug(slug, identity.userId);
+        return result ? JSON.parse(JSON.stringify(result)) : null;
     } catch (err) {
         console.error("[PROGRAM] getProgramBySlugAction error:", err);
         return null;
@@ -282,7 +283,8 @@ export async function getUserProgramsAction() {
         if (!identity) return [];
 
         const { getUserPrograms } = await import("@cols/services");
-        return getUserPrograms(identity.userId);
+        const result = await getUserPrograms(identity.userId);
+        return JSON.parse(JSON.stringify(result));
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
         return [];
@@ -292,7 +294,8 @@ export async function getUserProgramsAction() {
 export async function resolveEpisodeSlugAction(episodeId: string) {
     try {
         const { resolveSlugForEpisode } = await import("@cols/services");
-        return resolveSlugForEpisode(episodeId);
+        const result = await resolveSlugForEpisode(episodeId);
+        return result ? JSON.parse(JSON.stringify(result)) : null;
     } catch (err) {
         console.error("[PROGRAM] resolveEpisodeSlugAction error:", err);
         return null;
