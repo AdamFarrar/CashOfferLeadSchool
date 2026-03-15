@@ -29,12 +29,16 @@ export default function ProgramDetailPage() {
                 );
                 const data = await getProgramBySlugAction(slug);
                 if (data) {
-                    // Rehydrate Date fields lost during JSON serialization
-                    data.cohortStartDate = data.cohortStartDate
-                        ? new Date(data.cohortStartDate)
-                        : null;
+                    // Rehydrate cohortStartDate from ISO string to Date
+                    setProgram({
+                        ...data,
+                        cohortStartDate: data.cohortStartDate
+                            ? new Date(data.cohortStartDate)
+                            : null,
+                    } as ProgramWithModules);
+                } else {
+                    setProgram(null);
                 }
-                setProgram(data);
             } catch (err) {
                 console.error("[PROGRAM_DETAIL] Failed to load:", err);
                 setError("Failed to load program.");
