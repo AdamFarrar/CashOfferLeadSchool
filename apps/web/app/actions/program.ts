@@ -264,22 +264,37 @@ export async function getDashboardProgress() {
 // ── Phase B: Multi-Program Actions ──
 
 export async function getProgramBySlugAction(slug: string) {
-    const identity = await getServerIdentity();
-    if (!identity) return null;
+    try {
+        const identity = await getServerIdentity();
+        if (!identity) return null;
 
-    const { getProgramBySlug } = await import("@cols/services");
-    return getProgramBySlug(slug, identity.userId);
+        const { getProgramBySlug } = await import("@cols/services");
+        return getProgramBySlug(slug, identity.userId);
+    } catch (err) {
+        console.error("[PROGRAM] getProgramBySlugAction error:", err);
+        return null;
+    }
 }
 
 export async function getUserProgramsAction() {
-    const identity = await getServerIdentity();
-    if (!identity) return [];
+    try {
+        const identity = await getServerIdentity();
+        if (!identity) return [];
 
-    const { getUserPrograms } = await import("@cols/services");
-    return getUserPrograms(identity.userId);
+        const { getUserPrograms } = await import("@cols/services");
+        return getUserPrograms(identity.userId);
+    } catch (err) {
+        console.error("[PROGRAM] getUserProgramsAction error:", err);
+        return [];
+    }
 }
 
 export async function resolveEpisodeSlugAction(episodeId: string) {
-    const { resolveSlugForEpisode } = await import("@cols/services");
-    return resolveSlugForEpisode(episodeId);
+    try {
+        const { resolveSlugForEpisode } = await import("@cols/services");
+        return resolveSlugForEpisode(episodeId);
+    } catch (err) {
+        console.error("[PROGRAM] resolveEpisodeSlugAction error:", err);
+        return null;
+    }
 }

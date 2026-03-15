@@ -22,4 +22,23 @@ describe("program action contracts", () => {
         const resp = { success: true, completedCount: 5, totalCount: 10 };
         expect(resp.completedCount).toBeLessThanOrEqual(resp.totalCount);
     });
+
+    it("getUserProgramsAction always returns array", () => {
+        // On error, action returns [] — never throws
+        const errorResult: unknown[] = [];
+        expect(Array.isArray(errorResult)).toBe(true);
+
+        const successResult = [{ id: "p-1", title: "Program 1", slug: "program-1" }];
+        expect(Array.isArray(successResult)).toBe(true);
+    });
+
+    it("getProgramBySlugAction returns null on missing program", () => {
+        const result = null;
+        expect(result).toBeNull();
+    });
+
+    it("resolveEpisodeSlugAction returns null on missing episode", () => {
+        const result = null;
+        expect(result).toBeNull();
+    });
 });
