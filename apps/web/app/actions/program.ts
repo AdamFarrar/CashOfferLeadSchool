@@ -284,13 +284,76 @@ export async function getUserProgramsAction() {
         console.log("[PROGRAM] identity:", identity ? `userId=${identity.userId}` : "null");
         if (!identity) return [];
 
-        const { getUserPrograms } = await import("@cols/services");
-        console.log("[PROGRAM] getUserPrograms imported successfully");
-        const result = await getUserPrograms(identity.userId);
-        console.log("[PROGRAM] getUserPrograms returned", result.length, "programs");
-        const serialized = JSON.parse(JSON.stringify(result));
-        console.log("[PROGRAM] serialized", serialized.length, "programs");
-        return serialized;
+        // Direct DB query — bypasses @cols/services barrel import
+        // which produces UNDEFINED_VALUE in the production bundle.
+        const { db } = await import("@cols/database/client");
+        const { program, module: moduleTable, episode, episodeProgress } = await import("@cols/database/schema");
+        const { eq, asc, and, inArray } = await import("drizzle-orm");
+
+        const programs = await db
+            .select()
+            .from(program)
+            .where(eq(program.status, "active"))
+            .orderBy(asc(program.createdAt));
+
+        console.log("[PROGRAM] found", programs.length, "active programs");
+        if (programs.length === 0) return [];
+
+        const result = [];
+
+        for (const prog of programs) {
+            const modules = await db
+                .select({ id: moduleTable.id })
+                .from(moduleTable)
+                .where(eq(moduleTable.programId, prog.id));
+
+            const moduleIds = modules.map((m) => m.id);
+            let totalEpisodes = 0;
+            let completedEpisodes = 0;
+
+            if (moduleIds.length > 0) {
+                const episodeRows = await db
+                    .select({ id: episode.id })
+                    .from(episode)
+                    .where(inArray(episode.moduleId, moduleIds));
+
+                totalEpisodes = episodeRows.length;
+
+                if (episodeRows.length > 0) {
+                    const progressRows = await db
+                        .select({ completed: episodeProgress.completed })
+                        .from(episodeProgress)
+                        .where(
+                            and(
+                                eq(episodeProgress.userId, identity.userId),
+                                inArray(
+                                    episodeProgress.episodeId,
+                                    episodeRows.map((e) => e.id),
+                                ),
+                            ),
+                        );
+                    completedEpisodes = progressRows.filter((p) => p.completed).length;
+                }
+            }
+
+            result.push({
+                id: prog.id,
+                title: prog.title,
+                description: prog.description ?? null,
+                slug: prog.slug ?? null,
+                previewImageUrl: prog.previewImageUrl ?? null,
+                status: prog.status,
+                totalModules: modules.length,
+                totalEpisodes,
+                completedEpisodes,
+                progressPercent: totalEpisodes > 0
+                    ? Math.round((completedEpisodes / totalEpisodes) * 100)
+                    : 0,
+            });
+        }
+
+        console.log("[PROGRAM] returning", result.length, "programs");
+        return JSON.parse(JSON.stringify(result));
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
         return [];
