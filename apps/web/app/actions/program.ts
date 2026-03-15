@@ -282,13 +282,17 @@ export async function getProgramBySlugAction(slug: string) {
 export async function getUserProgramsAction() {
     try {
         const identity = await getServerIdentity();
-        if (!identity) return [];
+        if (!identity) {
+            console.error("[PROGRAM] getUserProgramsAction: no identity");
+            return [];
+        }
 
         // getUserPrograms is statically imported from @cols/services above.
         // DO NOT use dynamic `await import("@cols/services")` here — it
         // double-loads the barrel, causing pgEnum re-initialization which
         // corrupts the program.status column reference (UNDEFINED_VALUE).
         const result = await getUserPrograms(identity.userId);
+        console.log("[PROGRAM] getUserProgramsAction: got", result.length, "programs for user", identity.userId.slice(-4));
         return JSON.parse(JSON.stringify(result));
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
