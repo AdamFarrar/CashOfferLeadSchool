@@ -272,7 +272,38 @@ export async function getProgramBySlugAction(slug: string) {
         if (!identity) return null;
 
         const result = await getProgramBySlug(slug, identity.userId);
-        return result ? JSON.parse(JSON.stringify(result)) : null;
+        if (!result) return null;
+
+        // Explicit nested field mapping to strip Drizzle column proxy metadata.
+        // ProgramWithModules has modules[].episodes[] — deep nesting makes
+        // JSON.stringify even more likely to hit infinite recursion.
+        return {
+            id: String(result.id),
+            title: String(result.title),
+            description: result.description != null ? String(result.description) : null,
+            slug: result.slug != null ? String(result.slug) : null,
+            previewImageUrl: result.previewImageUrl != null ? String(result.previewImageUrl) : null,
+            cohortStartDate: result.cohortStartDate ? result.cohortStartDate.toISOString() : null,
+            status: String(result.status),
+            modules: (result.modules ?? []).map((m) => ({
+                id: String(m.id),
+                title: String(m.title),
+                description: m.description != null ? String(m.description) : null,
+                orderIndex: Number(m.orderIndex),
+                episodes: (m.episodes ?? []).map((ep) => ({
+                    id: String(ep.id),
+                    title: String(ep.title),
+                    description: ep.description != null ? String(ep.description) : null,
+                    videoUrl: ep.videoUrl != null ? String(ep.videoUrl) : null,
+                    durationSeconds: ep.durationSeconds != null ? Number(ep.durationSeconds) : null,
+                    orderIndex: Number(ep.orderIndex),
+                    unlockWeek: Number(ep.unlockWeek),
+                    moduleId: String(ep.moduleId),
+                    completed: Boolean(ep.completed),
+                    locked: Boolean(ep.locked),
+                })),
+            })),
+        };
     } catch (err) {
         console.error("[PROGRAM] getProgramBySlugAction error:", err);
         return null;
@@ -292,8 +323,23 @@ export async function getUserProgramsAction() {
         // double-loads the barrel, causing pgEnum re-initialization which
         // corrupts the program.status column reference (UNDEFINED_VALUE).
         const result = await getUserPrograms(identity.userId);
-        console.log("[PROGRAM] getUserProgramsAction: got", result.length, "programs for user", identity.userId.slice(-4));
-        return JSON.parse(JSON.stringify(result));
+
+        // Explicit field mapping — DO NOT use JSON.parse(JSON.stringify()).
+        // Drizzle result objects carry column proxy metadata that causes
+        // infinite recursion (Maximum call stack size exceeded) during
+        // RSC serialization. Map each field to plain primitives.
+        return result.map((p) => ({
+            id: String(p.id),
+            title: String(p.title),
+            description: p.description != null ? String(p.description) : null,
+            slug: p.slug != null ? String(p.slug) : null,
+            previewImageUrl: p.previewImageUrl != null ? String(p.previewImageUrl) : null,
+            status: String(p.status),
+            totalModules: Number(p.totalModules),
+            totalEpisodes: Number(p.totalEpisodes),
+            completedEpisodes: Number(p.completedEpisodes),
+            progressPercent: Number(p.progressPercent),
+        }));
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
         return [];
