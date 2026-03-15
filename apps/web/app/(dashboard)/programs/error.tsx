@@ -8,7 +8,6 @@
 // =============================================================================
 
 import Link from "next/link";
-import styles from "../error.module.css";
 
 export default function ProgramsError({
     error,
@@ -18,31 +17,29 @@ export default function ProgramsError({
     reset: () => void;
 }) {
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.icon}>📚</div>
-            <h1 className={styles.heading}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "50vh", textAlign: "center", padding: "2rem" }}>
+            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📚</div>
+            <h1 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>
                 Couldn&apos;t load programs
             </h1>
-            <p className={styles.message}>
+            <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: "24rem", marginBottom: "1.5rem", lineHeight: 1.6 }}>
                 We hit an issue loading your programs. This is
                 usually temporary — try again or head back to the dashboard.
                 {error.digest && (
-                    <span className={styles.digest}>
+                    <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.5rem" }}>
                         Error ID: {error.digest}
                     </span>
                 )}
             </p>
-            <button onClick={reset} className={styles.retryBtn}>
+            <button
+                onClick={reset}
+                style={{ padding: "0.5rem 1.5rem", background: "var(--brand-orange)", color: "#fff", border: "none", borderRadius: "var(--radius-md)", fontSize: "0.85rem", fontWeight: 600, cursor: "pointer" }}
+            >
                 Try Again
             </button>
             <Link
                 href="/dashboard"
-                style={{
-                    display: "block",
-                    marginTop: "1rem",
-                    fontSize: "0.8rem",
-                    color: "var(--text-muted)",
-                }}
+                style={{ display: "block", marginTop: "1rem", fontSize: "0.8rem", color: "var(--text-muted)" }}
             >
                 ← Back to Dashboard
             </Link>
