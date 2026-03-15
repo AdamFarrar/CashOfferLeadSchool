@@ -1,43 +1,117 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getProgramBySlugAction } from "@/app/actions/program";
-import { Breadcrumbs } from "@/app/components/ui/Breadcrumbs";
+"use client";
+
+// =============================================================================
+// Program Detail Page — Client Component
+// =============================================================================
+// Fetches program data client-side to avoid Server Component module-scope
+// BetterAuth initialization crash. Passes data to EpisodeLibrary.
+// =============================================================================
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { EpisodeLibrary } from "../../episodes/EpisodeLibrary";
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-    const { slug } = await params;
-    const program = await getProgramBySlugAction(slug);
-    return {
-        title: program
-            ? `${program.title} — Cash Offer Lead School`
-            : "Program — Cash Offer Lead School",
-    };
-}
+type ProgramData = {
+    id: string;
+    title: string;
+    description: string | null;
+    slug: string | null;
+    modules: {
+        id: string;
+        title: string;
+        description: string | null;
+        orderIndex: number;
+        episodes: {
+            id: string;
+            title: string;
+            description: string | null;
+            videoUrl: string | null;
+            durationSeconds: number | null;
+            orderIndex: number;
+            unlockWeek: number;
+            completed: boolean;
+            locked: boolean;
+            lastPositionSeconds: number;
+        }[];
+    }[];
+};
 
-export default async function ProgramDetailPage({
-    params,
-}: {
-    params: Promise<{ slug: string }>;
-}) {
-    const { slug } = await params;
-    const program = await getProgramBySlugAction(slug);
+export default function ProgramDetailPage() {
+    const params = useParams<{ slug: string }>();
+    const slug = params.slug;
 
-    if (!program) {
-        notFound();
+    const [program, setProgram] = useState<ProgramData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadProgram() {
+            try {
+                const { getProgramBySlugAction } = await import(
+                    "@/app/actions/program"
+                );
+                const data = await getProgramBySlugAction(slug);
+                setProgram(data);
+            } catch (err) {
+                console.error("[PROGRAM_DETAIL] Failed to load:", err);
+                setError("Failed to load program.");
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadProgram();
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: "center", paddingTop: "5rem" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📚</div>
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
+                    Loading program…
+                </p>
+            </div>
+        );
+    }
+
+    if (error || !program) {
+        return (
+            <div style={{ textAlign: "center", paddingTop: "5rem" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>😕</div>
+                <h1 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                    Program not found
+                </h1>
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: "1rem" }}>
+                    {error || "This program doesn't exist or you don't have access."}
+                </p>
+                <Link
+                    href="/programs"
+                    style={{
+                        padding: "0.5rem 1.5rem",
+                        borderRadius: "0.5rem",
+                        background: "var(--accent, #e53e3e)",
+                        color: "#fff",
+                        textDecoration: "none",
+                        fontWeight: 600,
+                    }}
+                >
+                    Back to Programs
+                </Link>
+            </div>
+        );
     }
 
     return (
         <div>
-            <Breadcrumbs
-                crumbs={[
-                    { label: "Programs", href: "/programs" },
-                    { label: program.title },
-                ]}
-            />
+            {/* Breadcrumbs */}
+            <nav style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.5rem" }}>
+                <Link href="/programs" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+                    Programs
+                </Link>
+                <span style={{ margin: "0 0.5rem" }}>›</span>
+                <span>{program.title}</span>
+            </nav>
+
             <EpisodeLibrary program={program} />
         </div>
     );
