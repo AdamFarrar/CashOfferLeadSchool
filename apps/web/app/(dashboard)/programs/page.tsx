@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { getUserProgramsAction } from "@/app/actions/program";
 import Link from "next/link";
 
@@ -10,11 +9,6 @@ export const metadata: Metadata = {
 
 export default async function ProgramsPage() {
     const programs = await getUserProgramsAction();
-
-    // Single program: auto-redirect to program view (UX decision by @ux-researcher)
-    if (programs.length === 1 && programs[0].slug) {
-        redirect(`/programs/${programs[0].slug}`);
-    }
 
     // Zero programs
     if (programs.length === 0) {
@@ -29,7 +23,7 @@ export default async function ProgramsPage() {
         );
     }
 
-    // Multi-program: show program cards
+    // Show program cards (works for single or multiple programs)
     return (
         <div>
             <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1.5rem" }}>
