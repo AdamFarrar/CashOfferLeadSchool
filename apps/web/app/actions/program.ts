@@ -279,12 +279,18 @@ export async function getProgramBySlugAction(slug: string) {
 
 export async function getUserProgramsAction() {
     try {
+        console.log("[PROGRAM] getUserProgramsAction called");
         const identity = await getServerIdentity();
+        console.log("[PROGRAM] identity:", identity ? `userId=${identity.userId}` : "null");
         if (!identity) return [];
 
         const { getUserPrograms } = await import("@cols/services");
+        console.log("[PROGRAM] getUserPrograms imported successfully");
         const result = await getUserPrograms(identity.userId);
-        return JSON.parse(JSON.stringify(result));
+        console.log("[PROGRAM] getUserPrograms returned", result.length, "programs");
+        const serialized = JSON.parse(JSON.stringify(result));
+        console.log("[PROGRAM] serialized", serialized.length, "programs");
+        return serialized;
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
         return [];
