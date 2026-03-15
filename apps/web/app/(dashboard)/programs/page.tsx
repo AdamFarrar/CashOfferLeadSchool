@@ -10,19 +10,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-interface ProgramSummary {
-    id: string;
-    title: string;
-    description: string | null;
-    slug: string | null;
-    previewImageUrl: string | null;
-    status: string;
-    totalModules: number;
-    totalEpisodes: number;
-    completedEpisodes: number;
-    progressPercent: number;
-}
+import type { ProgramSummary } from "@cols/services";
 
 export default function ProgramsPage() {
     const [programs, setPrograms] = useState<ProgramSummary[]>([]);

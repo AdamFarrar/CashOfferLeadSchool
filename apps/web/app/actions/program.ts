@@ -20,6 +20,8 @@ import {
     checkRateLimit,
     rateLimitKey,
     getUserPrograms,
+    getProgramBySlug,
+    resolveSlugForEpisode,
 } from "@cols/services";
 import { getServerIdentity } from "./identity";
 import { emitDomainEvent, DOMAIN_EVENTS } from "@cols/events";
@@ -269,9 +271,6 @@ export async function getProgramBySlugAction(slug: string) {
         const identity = await getServerIdentity();
         if (!identity) return null;
 
-        // NOTE: barrel import works for getProgramBySlug but breaks for getUserPrograms
-        // in the production bundle. See getUserProgramsAction comment for details.
-        const { getProgramBySlug } = await import("@cols/services");
         const result = await getProgramBySlug(slug, identity.userId);
         return result ? JSON.parse(JSON.stringify(result)) : null;
     } catch (err) {
@@ -299,7 +298,10 @@ export async function getUserProgramsAction() {
 
 export async function resolveEpisodeSlugAction(episodeId: string) {
     try {
-        const { resolveSlugForEpisode } = await import("@cols/services");
+        const identity = await getServerIdentity();
+        if (!identity) return null;
+        if (!isValidUuid(episodeId)) return null;
+
         const result = await resolveSlugForEpisode(episodeId);
         return result ? JSON.parse(JSON.stringify(result)) : null;
     } catch (err) {

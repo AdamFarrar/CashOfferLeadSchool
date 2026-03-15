@@ -94,7 +94,7 @@ interface UpdateProgramInput {
 }
 
 export async function updateProgramAction(input: UpdateProgramInput) {
-    await requireAdmin();
+    const identity = await requireAdmin();
 
     if (!input.programId || !UUID_RE.test(input.programId)) {
         return { success: false, error: "Valid program ID is required." };
@@ -120,6 +120,20 @@ export async function updateProgramAction(input: UpdateProgramInput) {
 
         if (Object.keys(updateData).length <= 1) {
             return { success: false, error: "No fields to update." };
+        }
+
+        // Verify org ownership (prevents cross-org IDOR)
+        const [existing] = await db
+            .select({ organizationId: program.organizationId })
+            .from(program)
+            .where(eq(program.id, input.programId))
+            .limit(1);
+
+        if (!existing) {
+            return { success: false, error: "Program not found." };
+        }
+        if (existing.organizationId && existing.organizationId !== identity.organizationId) {
+            return { success: false, error: "Unauthorized: program belongs to another organization." };
         }
 
         await db
@@ -196,7 +210,7 @@ export async function listProgramEpisodesAction(programId?: string) {
             })),
     }));
 
-    return { program: JSON.parse(JSON.stringify(prog)), modules: result };
+    return JSON.parse(JSON.stringify({ program: prog, modules: result }));
 }
 
 // ── Update episode metadata ──
@@ -211,7 +225,7 @@ interface UpdateEpisodeInput {
 }
 
 export async function updateEpisodeAction(input: UpdateEpisodeInput) {
-    await requireAdmin();
+    const identity = await requireAdmin();
 
     if (!input.episodeId || !UUID_RE.test(input.episodeId)) {
         return { success: false, error: "Valid episode ID is required." };
@@ -246,6 +260,22 @@ export async function updateEpisodeAction(input: UpdateEpisodeInput) {
 
         if (Object.keys(updateData).length === 0) {
             return { success: false, error: "No fields to update." };
+        }
+
+        // Verify episode belongs to admin's org (prevents cross-org IDOR)
+        const [epCheck] = await db
+            .select({ orgId: program.organizationId })
+            .from(episode)
+            .innerJoin(module, eq(episode.moduleId, module.id))
+            .innerJoin(program, eq(module.programId, program.id))
+            .where(eq(episode.id, input.episodeId))
+            .limit(1);
+
+        if (!epCheck) {
+            return { success: false, error: "Episode not found." };
+        }
+        if (epCheck.orgId && epCheck.orgId !== identity.organizationId) {
+            return { success: false, error: "Unauthorized: episode belongs to another organization." };
         }
 
         await db
