@@ -52,6 +52,12 @@ export async function getServerIdentity(): Promise<ServerIdentity | null> {
     }
 
     // --- Fallback path: Direct DB lookup bypassing org plugin ---
+    // SECURITY NOTE: This path bypasses BetterAuth's session validation
+    // (HMAC, token rotation, IP checks). Acceptable because:
+    //   1. Only fires when BetterAuth's org plugin throws (rare)
+    //   2. Token is verified against DB + expiry-checked
+    //   3. Read-only lookup — no session mutation
+    //   4. Attacker would need a valid, non-expired session token
     try {
         const cookieStore = await cookies();
         const token =
@@ -87,7 +93,7 @@ export async function getServerIdentity(): Promise<ServerIdentity | null> {
         const orgId = membership[0]?.organizationId || "";
         const role = membership[0]?.role || "";
 
-        console.log("[IDENTITY] Fallback resolved userId:", userId);
+        console.log("[IDENTITY] Fallback resolved userId:", userId.slice(-4));
         return { userId, organizationId: orgId, role };
     } catch (fallbackErr) {
         console.error("[IDENTITY] Fallback session lookup also failed:", fallbackErr);

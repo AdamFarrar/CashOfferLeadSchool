@@ -268,6 +268,8 @@ export async function getProgramBySlugAction(slug: string) {
         const identity = await getServerIdentity();
         if (!identity) return null;
 
+        // NOTE: barrel import works for getProgramBySlug but breaks for getUserPrograms
+        // in the production bundle. See getUserProgramsAction comment for details.
         const { getProgramBySlug } = await import("@cols/services");
         const result = await getProgramBySlug(slug, identity.userId);
         return result ? JSON.parse(JSON.stringify(result)) : null;
@@ -279,9 +281,7 @@ export async function getProgramBySlugAction(slug: string) {
 
 export async function getUserProgramsAction() {
     try {
-        console.log("[PROGRAM] getUserProgramsAction called");
         const identity = await getServerIdentity();
-        console.log("[PROGRAM] identity:", identity ? `userId=${identity.userId}` : "null");
         if (!identity) return [];
 
         // Direct DB query — bypasses @cols/services barrel import
@@ -296,7 +296,6 @@ export async function getUserProgramsAction() {
             .where(eq(program.status, "active"))
             .orderBy(asc(program.createdAt));
 
-        console.log("[PROGRAM] found", programs.length, "active programs");
         if (programs.length === 0) return [];
 
         const result = [];
@@ -352,7 +351,6 @@ export async function getUserProgramsAction() {
             });
         }
 
-        console.log("[PROGRAM] returning", result.length, "programs");
         return JSON.parse(JSON.stringify(result));
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
