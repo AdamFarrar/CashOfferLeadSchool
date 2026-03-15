@@ -10,38 +10,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import type { ProgramWithModules } from "@cols/services";
 import { EpisodeLibrary } from "../../episodes/EpisodeLibrary";
-
-type ProgramData = {
-    id: string;
-    title: string;
-    description: string | null;
-    slug: string | null;
-    modules: {
-        id: string;
-        title: string;
-        description: string | null;
-        orderIndex: number;
-        episodes: {
-            id: string;
-            title: string;
-            description: string | null;
-            videoUrl: string | null;
-            durationSeconds: number | null;
-            orderIndex: number;
-            unlockWeek: number;
-            completed: boolean;
-            locked: boolean;
-            lastPositionSeconds: number;
-        }[];
-    }[];
-};
 
 export default function ProgramDetailPage() {
     const params = useParams<{ slug: string }>();
     const slug = params.slug;
 
-    const [program, setProgram] = useState<ProgramData | null>(null);
+    const [program, setProgram] = useState<ProgramWithModules | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +28,12 @@ export default function ProgramDetailPage() {
                     "@/app/actions/program"
                 );
                 const data = await getProgramBySlugAction(slug);
+                if (data) {
+                    // Rehydrate Date fields lost during JSON serialization
+                    data.cohortStartDate = data.cohortStartDate
+                        ? new Date(data.cohortStartDate)
+                        : null;
+                }
                 setProgram(data);
             } catch (err) {
                 console.error("[PROGRAM_DETAIL] Failed to load:", err);
