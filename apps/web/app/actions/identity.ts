@@ -21,33 +21,38 @@ export interface ServerIdentity {
 }
 
 export async function getServerIdentity(): Promise<ServerIdentity | null> {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user?.id) return null;
+    try {
+        const session = await auth.api.getSession({ headers: await headers() });
+        if (!session?.user?.id) return null;
 
-    let orgId = session.session?.activeOrganizationId || "";
-    let role = "";
+        let orgId = session.session?.activeOrganizationId || "";
+        let role = "";
 
-    if (orgId) {
-        const activeMember = await auth.api
-            .getActiveMember({ headers: await headers() })
-            .catch(() => null);
-        role = activeMember?.role || "";
-    } else {
-        // No active org on session — look up the user's first org from DB
-        const membership = await db
-            .select({ organizationId: member.organizationId, role: member.role })
-            .from(member)
-            .where(eq(member.userId, session.user.id))
-            .limit(1);
-        if (membership.length > 0) {
-            orgId = membership[0].organizationId;
-            role = membership[0].role;
+        if (orgId) {
+            const activeMember = await auth.api
+                .getActiveMember({ headers: await headers() })
+                .catch(() => null);
+            role = activeMember?.role || "";
+        } else {
+            // No active org on session — look up the user's first org from DB
+            const membership = await db
+                .select({ organizationId: member.organizationId, role: member.role })
+                .from(member)
+                .where(eq(member.userId, session.user.id))
+                .limit(1);
+            if (membership.length > 0) {
+                orgId = membership[0].organizationId;
+                role = membership[0].role;
+            }
         }
-    }
 
-    return {
-        userId: session.user.id,
-        organizationId: orgId,
-        role,
-    };
+        return {
+            userId: session.user.id,
+            organizationId: orgId,
+            role,
+        };
+    } catch (err) {
+        console.error("[IDENTITY] getServerIdentity error:", err);
+        return null;
+    }
 }
