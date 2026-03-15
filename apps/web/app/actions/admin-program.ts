@@ -1,31 +1,167 @@
 "use server";
 
 // =============================================================================
-// Admin Program Server Actions — Episode Management
+// Admin Program Server Actions — Program + Episode Management
 // =============================================================================
-// Admin-only actions for managing episode metadata (video URLs, transcripts,
-// descriptions, duration). Uses requireAdmin() guard.
-// This is NOT a CMS — it's structured data field editing.
+// Admin-only actions for managing programs, modules, and episode metadata.
+// Uses requireAdmin() guard for all actions.
 // =============================================================================
 
 import { requireAdmin } from "./guards";
 import { db } from "@cols/database/client";
 import { program, module, episode } from "@cols/database/schema";
-import { eq, asc, inArray } from "drizzle-orm";
+import { eq, asc, desc, inArray } from "drizzle-orm";
 
-// ── List all episodes grouped by module ──
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export async function listProgramEpisodesAction() {
+// ── List all programs ──
+
+export async function listAllProgramsAction() {
     await requireAdmin();
 
     const programs = await db
-        .select()
+        .select({
+            id: program.id,
+            title: program.title,
+            description: program.description,
+            slug: program.slug,
+            status: program.status,
+            previewImageUrl: program.previewImageUrl,
+            cohortStartDate: program.cohortStartDate,
+            createdAt: program.createdAt,
+        })
         .from(program)
-        .where(eq(program.status, "active"))
-        .limit(1);
+        .orderBy(desc(program.createdAt));
 
-    if (programs.length === 0) return { program: null, modules: [] };
-    const prog = programs[0];
+    return JSON.parse(JSON.stringify(programs));
+}
+
+// ── Create program ──
+
+interface CreateProgramInput {
+    title: string;
+    description?: string;
+    slug?: string;
+    status?: "draft" | "active" | "archived";
+}
+
+export async function createProgramAction(input: CreateProgramInput) {
+    const identity = await requireAdmin();
+
+    if (!input.title || input.title.trim().length === 0) {
+        return { success: false, error: "Title is required." };
+    }
+    if (input.title.length > 255) {
+        return { success: false, error: "Title must be under 255 characters." };
+    }
+    if (input.slug && !SLUG_RE.test(input.slug)) {
+        return { success: false, error: "Slug must be lowercase letters, numbers, and hyphens." };
+    }
+
+    try {
+        const [created] = await db
+            .insert(program)
+            .values({
+                title: input.title.trim(),
+                description: input.description?.trim() || null,
+                slug: input.slug?.trim() || null,
+                status: input.status || "draft",
+                organizationId: identity.organizationId || null,
+            })
+            .returning({ id: program.id });
+
+        return { success: true, programId: created.id };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "";
+        if (msg.includes("idx_program_slug")) {
+            return { success: false, error: "A program with this slug already exists." };
+        }
+        console.error("[ADMIN] Create program error:", err);
+        return { success: false, error: "Failed to create program." };
+    }
+}
+
+// ── Update program metadata ──
+
+interface UpdateProgramInput {
+    programId: string;
+    title?: string;
+    description?: string;
+    slug?: string;
+    status?: "draft" | "active" | "archived";
+    previewImageUrl?: string;
+}
+
+export async function updateProgramAction(input: UpdateProgramInput) {
+    await requireAdmin();
+
+    if (!input.programId || !UUID_RE.test(input.programId)) {
+        return { success: false, error: "Valid program ID is required." };
+    }
+    if (input.title !== undefined && input.title.trim().length === 0) {
+        return { success: false, error: "Title cannot be empty." };
+    }
+    if (input.title !== undefined && input.title.length > 255) {
+        return { success: false, error: "Title must be under 255 characters." };
+    }
+    if (input.slug !== undefined && input.slug.length > 0 && !SLUG_RE.test(input.slug)) {
+        return { success: false, error: "Slug must be lowercase letters, numbers, and hyphens." };
+    }
+
+    try {
+        const updateData: Record<string, unknown> = {};
+        if (input.title !== undefined) updateData.title = input.title.trim();
+        if (input.description !== undefined) updateData.description = input.description.trim() || null;
+        if (input.slug !== undefined) updateData.slug = input.slug.trim() || null;
+        if (input.status !== undefined) updateData.status = input.status;
+        if (input.previewImageUrl !== undefined) updateData.previewImageUrl = input.previewImageUrl.trim() || null;
+        updateData.updatedAt = new Date();
+
+        if (Object.keys(updateData).length <= 1) {
+            return { success: false, error: "No fields to update." };
+        }
+
+        await db
+            .update(program)
+            .set(updateData)
+            .where(eq(program.id, input.programId));
+
+        return { success: true };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "";
+        if (msg.includes("idx_program_slug")) {
+            return { success: false, error: "A program with this slug already exists." };
+        }
+        console.error("[ADMIN] Update program error:", err);
+        return { success: false, error: "Failed to update program." };
+    }
+}
+
+// ── List episodes for a specific program ──
+
+export async function listProgramEpisodesAction(programId?: string) {
+    await requireAdmin();
+
+    let prog;
+    if (programId && UUID_RE.test(programId)) {
+        const result = await db
+            .select()
+            .from(program)
+            .where(eq(program.id, programId))
+            .limit(1);
+        prog = result[0] ?? null;
+    } else {
+        // Fallback: first active program (backward compat)
+        const result = await db
+            .select()
+            .from(program)
+            .where(eq(program.status, "active"))
+            .limit(1);
+        prog = result[0] ?? null;
+    }
+
+    if (!prog) return { program: null, modules: [] };
 
     const modules_ = await db
         .select()
@@ -60,7 +196,7 @@ export async function listProgramEpisodesAction() {
             })),
     }));
 
-    return { program: prog, modules: result };
+    return { program: JSON.parse(JSON.stringify(prog)), modules: result };
 }
 
 // ── Update episode metadata ──
@@ -74,21 +210,15 @@ interface UpdateEpisodeInput {
     transcript?: string;
 }
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export async function updateEpisodeAction(input: UpdateEpisodeInput) {
-    const identity = await requireAdmin();
+    await requireAdmin();
 
     if (!input.episodeId || !UUID_RE.test(input.episodeId)) {
         return { success: false, error: "Valid episode ID is required." };
     }
-
-    // Validate title length
     if (input.title !== undefined && input.title.length > 255) {
         return { success: false, error: "Title must be under 255 characters." };
     }
-
-    // Validate video URL format (basic)
     if (input.videoUrl !== undefined && input.videoUrl.length > 0) {
         if (input.videoUrl.length > 2000) {
             return { success: false, error: "Video URL too long." };
@@ -97,15 +227,11 @@ export async function updateEpisodeAction(input: UpdateEpisodeInput) {
             return { success: false, error: "Video URL must start with http." };
         }
     }
-
-    // Validate duration
     if (input.durationSeconds !== undefined && input.durationSeconds !== null) {
         if (input.durationSeconds < 0 || input.durationSeconds > 86400) {
             return { success: false, error: "Duration must be between 0 and 86400 seconds." };
         }
     }
-
-    // Validate transcript length
     if (input.transcript !== undefined && input.transcript.length > 500000) {
         return { success: false, error: "Transcript too long (max 500k characters)." };
     }
