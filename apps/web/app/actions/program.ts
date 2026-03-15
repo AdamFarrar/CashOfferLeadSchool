@@ -19,7 +19,6 @@ import {
     getProgramProgressForDashboard as getProgressSvc,
     checkRateLimit,
     rateLimitKey,
-    getUserPrograms,
     getProgramBySlug,
     resolveSlugForEpisode,
 } from "@cols/services";
@@ -313,33 +312,91 @@ export async function getProgramBySlugAction(slug: string) {
 export async function getUserProgramsAction() {
     try {
         const identity = await getServerIdentity();
-        if (!identity) {
-            console.error("[PROGRAM] getUserProgramsAction: no identity");
-            return [];
+        if (!identity) return [];
+
+        // ╔══════════════════════════════════════════════════════════════════╗
+        // ║  INLINE DB QUERY — DO NOT REFACTOR TO USE @cols/services       ║
+        // ║                                                                 ║
+        // ║  The @cols/services barrel creates circular references in the   ║
+        // ║  production bundle. Any function that touches pgEnum columns    ║
+        // ║  (e.g. program.status) causes:                                  ║
+        // ║    - UNDEFINED_VALUE (via dynamic import)                       ║
+        // ║    - Maximum call stack exceeded (via static import)            ║
+        // ║                                                                 ║
+        // ║  Direct @cols/database imports bypass the barrel and work.      ║
+        // ╚══════════════════════════════════════════════════════════════════╝
+        const { db } = await import("@cols/database/client");
+        const {
+            program: programTable,
+            module: moduleTable,
+            episode: episodeTable,
+            episodeProgress,
+        } = await import("@cols/database/schema");
+        const { eq, asc, and, inArray } = await import("drizzle-orm");
+
+        const programs = await db
+            .select()
+            .from(programTable)
+            .where(eq(programTable.status, "active"))
+            .orderBy(asc(programTable.createdAt));
+
+        if (programs.length === 0) return [];
+
+        const result = [];
+
+        for (const prog of programs) {
+            const modules = await db
+                .select({ id: moduleTable.id })
+                .from(moduleTable)
+                .where(eq(moduleTable.programId, prog.id));
+
+            const moduleIds = modules.map((m) => m.id);
+            let totalEpisodes = 0;
+            let completedEpisodes = 0;
+
+            if (moduleIds.length > 0) {
+                const episodeRows = await db
+                    .select({ id: episodeTable.id })
+                    .from(episodeTable)
+                    .where(inArray(episodeTable.moduleId, moduleIds));
+
+                totalEpisodes = episodeRows.length;
+
+                if (episodeRows.length > 0) {
+                    const progressRows = await db
+                        .select({ completed: episodeProgress.completed })
+                        .from(episodeProgress)
+                        .where(
+                            and(
+                                eq(episodeProgress.userId, identity.userId),
+                                inArray(
+                                    episodeProgress.episodeId,
+                                    episodeRows.map((e) => e.id),
+                                ),
+                            ),
+                        );
+                    completedEpisodes = progressRows.filter((p) => p.completed).length;
+                }
+            }
+
+            // Explicit field mapping — plain primitives only, no Drizzle metadata
+            result.push({
+                id: String(prog.id),
+                title: String(prog.title),
+                description: prog.description != null ? String(prog.description) : null,
+                slug: prog.slug != null ? String(prog.slug) : null,
+                previewImageUrl: prog.previewImageUrl != null ? String(prog.previewImageUrl) : null,
+                status: String(prog.status),
+                totalModules: modules.length,
+                totalEpisodes,
+                completedEpisodes,
+                progressPercent: totalEpisodes > 0
+                    ? Math.round((completedEpisodes / totalEpisodes) * 100)
+                    : 0,
+            });
         }
 
-        // getUserPrograms is statically imported from @cols/services above.
-        // DO NOT use dynamic `await import("@cols/services")` here — it
-        // double-loads the barrel, causing pgEnum re-initialization which
-        // corrupts the program.status column reference (UNDEFINED_VALUE).
-        const result = await getUserPrograms(identity.userId);
-
-        // Explicit field mapping — DO NOT use JSON.parse(JSON.stringify()).
-        // Drizzle result objects carry column proxy metadata that causes
-        // infinite recursion (Maximum call stack size exceeded) during
-        // RSC serialization. Map each field to plain primitives.
-        return result.map((p) => ({
-            id: String(p.id),
-            title: String(p.title),
-            description: p.description != null ? String(p.description) : null,
-            slug: p.slug != null ? String(p.slug) : null,
-            previewImageUrl: p.previewImageUrl != null ? String(p.previewImageUrl) : null,
-            status: String(p.status),
-            totalModules: Number(p.totalModules),
-            totalEpisodes: Number(p.totalEpisodes),
-            completedEpisodes: Number(p.completedEpisodes),
-            progressPercent: Number(p.progressPercent),
-        }));
+        return result;
     } catch (err) {
         console.error("[PROGRAM] getUserProgramsAction error:", err);
         return [];
